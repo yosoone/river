@@ -70,7 +70,7 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .verse .line{display:block}
 .sign{margin:44px 0 0;font-size:14px;letter-spacing:.12em;color:var(--muted)}
 .piece{cursor:pointer;-webkit-tap-highlight-color:transparent}
-.hint{display:none;margin:28px 0 0;font-size:12px;letter-spacing:.14em;color:var(--muted)}
+.hint{display:none;width:100%;margin:0;text-align:center;font-size:12px;letter-spacing:.14em;color:var(--muted)}
 @media (hover:none) and (pointer:coarse){.hint{display:block}}
 nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;padding-block:28px;border-top:1px solid var(--rule);font-size:15px}
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
@@ -222,9 +222,9 @@ function piece(i){
   view.innerHTML =
     '<article class="piece" aria-label="' + esc(title(x)) + '"><div class="piece-inner">' +
     '<p class="verse">' + verseHTML(verse(x)) + '</p>' +
-    '<p class="sign">' + UI[lang].sign + '</p>' +
-    '<p class="hint">' + UI[lang].hint + '</p></div></article>' +
+    '<p class="sign">' + UI[lang].sign + '</p></div></article>' +
     '<nav class="pager" aria-label="More texts">' +
+    '<p class="hint">' + UI[lang].hint + '</p>' +
     '<a href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
     '<a class="mid" href="#home">' + UI[lang].all + '</a>' +
     '<a href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +

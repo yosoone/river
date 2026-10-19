@@ -161,11 +161,11 @@ const TEXTS = [
 
 const UI = {
   en: { intro:"Short texts that move like a quiet river: on breath, love, spring and surrendering to the flow.",
-        all:"All texts", about:"About", aboutTitle:"About River", credit:"Photograph by Qualishu", aboutAlt:"Yoso in profile, silhouetted against a bright window",
+        all:"All texts", about:"About", aboutTitle:"About River", place:"Kougenji Temple, Kumamoto", credit:"Photograph by Qualishu", aboutAlt:"Yoso in profile, silhouetted against a bright window",
         aboutText:"River 川 is a collection of short texts written by Yoso in Miyazaki, Japan. Reflections on daily practice: morning meditation, the breath, the turning of the seasons, the depth of the heart. A few lines each, inspirations kept close to the moment they were written and given a page of their own, to be read slowly, one after another, the way a river carries one thing and then the next.",
         byline:"Yoso · Miyazaki", footL:"© Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"– Yoso", hint:"Swipe or tap to navigate" },
   ja: { intro:"静かな川のように流れる、短い言葉たち。息のこと、愛のこと、春のこと、そして流れに身をゆだねること。",
-        all:"一覧へ", about:"このページについて", aboutTitle:"River 川について", credit:"写真：Qualishu", aboutAlt:"明るい窓を背に、横顔のシルエットになったYoso",
+        all:"一覧へ", about:"このページについて", aboutTitle:"River 川について", place:"熊本・廣現寺", credit:"写真：Qualishu", aboutAlt:"明るい窓を背に、横顔のシルエットになったYoso",
         aboutText:"「River 川」は、宮崎でYosoが書いた短い言葉を集めたものです。日々の修行の中での思い。朝の瞑想、呼吸、季節の移ろい、心の深み。数行ずつの言葉は、書かれた瞬間に近いままのひらめきであり、それぞれに一頁を与えました。川がひとつ、またひとつと運んでいくように、ゆっくりと、順に読んでください。",
         byline:"Yoso · 宮崎", footL:"© Yoso · 宮崎", footR:"心は家", sign:"– Yoso", hint:"スワイプまたはタップで移動" }
 };
@@ -212,7 +212,7 @@ function about(){
   const u = UI[lang];
   document.title = u.aboutTitle + ' · River 川';
   view.innerHTML =
-    '<section class="about"><figure><img src="' + ABOUT_IMG + '" alt="' + esc(u.aboutAlt) + '"><figcaption>' + esc(u.credit) + '</figcaption></figure>' +
+    '<section class="about"><figure><img src="' + ABOUT_IMG + '" alt="' + esc(u.aboutAlt) + '"><figcaption>' + esc(u.place) + '<br>' + esc(u.credit) + '</figcaption></figure>' +
     '<div class="copy"><h1>' + esc(u.aboutTitle) + '</h1><p>' + esc(u.aboutText) + '</p>' +
     '<p class="sign" style="margin-top:36px">' + u.sign + '</p></div></section>';
 }

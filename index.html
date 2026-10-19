@@ -139,11 +139,29 @@ function piece(i){
     '</nav>';
 }
 
+let nav = null; // hashes of the current text's neighbours, for swiping
+
+// Phone: swipe left for the next text, right for the previous one
+let sx = 0, sy = 0, st = 0;
+window.addEventListener('touchstart', e => {
+  const t = e.changedTouches[0]; sx = t.clientX; sy = t.clientY; st = Date.now();
+}, {passive:true});
+window.addEventListener('touchend', e => {
+  if (!nav) return;
+  const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+  if (Date.now() - st > 800 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+  location.hash = dx < 0 ? nav.next : nav.prev;
+}, {passive:true});
+
 function route(){
   const h = location.hash.replace('#','');
   const m = /^t(\d+)$/.exec(h);
   const i = m ? TEXTS.findIndex(x => x.n === Number(m[1])) : -1;
-  if (i >= 0) piece(i); else home();
+  if (i >= 0) {
+    const L = TEXTS.length;
+    nav = { prev: 't' + TEXTS[(i - 1 + L) % L].n, next: 't' + TEXTS[(i + 1) % L].n };
+    piece(i);
+  } else { nav = null; home(); }
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', route);

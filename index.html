@@ -64,11 +64,13 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 
 /* Text page */
 .piece{min-height:calc(100svh - 260px);display:flex;flex-direction:column;justify-content:center;padding-block:64px 80px;border-top:1px solid var(--rule)}
-.piece-inner{width:fit-content;max-width:min(36em,100%);margin:0 auto;text-align:center}
+.piece-inner{width:fit-content;max-width:100%;margin:0 auto;text-align:center}
 .verse{margin:0;font-family:var(--display);font-size:clamp(22px,3.4vw,30px);line-height:1.75;color:var(--ink);text-wrap:pretty}
 .verse:lang(ja){font-size:clamp(20px,3vw,27px);line-height:1.9;letter-spacing:.04em}
 .verse .stanza+.stanza{margin-top:1.4em}
-.verse .line{display:block}
+.verse .line{display:block;text-wrap:balance}
+.verse.long{font-size:clamp(18px,2.2vw,24px)}
+.verse.longer{font-size:clamp(16px,1.8vw,20px)}
 .sign{margin:44px 0 0;font-size:14px;letter-spacing:.12em;color:var(--muted)}
 .piece{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hint{display:none;width:100%;margin:0;text-align:center;font-size:12px;letter-spacing:.14em;color:var(--muted)}
@@ -178,6 +180,12 @@ const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','
 const title = x => lang === 'ja' ? x.tj : x.t;
 const verse = x => lang === 'ja' ? x.vj : x.v;
 
+// Longest line in width units (a CJK character counts as two), so long lines get a smaller size and stay whole on wide screens
+function sizeClass(v){
+  const w = Math.max(...v.split('\n').map(l => [...l].reduce((a, c) => a + (/[\u3000-\u9fff\uff00-\uffef]/.test(c) ? 2 : 1), 0)));
+  return w > 80 ? ' longer' : w > 55 ? ' long' : '';
+}
+
 function verseHTML(v){
   return v.split(/\n\s*\n/).map(st =>
     '<span class="stanza" style="display:block">' +
@@ -222,7 +230,7 @@ function piece(i){
   document.title = title(x) + ' · River 川';
   view.innerHTML =
     '<article class="piece" aria-label="' + esc(title(x)) + '"><div class="piece-inner">' +
-    '<p class="verse">' + verseHTML(verse(x)) + '</p>' +
+    '<p class="verse' + sizeClass(verse(x)) + '">' + verseHTML(verse(x)) + '</p>' +
     '<p class="sign">' + UI[lang].sign + '</p></div></article>' +
     '<nav class="pager" aria-label="More texts">' +
     '<p class="hint">' + UI[lang].hint + '</p>' +

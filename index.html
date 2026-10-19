@@ -25,13 +25,18 @@ img{max-width:100%}
 :root[data-theme="dark"]{
   --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; color-scheme:dark}
 body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7}
+:lang(ja){line-break:strict;word-break:normal}
 a{color:var(--accent)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
 .wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-header.site{display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding-block:32px 24px}
+header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:32px 24px}
 .mark{font-family:var(--display);font-size:26px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
 .mark span{color:var(--muted);margin-left:.35em}
+.head-right{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
 .byline{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.lang{display:inline-flex;border:1px solid var(--rule);border-radius:999px;padding:3px}
+.lang button{font:inherit;font-size:13px;letter-spacing:.06em;min-height:36px;min-width:52px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
 
 /* Home */
 .intro{padding-block:56px 48px;border-bottom:1px solid var(--rule)}
@@ -48,6 +53,7 @@ header.site{display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-co
 .piece{min-height:calc(100svh - 260px);display:flex;flex-direction:column;justify-content:center;padding-block:64px 80px;border-top:1px solid var(--rule)}
 .piece-inner{width:fit-content;max-width:min(36em,100%);margin:0 auto;text-align:center}
 .verse{margin:0;font-family:var(--display);font-size:clamp(22px,3.4vw,30px);line-height:1.75;color:var(--ink);text-wrap:pretty}
+.verse:lang(ja){font-size:clamp(20px,3vw,27px);line-height:1.9;letter-spacing:.04em}
 .verse .stanza+.stanza{margin-top:1.4em}
 .verse .line{display:block}
 .sign{margin:44px 0 0;font-size:14px;letter-spacing:.12em;color:var(--muted)}
@@ -64,49 +70,92 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
 <div class="wrap">
   <header class="site">
     <a class="mark" href="#home">River<span lang="ja">川</span></a>
-    <span class="byline">Yoso · Miyazaki</span>
+    <div class="head-right">
+      <span class="byline" id="byline">Yoso · Miyazaki</span>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" id="btn-en" lang="en" aria-pressed="true">EN</button>
+        <button type="button" id="btn-ja" lang="ja" aria-pressed="false">日本語</button>
+      </div>
+    </div>
   </header>
   <main id="view"></main>
   <footer class="site">
-    <span>© Yoso · Miyazaki, Japan</span>
-    <span>Mind is home</span>
+    <span id="foot-l">© Yoso · Miyazaki, Japan</span>
+    <span id="foot-r">Mind is home</span>
   </footer>
 </div>
 
 <script>
-// First version of each draft in River 川/Desk/Draft, in file order. Text as written.
+// First version of each draft in River 川/Desk/Draft, in file order. English as written; Japanese translations (ja) for review.
 const TEXTS = [
- {n:0,  t:"Before reaching the shore", v:"Before reaching the shore,\nin the quiet sea of abstraction;\nSeize the mind."},
- {n:1,  t:"To feel with opened eyes", v:"To feel with opened eyes,\nto listen with the heart,\nto speak with truth."},
- {n:2,  t:"Wind’s Natural Soul", v:"Wind’s Natural Soul…\nLeading me to the unknown…\nTranscendental Flow."},
- {n:3,  t:"Breathe in", v:"Breathe in…\nBreathe out…\nThe energy that connects all forms…\nInfinite chains of chemical reactions…\nTrillions of cells living within…\nWhat am I?"},
- {n:4,  t:"Kind loving love", v:"Kind loving love,\nKind loving love,\nKind loving love."},
- {n:5,  t:"Submissiveness", v:"Submissiveness,\nalien to the shining soul,\nbreathing union is."},
- {n:6,  t:"I surrender to the flow", v:"I surrender to the flow…\nReaching the depth of my heart…\nUnion’s Embrace."},
- {n:7,  t:"Spring Energy", v:"Spring Energy,\nBlessing our hearts with promising light.\nEach blossom, a vow of harmony.\nWith gratitude, I honour your transience."},
- {n:17, t:"Awakening Mind", v:"Awakening mind…\nThat which is conscious…\nFor the good of sentience."},
- {n:18, t:"Present, mindful now", v:"Present, mindful now.\nPeaceful heart, a quiet mind.\nHarmony’s embrace."},
- {n:19, t:"Being is beyond knowledge", v:"Being is beyond knowledge,\nbeing is integrity,\nbeing is the totality.\n\nThe totality of your experiences,\nThe sacred energy that unites past and future to the present moment!"},
- {n:20, t:"To each cell", v:"Hands in prayer,\nI bow respectfully to each cell in my body,\nand to the life in you."},
- {n:21, t:"Heal yourself to heal others", v:"Heal yourself to heal others,\nHeal others to heal yourself."},
- {n:22, t:"First Love, Then Form", v:"First Love, Then Form."},
- {n:23, t:"There is no greater shock in life than birth", v:"There is no greater shock in life than birth,\nFighting for survival,\nDeath is release,"},
- {n:24, t:"Life itself", v:"Life itself...\nIs death itself...\n\nFull circle,\nBalance,\nDance...\n\nTransfer of energy...\nConsciousness...\n\nSurvival..."},
- {n:25, t:"In modern times", v:"In modern times,\nWe acquire knowledge,\nbelieving that it is the truth,\nonly to realize that it is only part of it!\n\nLife itself is knowledge!\nWithin Life itself resides the knowledge!\nThe multitude of Life forms that created our being!\nIt is when we tune in, that all become one!\n\nWhen we surrender with gratitude,\nwhen we learn to respect!\nthat our knowledge requires energy to survive,\nthat survival itself is ephemeral!\n\nthat each breath matters more than knowledge!\nand that at the end of the day,\nlife itself is the experience!"},
- {n:26, t:"End of Summer Full moon", v:"End of Summer Full moon,\nBright in the East…\nI could feel the cold wind in the morning rise…\nSummer afternoon…\nFeeling the Rain coming when you set your light…\nIt took me half a century to recognize, that both the Sun and you…\nMade me who I have become…\nA modern man seeking revenge on modern civilisation..\nFor hiding your beauty for so long..\nI am back, and choose to celebrate your dance and gentle light, until the last day of my winter…\nLet me celebrate many sunrises…"},
- {n:27, t:"Being One", v:"Being One.\nBecoming one.\nmicrocosm and Macrocosm.\nOne"},
- {n:28, t:"With each petal in the wind", v:"With each petal in the wind,\nI vow to dedicate myself to prosperity and harmony for sentient life."},
- {n:29, t:"Like a petal in the wind", v:"Like a petal in the wind,\nI surrender to the flow..."},
- {n:30, t:"Do not love Love", v:"Do not love Love,\nBe love,\nLove."},
- {n:31, t:"The spring awakes", v:"The spring awakes,\nThe Golden Heart is Here!\nPure Counsciousness."},
- {n:32, t:"Your Mind is your home", v:"Your Mind is your home"},
- {n:33, t:"With each blossom", v:"With each blossom,\nI vow to dedicate myself to prosperity and harmony for sentient life."},
- {n:38, t:"A quiet river", v:"Thank you for always being by my side.\nWith you, my heart flows like a quiet river."}
+ {n:0, t:"Before reaching the shore", v:"Before reaching the shore,\nin the quiet sea of abstraction;\nSeize the mind.",
+  tj:"岸にたどり着く前に", vj:"岸にたどり着く前に、\n抽象の静かな海で、\n心をつかめ。"},
+ {n:1, t:"To feel with opened eyes", v:"To feel with opened eyes,\nto listen with the heart,\nto speak with truth.",
+  tj:"開いた目で感じ", vj:"開いた目で感じ、\n心で聴き、\n真実をもって語る。"},
+ {n:2, t:"Wind’s Natural Soul", v:"Wind’s Natural Soul…\nLeading me to the unknown…\nTranscendental Flow.",
+  tj:"風の自然な魂", vj:"風の自然な魂…\n私を未知へと導く…\n超越の流れ。"},
+ {n:3, t:"Breathe in", v:"Breathe in…\nBreathe out…\nThe energy that connects all forms…\nInfinite chains of chemical reactions…\nTrillions of cells living within…\nWhat am I?",
+  tj:"息を吸う", vj:"息を吸う…\n息を吐く…\nすべての形をつなぐエネルギー…\n果てしなく連なる化学反応…\n内に生きる何兆もの細胞…\n私とは何か？"},
+ {n:4, t:"Kind loving love", v:"Kind loving love,\nKind loving love,\nKind loving love.",
+  tj:"優しく慈しむ愛", vj:"優しく慈しむ愛、\n優しく慈しむ愛、\n優しく慈しむ愛。"},
+ {n:5, t:"Submissiveness", v:"Submissiveness,\nalien to the shining soul,\nbreathing union is.",
+  tj:"服従", vj:"服従、\n輝く魂には無縁のもの、\n息づく合一こそが在る。"},
+ {n:6, t:"I surrender to the flow", v:"I surrender to the flow…\nReaching the depth of my heart…\nUnion’s Embrace.",
+  tj:"流れに身をゆだねる", vj:"流れに身をゆだねる…\n心の奥深くに届き…\n合一の抱擁。"},
+ {n:7, t:"Spring Energy", v:"Spring Energy,\nBlessing our hearts with promising light.\nEach blossom, a vow of harmony.\nWith gratitude, I honour your transience.",
+  tj:"春のエネルギー", vj:"春のエネルギーよ、\n約束の光で私たちの心を祝福する。\nひとつひとつの花は、調和の誓い。\n感謝とともに、あなたの儚さを敬う。"},
+ {n:17, t:"Awakening Mind", v:"Awakening mind…\nThat which is conscious…\nFor the good of sentience.",
+  tj:"目覚める心", vj:"目覚める心…\n意識あるもの…\n生きとし生けるものの幸せのために。"},
+ {n:18, t:"Present, mindful now", v:"Present, mindful now.\nPeaceful heart, a quiet mind.\nHarmony’s embrace.",
+  tj:"今ここに", vj:"今ここに、気づきとともに。\n穏やかな心、静かな精神。\n調和の抱擁。"},
+ {n:19, t:"Being is beyond knowledge", v:"Being is beyond knowledge,\nbeing is integrity,\nbeing is the totality.\n\nThe totality of your experiences,\nThe sacred energy that unites past and future to the present moment!",
+  tj:"在ることは知識を超える", vj:"在ることは、知識を超える。\n在ることは、誠実さ。\n在ることは、全体。\n\nあなたの経験の全体、\n過去と未来を今この瞬間へと結ぶ、聖なるエネルギー！"},
+ {n:20, t:"To each cell", v:"Hands in prayer,\nI bow respectfully to each cell in my body,\nand to the life in you.",
+  tj:"ひとつひとつの細胞に", vj:"手を合わせ、\n私の体のひとつひとつの細胞に、\nそしてあなたの中の命に、敬意をもって礼をする。"},
+ {n:21, t:"Heal yourself to heal others", v:"Heal yourself to heal others,\nHeal others to heal yourself.",
+  tj:"自らを癒し、他者を癒す", vj:"他者を癒すために、自らを癒し、\n自らを癒すために、他者を癒す。"},
+ {n:22, t:"First Love, Then Form", v:"First Love, Then Form.",
+  tj:"まず愛、そして形", vj:"まず愛、そして形。"},
+ {n:23, t:"There is no greater shock in life than birth", v:"There is no greater shock in life than birth,\nFighting for survival,\nDeath is release,",
+  tj:"生まれること以上の衝撃はない", vj:"人生で、生まれること以上の衝撃はない、\n生き延びるための闘い、\n死は解放、"},
+ {n:24, t:"Life itself", v:"Life itself...\nIs death itself...\n\nFull circle,\nBalance,\nDance...\n\nTransfer of energy...\nConsciousness...\n\nSurvival...",
+  tj:"生そのもの", vj:"生そのものは…\n死そのもの…\n\n円環、\n均衡、\n舞…\n\nエネルギーの移ろい…\n意識…\n\n生存…"},
+ {n:25, t:"In modern times", v:"In modern times,\nWe acquire knowledge,\nbelieving that it is the truth,\nonly to realize that it is only part of it!\n\nLife itself is knowledge!\nWithin Life itself resides the knowledge!\nThe multitude of Life forms that created our being!\nIt is when we tune in, that all become one!\n\nWhen we surrender with gratitude,\nwhen we learn to respect!\nthat our knowledge requires energy to survive,\nthat survival itself is ephemeral!\n\nthat each breath matters more than knowledge!\nand that at the end of the day,\nlife itself is the experience!",
+  tj:"現代において", vj:"現代において、\n私たちは知識を得る、\nそれが真実だと信じて、\nやがて、それが一部にすぎないと気づく！\n\n生そのものが知識！\n生そのものの内に、知識は宿る！\n私たちという存在を形づくった、無数の生命！\n波長を合わせたとき、すべてはひとつになる！\n\n感謝とともに身をゆだねるとき、\n敬うことを学ぶとき！\n私たちの知識は、生きるためにエネルギーを必要とし、\n生きることそのものが儚いのだと！\n\nひと呼吸ひと呼吸が知識よりも大切で、\nそして結局のところ、\n生そのものが経験なのだと！"},
+ {n:26, t:"End of Summer Full moon", v:"End of Summer Full moon,\nBright in the East…\nI could feel the cold wind in the morning rise…\nSummer afternoon…\nFeeling the Rain coming when you set your light…\nIt took me half a century to recognize, that both the Sun and you…\nMade me who I have become…\nA modern man seeking revenge on modern civilisation..\nFor hiding your beauty for so long..\nI am back, and choose to celebrate your dance and gentle light, until the last day of my winter…\nLet me celebrate many sunrises…",
+  tj:"夏の終わりの満月", vj:"夏の終わりの満月よ、\n東の空に明るく…\n朝の目覚めに、冷たい風を感じた…\n夏の午後…\nあなたが光を沈めるとき、雨の気配を感じて…\n半世紀かかって気づいた、太陽とあなたの両方が…\n今の私をつくったのだと…\n現代文明に報いを求める、ひとりの現代人…\nあなたの美しさを、これほど長く隠してきたことへの…\n私は戻ってきた。あなたの舞と優しい光を祝おう、私の冬の最後の日まで…\nいくつもの日の出を、祝わせてほしい…"},
+ {n:27, t:"Being One", v:"Being One.\nBecoming one.\nmicrocosm and Macrocosm.\nOne",
+  tj:"ひとつで在る", vj:"ひとつで在る。\nひとつになる。\n小宇宙と大宇宙。\nひとつ"},
+ {n:28, t:"With each petal in the wind", v:"With each petal in the wind,\nI vow to dedicate myself to prosperity and harmony for sentient life.",
+  tj:"風に舞うひとひらごとに", vj:"風に舞うひとひらごとに、\n生きとし生けるものの繁栄と調和に、この身を捧げることを誓う。"},
+ {n:29, t:"Like a petal in the wind", v:"Like a petal in the wind,\nI surrender to the flow...",
+  tj:"風に舞う花びらのように", vj:"風に舞う花びらのように、\n流れに身をゆだねる…"},
+ {n:30, t:"Do not love Love", v:"Do not love Love,\nBe love,\nLove.",
+  tj:"愛を愛するな", vj:"愛を愛するな、\n愛であれ、\n愛せよ。"},
+ {n:31, t:"The spring awakes", v:"The spring awakes,\nThe Golden Heart is Here!\nPure Counsciousness.",
+  tj:"春が目覚める", vj:"春が目覚める、\n黄金の心がここに！\n純粋な意識。"},
+ {n:32, t:"Your Mind is your home", v:"Your Mind is your home",
+  tj:"心は、あなたの家", vj:"あなたの心は、あなたの家"},
+ {n:33, t:"With each blossom", v:"With each blossom,\nI vow to dedicate myself to prosperity and harmony for sentient life.",
+  tj:"花ひとつひとつに", vj:"花ひとつひとつに、\n生きとし生けるものの繁栄と調和に、この身を捧げることを誓う。"},
+ {n:38, t:"A quiet river", v:"Thank you for always being by my side.\nWith you, my heart flows like a quiet river.",
+  tj:"静かな川", vj:"いつもそばにいてくれて、ありがとう。\nあなたといると、私の心は静かな川のように流れる。"}
 ];
+
+const UI = {
+  en: { intro:"Short texts that move like a quiet river: on breath, love, spring and surrendering to the flow.",
+        all:"All texts", byline:"Yoso · Miyazaki", footL:"© Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"– Yoso" },
+  ja: { intro:"静かな川のように流れる、短い言葉たち。息のこと、愛のこと、春のこと、そして流れに身をゆだねること。",
+        all:"一覧へ", byline:"Yoso · 宮崎", footL:"© Yoso · 宮崎", footR:"心は家", sign:"– Yoso" }
+};
+
+let lang = 'en';
+try { const s = localStorage.getItem('river-lang'); if (s === 'en' || s === 'ja') lang = s; else if ((navigator.language || '').startsWith('ja')) lang = 'ja'; } catch(e) { if ((navigator.language || '').startsWith('ja')) lang = 'ja'; }
 
 const view = document.getElementById('view');
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const pad = n => String(n).padStart(2,'0');
+const title = x => lang === 'ja' ? x.tj : x.t;
+const verse = x => lang === 'ja' ? x.vj : x.v;
 
 function verseHTML(v){
   return v.split(/\n\s*\n/).map(st =>
@@ -115,27 +164,37 @@ function verseHTML(v){
     '</span>').join('');
 }
 
+function chrome(){
+  const u = UI[lang];
+  document.documentElement.lang = lang;
+  document.getElementById('byline').textContent = u.byline;
+  document.getElementById('foot-l').textContent = u.footL;
+  document.getElementById('foot-r').textContent = u.footR;
+  document.getElementById('btn-en').setAttribute('aria-pressed', lang === 'en');
+  document.getElementById('btn-ja').setAttribute('aria-pressed', lang === 'ja');
+}
+
 function home(){
   document.title = 'River 川';
   view.innerHTML =
-    '<section class="intro"><div><h1>River<span class="kanji" lang="ja">川</span></h1>' +
-    '<p>Short texts that move like a quiet river: on breath, love, spring and surrendering to the flow.</p></div></section>' +
+    '<section class="intro"><h1>River<span class="kanji" lang="ja">川</span></h1>' +
+    '<p>' + esc(UI[lang].intro) + '</p></section>' +
     '<ol class="index">' + TEXTS.map(x =>
-      '<li><a href="#t' + x.n + '"><span class="t">' + esc(x.t) + '</span></a></li>'
+      '<li><a href="#t' + x.n + '"><span class="t">' + esc(title(x)) + '</span></a></li>'
     ).join('') + '</ol>';
 }
 
 function piece(i){
   const L = TEXTS.length, x = TEXTS[i], prev = TEXTS[(i - 1 + L) % L], next = TEXTS[(i + 1) % L];
-  document.title = x.t + ' · River 川';
+  document.title = title(x) + ' · River 川';
   view.innerHTML =
-    '<article class="piece" aria-label="' + esc(x.t) + '"><div class="piece-inner">' +
-    '<p class="verse">' + verseHTML(x.v) + '</p>' +
-    '<p class="sign">– Yoso</p></div></article>' +
+    '<article class="piece" aria-label="' + esc(title(x)) + '"><div class="piece-inner">' +
+    '<p class="verse">' + verseHTML(verse(x)) + '</p>' +
+    '<p class="sign">' + UI[lang].sign + '</p></div></article>' +
     '<nav class="pager" aria-label="More texts">' +
-    (prev ? '<a href="#t' + prev.n + '">← ' + esc(prev.t) + '</a>' : '<span></span>') +
-    '<a class="mid" href="#home">All texts</a>' +
-    (next ? '<a href="#t' + next.n + '">' + esc(next.t) + ' →</a>' : '<span></span>') +
+    '<a href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
+    '<a class="mid" href="#home">' + UI[lang].all + '</a>' +
+    '<a href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +
     '</nav>';
 }
 
@@ -153,7 +212,8 @@ window.addEventListener('touchend', e => {
   location.hash = dx < 0 ? nav.next : nav.prev;
 }, {passive:true});
 
-function route(){
+function render(){
+  chrome();
   const h = location.hash.replace('#','');
   const m = /^t(\d+)$/.exec(h);
   const i = m ? TEXTS.findIndex(x => x.n === Number(m[1])) : -1;
@@ -162,8 +222,18 @@ function route(){
     nav = { prev: 't' + TEXTS[(i - 1 + L) % L].n, next: 't' + TEXTS[(i + 1) % L].n };
     piece(i);
   } else { nav = null; home(); }
-  window.scrollTo(0,0);
 }
+
+function route(){ render(); window.scrollTo(0,0); }
+
+function setLang(l){
+  lang = l;
+  try { localStorage.setItem('river-lang', l); } catch(e) {}
+  render();
+}
+document.getElementById('btn-en').addEventListener('click', () => setLang('en'));
+document.getElementById('btn-ja').addEventListener('click', () => setLang('ja'));
+
 window.addEventListener('hashchange', route);
 route();
 </script>

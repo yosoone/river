@@ -126,7 +126,7 @@ function home(){
 }
 
 function piece(i){
-  const x = TEXTS[i], prev = TEXTS[i-1], next = TEXTS[i+1];
+  const L = TEXTS.length, x = TEXTS[i], prev = TEXTS[(i - 1 + L) % L], next = TEXTS[(i + 1) % L];
   document.title = x.t + ' · River 川';
   view.innerHTML =
     '<article class="piece" aria-label="' + esc(x.t) + '"><div class="piece-inner">' +

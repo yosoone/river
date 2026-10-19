@@ -46,7 +46,7 @@ header.site{display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-co
 
 /* Text page */
 .piece{min-height:60vh;display:flex;flex-direction:column;justify-content:center;padding-block:64px 80px;border-top:1px solid var(--rule)}
-.piece-inner{max-width:36em;margin:0 auto;width:100%}
+.piece-inner{width:fit-content;max-width:min(36em,100%);margin:0 auto}
 .verse{margin:0;font-family:var(--display);font-size:clamp(22px,3.4vw,30px);line-height:1.75;color:var(--ink);text-wrap:pretty}
 .verse .stanza+.stanza{margin-top:1.4em}
 .verse .line{display:block}

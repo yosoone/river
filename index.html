@@ -69,6 +69,9 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .verse .stanza+.stanza{margin-top:1.4em}
 .verse .line{display:block}
 .sign{margin:44px 0 0;font-size:14px;letter-spacing:.12em;color:var(--muted)}
+.piece{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hint{display:none;margin:28px 0 0;font-size:12px;letter-spacing:.14em;color:var(--muted)}
+@media (hover:none) and (pointer:coarse){.hint{display:block}}
 nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;padding-block:28px;border-top:1px solid var(--rule);font-size:15px}
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
 nav.pager .mid{color:var(--muted)}
@@ -159,11 +162,11 @@ const UI = {
   en: { intro:"Short texts that move like a quiet river: on breath, love, spring and surrendering to the flow.",
         all:"All texts", about:"About", aboutTitle:"About River", aboutAlt:"Yoso in profile, silhouetted against a bright window",
         aboutText:"River 川 is a collection of short texts written by Yoso in Miyazaki, Japan. Reflections on daily practice: morning meditation, the breath, the turning of the seasons, the depth of the heart. A few lines each, inspirations kept close to the moment they were written and given a page of their own, to be read slowly, one after another, the way a river carries one thing and then the next.",
-        byline:"Yoso · Miyazaki", footL:"© Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"– Yoso" },
+        byline:"Yoso · Miyazaki", footL:"© Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"– Yoso", hint:"Swipe or tap to navigate" },
   ja: { intro:"静かな川のように流れる、短い言葉たち。息のこと、愛のこと、春のこと、そして流れに身をゆだねること。",
         all:"一覧へ", about:"このページについて", aboutTitle:"River 川について", aboutAlt:"明るい窓を背に、横顔のシルエットになったYoso",
         aboutText:"「River 川」は、宮崎でYosoが書いた短い言葉を集めたものです。日々の修行の中での思い。朝の瞑想、呼吸、季節の移ろい、心の深み。数行ずつの言葉は、書かれた瞬間に近いままのひらめきであり、それぞれに一頁を与えました。川がひとつ、またひとつと運んでいくように、ゆっくりと、順に読んでください。",
-        byline:"Yoso · 宮崎", footL:"© Yoso · 宮崎", footR:"心は家", sign:"– Yoso" }
+        byline:"Yoso · 宮崎", footL:"© Yoso · 宮崎", footR:"心は家", sign:"– Yoso", hint:"スワイプまたはタップで移動" }
 };
 
 let lang = 'en';
@@ -219,7 +222,8 @@ function piece(i){
   view.innerHTML =
     '<article class="piece" aria-label="' + esc(title(x)) + '"><div class="piece-inner">' +
     '<p class="verse">' + verseHTML(verse(x)) + '</p>' +
-    '<p class="sign">' + UI[lang].sign + '</p></div></article>' +
+    '<p class="sign">' + UI[lang].sign + '</p>' +
+    '<p class="hint">' + UI[lang].hint + '</p></div></article>' +
     '<nav class="pager" aria-label="More texts">' +
     '<a href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
     '<a class="mid" href="#home">' + UI[lang].all + '</a>' +
@@ -240,6 +244,14 @@ window.addEventListener('touchend', e => {
   if (Date.now() - st > 800 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
   location.hash = dx < 0 ? nav.next : nav.prev;
 }, {passive:true});
+
+// Tap: right half of the text for the next one, left half for the previous one
+view.addEventListener('click', e => {
+  if (!nav || !e.target.closest('.piece') || e.target.closest('a')) return;
+  const sel = window.getSelection && String(window.getSelection());
+  if (sel) return;
+  location.hash = e.clientX > window.innerWidth / 2 ? nav.next : nav.prev;
+});
 
 function render(){
   chrome();

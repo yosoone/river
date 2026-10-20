@@ -1,0 +1,15 @@
+# robots.txt for river.yoso.one
+# Search engines may index this site. AI model-training crawlers may not.
+# Shared across all Yoso microsites; see the yoso-microsites skill.
+
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: CCBot
+User-agent: Bytespider
+Disallow: /
+
+User-agent: *
+Allow: /

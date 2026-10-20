@@ -119,7 +119,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
     </div>
   </header>
   <main id="view"></main>
-  <!-- Mailing list: one Buttondown list for all Yoso sites; the hidden tag records that the sign-up came from River. -->
+  <!-- Mailing list: one Buttondown list for all Yoso sites; readers choose their newsletters, each one a tag. -->
   <section class="list" aria-labelledby="list-h">
     <div>
       <h2 id="list-h">Mailing list</h2>
@@ -131,7 +131,15 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
         <input id="list-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
         <button type="submit" id="list-btn">Subscribe</button>
       </div>
-      <input type="hidden" name="tag" value="river">
+      <!-- Newsletter choice: each ticked box becomes a Buttondown tag. Shown after the email step by assets/list-choice.js. -->
+      <fieldset class="list-choice" data-list-choice>
+        <legend>Which newsletters would you like?</legend>
+        <label class="lc-box"><input type="checkbox" name="tag" value="one"><span><span class="lc-name">The Vault</span><span class="lc-desc">Notes, essays and research from one.yoso.one</span></span></label>
+        <label class="lc-box"><input type="checkbox" name="tag" value="yosokuro"><span><span class="lc-name">Yosokuro</span><span class="lc-desc">Black-and-white photographs of Japan</span></span></label>
+        <label class="lc-box"><input type="checkbox" name="tag" value="shinsei"><span><span class="lc-name">Shinsei</span><span class="lc-desc">New paintings, scrolls and exhibitions</span></span></label>
+        <label class="lc-box"><input type="checkbox" name="tag" value="river" checked><span><span class="lc-name">River</span><span class="lc-desc">New short texts</span></span></label>
+        <label class="lc-box"><input type="checkbox" name="tag" value="on"><span><span class="lc-name">On</span><span class="lc-desc">Each numbered issue of the magazine</span></span></label>
+      </fieldset>
       <input type="hidden" name="embed" value="1">
       <p class="list-note" id="list-note">Sent through Buttondown. Confirm by email; unsubscribe any time.</p>
       <p class="list-note"><a href="feed.xml" id="list-rss">Or follow by RSS</a></p>
@@ -139,7 +147,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <footer class="site">
     <span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.1</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.2</span></span>
   </footer>
 </div>
 
@@ -215,6 +223,15 @@ const FR = {"0": ["Avant d'atteindre le rivage", "Avant d'atteindre le rivage,\n
 
 UI.fr = {"intro": "Des textes courts qui coulent comme une rivière tranquille : sur le souffle, l'amour, le printemps et l'abandon au courant.", "all": "Tous les textes", "about": "À propos", "aboutTitle": "À propos de River", "place": "Temple Kougenji, Kumamoto", "credit": "Photographie de Qualishu", "aboutAlt": "Yoso de profil, en silhouette devant une fenêtre lumineuse", "aboutText": "River 川 est un recueil de textes courts écrits par Yoso à Miyazaki, au Japon. Des réflexions sur la pratique quotidienne : la méditation du matin, le souffle, le passage des saisons, la profondeur du cœur. Quelques lignes chacun, des inspirations gardées au plus près de l'instant où elles ont été écrites, chacune avec sa propre page, à lire lentement, l'une après l'autre, comme une rivière emporte une chose, puis la suivante.", "byline": "Yoso · Miyazaki", "footL": "© Yoso · Miyazaki, Japon", "footR": "L'esprit est la demeure", "sign": "– Yoso", "hint": "Balayez ou touchez pour naviguer"};
 
+// Newsletter-choice wording (assets/list-choice.js). Japanese and French are drafts for Yoso to check.
+const CHOICE = {
+  en: { legend:"Which newsletters would you like?", cont:"Continue", as:"Signing up as", change:"Change", none:"Tick at least one newsletter.",
+        d:{ one:"Notes, essays and research from one.yoso.one", yosokuro:"Black-and-white photographs of Japan", shinsei:"New paintings, scrolls and exhibitions", river:"New short texts", on:"Each numbered issue of the magazine" } },
+  ja: { legend:"どのニュースレターを受け取りますか？", cont:"次へ", as:"登録するアドレス：", change:"変更", none:"ニュースレターを一つ以上選んでください。",
+        d:{ one:"one.yoso.one のノート・エッセイ・研究", yosokuro:"日本を写した白黒写真", shinsei:"新しい絵画・掛軸・展示", river:"新しい短い言葉", on:"雑誌の各号" } },
+  fr: { legend:"Quelles lettres souhaitez-vous recevoir ?", cont:"Continuer", as:"Inscription de", change:"Modifier", none:"Cochez au moins une lettre.",
+        d:{ one:"Notes, essais et recherches de one.yoso.one", yosokuro:"Photographies du Japon en noir et blanc", shinsei:"Nouvelles peintures, rouleaux et expositions", river:"Nouveaux textes courts", on:"Chaque numéro du magazine" } }
+};
 // Mailing-list wording. Japanese and French are drafts for Yoso to check.
 const LIST = {
   en: { h:"Mailing list", p:"New texts by email, now and then.", label:"Email address", btn:"Subscribe", note:"Sent through Buttondown. Confirm by email; unsubscribe any time.", rss:"Or follow by RSS" },
@@ -266,6 +283,14 @@ function chrome(){
   document.getElementById('list-btn').textContent = L.btn;
   document.getElementById('list-note').textContent = L.note;
   document.getElementById('list-rss').textContent = L.rss;
+  const C = CHOICE[lang], fs = document.querySelector('[data-list-choice]');
+  if (fs) {
+    fs.querySelector('legend').textContent = C.legend;
+    fs.dataset.continue = C.cont; fs.dataset.subscribe = L.btn; fs.dataset.as = C.as;
+    fs.dataset.change = C.change; fs.dataset.none = C.none;
+    fs.querySelectorAll('input[name="tag"]').forEach(b => { b.closest('label').querySelector('.lc-desc').textContent = C.d[b.value]; });
+    if (window.yosoListChoice) window.yosoListChoice.refresh();
+  }
   document.getElementById('btn-en').setAttribute('aria-pressed', lang === 'en');
   document.getElementById('btn-ja').setAttribute('aria-pressed', lang === 'ja');
   document.getElementById('btn-fr').setAttribute('aria-pressed', lang === 'fr');
@@ -359,5 +384,6 @@ window.addEventListener('hashchange', route);
 route();
 </script>
 
+<script src="assets/list-choice.js" defer></script>
 </body>
 </html>

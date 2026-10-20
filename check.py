@@ -7,7 +7,8 @@ It exits with an error, and the site is not published, if any page:
   - has broken HTML (a tag left open or closed in the wrong order);
   - links to a file or image in this site that does not exist;
   - has a script with a syntax error (needs Node; skipped with a warning if Node is missing);
-  - is missing the footer link to the hub, or the mailing-list form with this site's tag;
+  - is missing the footer link to the hub, or the mailing-list form with a tick-box for
+    every newsletter (this site's own one ticked) and the script that shows them;
   - does not show this site's beta number (from VERSION) in its footer;
 and if feed.xml (when there is one), robots.txt, CNAME or VERSION is missing or broken.
 
@@ -35,6 +36,9 @@ IGNORE = ()              # folders of old pages the check leaves alone, e.g. ("a
 ROOT = Path(__file__).resolve().parent
 LIST_ACTION = "https://buttondown.com/api/emails/embed-subscribe/yoso"
 HUB = "https://hub.yoso.one"
+# The newsletters readers can choose; each is a Buttondown tag. Same on every site.
+NEWSLETTERS = ("one", "yosokuro", "shinsei", "river", "on")
+CHOICE_SCRIPT = "assets/list-choice.js"
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
         "param", "source", "track", "wbr"}
 # Elements the HTML standard lets you leave unclosed
@@ -59,7 +63,7 @@ class Page(HTMLParser):
         self.refs = []          # (line, url)
         self.scripts = []       # (line, code)
         self._script = None
-        self.forms = []         # {"action": ..., "tag": ...}
+        self.forms = []         # {"action": ..., "boxes": {tag: ticked}}
         self._form = None
         self.hub_link = False
 
@@ -72,10 +76,11 @@ class Page(HTMLParser):
         if tag == "a" and (a.get("href") or "").rstrip("/") == HUB:
             self.hub_link = True
         if tag == "form":
-            self._form = {"action": a.get("action", ""), "tag": None}
+            self._form = {"action": a.get("action", ""), "boxes": {}}
             self.forms.append(self._form)
         if tag == "input" and self._form is not None and a.get("name") == "tag":
-            self._form["tag"] = a.get("value")
+            if a.get("type") == "checkbox":
+                self._form["boxes"][a.get("value")] = "checked" in a
         if tag == "script" and not a.get("src") and a.get("type", "text/javascript") in (
                 "text/javascript", "module", "application/javascript"):
             self._script = [line, ""]
@@ -169,8 +174,15 @@ def check_page(page):
     forms = [f for f in p.forms if f["action"] == LIST_ACTION]
     if not forms:
         problem(name, "no mailing-list form")
-    elif not any(f["tag"] == SITE_TAG for f in forms):
-        problem(name, f"mailing-list form does not carry the tag '{SITE_TAG}'")
+    else:
+        for f in forms:
+            missing = [t for t in NEWSLETTERS if t not in f["boxes"]]
+            if missing:
+                problem(name, "mailing-list form has no tick-box for " + ", ".join(missing))
+            if SITE_TAG in NEWSLETTERS and not f["boxes"].get(SITE_TAG):
+                problem(name, f"mailing-list form does not tick this site's newsletter '{SITE_TAG}'")
+        if not any(url == CHOICE_SCRIPT for _, url in p.refs):
+            problem(name, f"mailing-list form needs <script src=\"{CHOICE_SCRIPT}\" defer></script>")
     if VERSION and f'<span class="version" data-version>Beta {VERSION}</span>' not in text:
         problem(name, f"footer does not show Beta {VERSION} (release.py sets it)")
 

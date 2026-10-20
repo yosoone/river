@@ -9,11 +9,23 @@
  * ticked, and the button reads 'Subscribe'. Without the script the boxes simply
  * show under the email field and the form still works.
  *
+ * Signing up: when Subscribe is pressed, the script sends the address and ticked
+ * newsletters to the Yoso forms Worker (https://forms.yoso.one/subscribe), which adds the
+ * reader to Buttondown; Buttondown then emails them to confirm. No new tab opens. A
+ * mostly invisible Cloudflare Turnstile check, added by this script, keeps bots out.
+ * If the Worker cannot be reached, the reader is asked to press Subscribe again, and
+ * that press posts the form straight to Buttondown in a new tab, as before.
+ *
  * Wording comes from data- attributes on the <fieldset>, so a multilingual site can
- * change them and call window.yosoListChoice.refresh().
+ * change them and call window.yosoListChoice.refresh(). Extra keys for the sign-up:
+ * data-sending, data-done, data-retry, data-error.
  */
 (function () {
   "use strict";
+
+  var ENDPOINT = "https://forms.yoso.one/subscribe";
+  var SITEKEY = "0x4AAAAAAFeWKK51BEJbKJSu"; // Turnstile widget 'Yoso forms' (public key)
+  var TS_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 
   var css =
     ".list-choice{border:0;margin:16px 0 0;padding:0;min-width:0}" +
@@ -29,6 +41,7 @@
     "form .lc-as button.lc-change{display:inline;width:auto;font:inherit;letter-spacing:inherit;text-transform:none;color:inherit;background:none;border:0;border-radius:0;box-shadow:none;padding:0 2px;margin:0;min-height:44px;text-decoration:underline;cursor:pointer}" +
     "form .lc-as button.lc-change:focus-visible{outline:2px solid currentColor;outline-offset:2px}" +
     ".lc-msg{margin:8px 0 0;min-height:1.4em;font-size:.92em}" +
+    ".lc-ts:empty{display:none}.lc-ts{margin:10px 0 0}" +
     ".lc-hidden{display:none !important}";
 
   function addStyle() {
@@ -37,6 +50,41 @@
     s.id = "lc-style";
     s.textContent = css;
     document.head.appendChild(s);
+  }
+
+  // Turnstile: load Cloudflare's script once (or reuse it if the page already has it),
+  // then call back when window.turnstile is ready. Gives up quietly after 20 seconds.
+  var tsWaiting = [];
+  function withTurnstile(cb) {
+    if (window.turnstile) { cb(window.turnstile); return; }
+    tsWaiting.push(cb);
+    if (tsWaiting.length > 1) return;
+    if (!document.querySelector('script[src^="' + TS_SRC + '"]')) {
+      var sc = document.createElement("script");
+      sc.src = TS_SRC + "?render=explicit";
+      sc.async = true;
+      document.head.appendChild(sc);
+    }
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (window.turnstile || ++tries > 100) {
+        clearInterval(timer);
+        var t = window.turnstile, list = tsWaiting;
+        tsWaiting = [];
+        if (t) list.forEach(function (f) { f(t); });
+      }
+    }, 200);
+  }
+
+  // Waits (up to about 8 seconds) for the widget's token.
+  function tokenFor(box, done) {
+    var tries = 0;
+    (function look() {
+      var t = window.turnstile, id = box.getAttribute("data-ts-id"), tok = "";
+      if (t && id) { try { tok = t.getResponse(id) || ""; } catch (e) { tok = ""; } }
+      if (tok || ++tries > 40) done(tok);
+      else setTimeout(look, 200);
+    })();
   }
 
   var forms = [];
@@ -75,7 +123,19 @@
     var msg = document.createElement("p");
     msg.className = "lc-msg";
     msg.setAttribute("role", "status");
-    fs.appendChild(msg);
+    fs.parentNode.insertBefore(msg, fs.nextSibling);
+
+    // The Turnstile widget sits in the choice step; it only shows if Cloudflare needs the
+    // reader to prove they are human.
+    var tsBox = document.createElement("div");
+    tsBox.className = "lc-ts";
+    fs.appendChild(tsBox);
+    withTurnstile(function (t) {
+      try {
+        tsBox.setAttribute("data-ts-id", t.render(tsBox, { sitekey: SITEKEY, appearance: "interaction-only" }));
+      } catch (e) { /* the fallback below still works */ }
+    });
+    var direct = false;   // true after the Worker failed: the next press posts to Buttondown
 
     // When the button shares a row with the email field, the whole row (which carries the
     // site's button styling) moves under the boxes on the choice step, minus the email field.
@@ -112,6 +172,7 @@
         e.preventDefault();
         if (!email.checkValidity()) { email.reportValidity(); return; }
         state.step = "choose";
+        direct = false;
         msg.textContent = "";
         render();
         var first = fs.querySelector('input[type="checkbox"]');
@@ -125,17 +186,52 @@
         if (box) box.focus();
         return;
       }
-      // The form posts to Buttondown in a new tab; afterwards this page goes back to step 1.
-      msg.textContent = "";
-      setTimeout(function () {
-        state.step = "email";
-        email.value = "";
-        Array.prototype.forEach.call(fs.querySelectorAll('input[type="checkbox"]'), function (b) { b.checked = b.defaultChecked; });
-        render();
-      }, 0);
+      if (direct) {
+        // Fallback: the form posts straight to Buttondown in a new tab, as it does without
+        // this script; afterwards this page goes back to step 1.
+        direct = false;
+        msg.textContent = "";
+        setTimeout(reset, 0);
+        return;
+      }
+      e.preventDefault();
+      if (state.sending) return;
+      state.sending = true;
+      button.disabled = true;
+      msg.textContent = word(fs, "sending", "Signing you up…");
+      tokenFor(tsBox, function (token) {
+        var data = new FormData();
+        data.append("email", email.value.trim());
+        Array.prototype.forEach.call(fs.querySelectorAll('input[name="tag"]:checked'), function (b) { data.append("tag", b.value); });
+        data.append("cf-turnstile-response", token);
+        fetch(ENDPOINT, { method: "POST", body: data })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return r.ok && j.ok; }); })
+          .catch(function () { return false; })
+          .then(function (ok) {
+            state.sending = false;
+            button.disabled = false;
+            try { if (window.turnstile && tsBox.getAttribute("data-ts-id")) window.turnstile.reset(tsBox.getAttribute("data-ts-id")); } catch (e2) {}
+            if (ok) {
+              reset();
+              msg.textContent = word(fs, "done", "Thank you. Buttondown will email you to confirm.");
+            } else {
+              direct = true;
+              msg.textContent = word(fs, "retry", "That didn’t go through. Press Subscribe again to sign up on Buttondown instead.");
+            }
+          });
+      });
     });
 
+    function reset() {
+      state.step = "email";
+      email.value = "";
+      Array.prototype.forEach.call(fs.querySelectorAll('input[type="checkbox"]'), function (b) { b.checked = b.defaultChecked; });
+      render();
+    }
+
     change.addEventListener("click", function () {
+      direct = false;
+      msg.textContent = "";
       state.step = "email";
       render();
       email.focus();

@@ -33,10 +33,11 @@ git revert HEAD
 git push
 ```
 
-**To go back to a known-good version** (tags named `good-YYYY-MM-DD`):
+**To go back to a known-good version** (kept as branches named `good-YYYY-MM-DD`):
 
 ```
-git checkout good-2026-10-20 -- .
+git fetch origin
+git checkout origin/good-2026-10-20 -- .
 git commit -m "Back to the good version of 20 October 2026"
 git push
 ```

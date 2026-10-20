@@ -30,6 +30,10 @@ body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size
 a{color:var(--accent)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
 .wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Family mark: centred at the top of every Yoso site, linking to the hub */
+.family-mark{display:block;width:48px;margin:24px auto 0;line-height:0}
+.family-mark img{display:block;width:48px;height:48px}
+.family-mark:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:32px 24px}
 .mark{font-family:var(--display);font-size:26px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
 .mark span{color:var(--muted);margin-left:.35em}
@@ -101,6 +105,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
 <body>
 
 <div class="wrap">
+  <a class="family-mark" href="https://hub.yoso.one"><img src="images/yoso-mark.png" alt="Yoso" width="48" height="48"></a>
   <header class="site">
     <a class="mark" href="#home">River<span lang="ja">川</span></a>
     <div class="head-right">

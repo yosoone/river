@@ -8,7 +8,10 @@ It exits with an error, and the site is not published, if any page:
   - links to a file or image in this site that does not exist;
   - has a script with a syntax error (needs Node; skipped with a warning if Node is missing);
   - is missing the footer link to the hub, or the mailing-list form with this site's tag;
-and if feed.xml (when there is one), robots.txt or CNAME is missing or broken.
+  - does not show this site's beta number (from VERSION) in its footer;
+and if feed.xml (when there is one), robots.txt, CNAME or VERSION is missing or broken.
+
+To publish an update, use release.py: it moves the beta number up, runs this check, then pushes.
 
 The same file is used on every site; only the two settings below differ.
 GitHub runs it on every push (see .github/workflows/publish.yml).
@@ -41,6 +44,7 @@ SKIP_DIRS = {".git", ".github", "node_modules"} | set(IGNORE)
 
 problems = []
 warnings = []
+VERSION = None   # the beta number, read from the VERSION file
 
 
 def problem(where, what):
@@ -142,7 +146,8 @@ def check_page(page):
     name = page.relative_to(ROOT).as_posix()
     p = Page()
     try:
-        p.feed(page.read_text(encoding="utf-8"))
+        text = page.read_text(encoding="utf-8")
+        p.feed(text)
         p.close()
     except Exception as e:  # noqa: BLE001
         problem(name, f"could not be read: {e}")
@@ -166,9 +171,25 @@ def check_page(page):
         problem(name, "no mailing-list form")
     elif not any(f["tag"] == SITE_TAG for f in forms):
         problem(name, f"mailing-list form does not carry the tag '{SITE_TAG}'")
+    if VERSION and f'<span class="version" data-version>Beta {VERSION}</span>' not in text:
+        problem(name, f"footer does not show Beta {VERSION} (release.py sets it)")
+
+
+def read_version():
+    f = ROOT / "VERSION"
+    if not f.exists():
+        problem("VERSION", "is missing (it holds the beta number shown in every footer)")
+        return None
+    v = f.read_text(encoding="utf-8").strip()
+    if not re.fullmatch(r"[0-9]+\.[0-9]+", v):
+        problem("VERSION", f"should hold a number like 0.4, not '{v}'")
+        return None
+    return v
 
 
 def main():
+    global VERSION
+    VERSION = read_version()
     pages = sorted(p for p in ROOT.rglob("*.html") if not SKIP_DIRS & set(p.relative_to(ROOT).parts))
     if not (ROOT / "index.html").exists():
         problem("site", "index.html is missing")

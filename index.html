@@ -100,7 +100,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </header>
   <main id="view"></main>
   <footer class="site">
-    <span id="foot-l">© Yoso · Miyazaki, Japan</span>
+    <span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
     <span id="foot-r">Mind is home</span>
   </footer>
 </div>
@@ -204,7 +204,15 @@ function chrome(){
   document.documentElement.lang = lang;
   document.getElementById('byline').textContent = u.byline;
   document.getElementById('about-link').textContent = u.about;
-  document.getElementById('foot-l').textContent = u.footL;
+  // Footer: keep 'Yoso' as the link back to the hub in every language.
+  (function(){
+    var el = document.getElementById('foot-l'), i = u.footL.indexOf('Yoso');
+    el.textContent = '';
+    if (i < 0) { el.textContent = u.footL; return; }
+    var a = document.createElement('a');
+    a.className = 'hub-link'; a.href = 'https://hub.yoso.one'; a.textContent = 'Yoso';
+    el.append(u.footL.slice(0, i), a, u.footL.slice(i + 4));
+  })();
   document.getElementById('foot-r').textContent = u.footR;
   document.getElementById('btn-en').setAttribute('aria-pressed', lang === 'en');
   document.getElementById('btn-ja').setAttribute('aria-pressed', lang === 'ja');

@@ -16,6 +16,23 @@ Each text keeps the date it first appeared in the feed, so readers only see new 
 
 © Yoso
 
+## Book editions (PDF and EPUB)
+
+When there has been enough change for a new edition, run this in the river folder:
+
+```
+python3 book.py
+```
+
+It reads the texts from `TEXTS` in `index.html` (English only for now), the About text and the beta number in `VERSION`, and makes two files in `editions/`, named with the beta number and today's date:
+
+- `river-beta-0.4-2026-10-21.pdf`: an A5 book (cover, colophon, About, contents, one text per page)
+- `river-beta-0.4-2026-10-21.epub`: the same book for phones and e-readers
+
+Use `--date 2026-11-03` to put a different date on it. The book is set in Shippori Mincho, the site's own typeface, kept small in `book/fonts` (see `book/make_fonts.py`). It needs WeasyPrint and Pillow: `pip3 install weasyprint pillow`.
+
+`editions/` is not committed, so the books are not public on the site. Keep the copies you want on the backup drive.
+
 ## Publishing an update (beta number)
 
 The footer of every page shows the site's beta number, for example 'Beta 0.4'. It goes up by one with each update. To publish, in this folder:

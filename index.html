@@ -77,6 +77,7 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .about .copy{flex:1 1 360px;min-width:0;max-width:34em}
 .about h1{margin:0 0 24px;font-family:var(--display);font-weight:400;font-size:clamp(34px,5vw,48px);line-height:1.2}
 .about p{margin:0;font-size:18px;line-height:1.95;color:var(--ink-2)}
+.about .about-next{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
 .about p:lang(ja){font-size:17px;line-height:2.1}
 
 /* Text page */
@@ -238,7 +239,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.24</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.25</span></span>
   </footer>
 </div>
 
@@ -563,7 +564,11 @@ function about(){
   view.innerHTML =
     '<section class="about"><figure><img src="' + ABOUT_IMG + '" alt="' + esc(u.aboutAlt) + '"><figcaption>' + esc(u.place) + '<br>' + esc(u.credit) + '</figcaption></figure>' +
     '<div class="copy"><h1>' + esc(u.aboutTitle) + '</h1><p>' + esc(u.aboutText) + '</p>' +
-    '<p class="sign" style="margin-top:36px">' + u.sign + '</p></div></section>';
+    '<p class="sign" style="margin-top:36px">' + u.sign + '</p>' +
+    '<p class="about-next">' +
+      '<a class="btn primary" href="#home" data-to-list>' + esc({en:'Read the texts', ja:'言葉を読む', fr:'Lire les textes'}[lang]) + '</a>' +
+      (window.RIVER_BOOK ? '<a class="btn" href="#book">' + esc(BOOK_UI[lang].get) + '</a>' : '') +
+    '</p></div></section>';
 }
 
 function piece(i){
@@ -622,11 +627,13 @@ function render(){
 }
 
 let lastRead = null;  // the text shown before returning to the list
-let backTo = null;   // text number to land on in the list after 'All texts'
+let backTo = null;
+let toList = false;  // land on the 'Read now' list rather than the top   // text number to land on in the list after 'All texts'
 let firstRoute = true;
 document.addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[data-from]');
   if (a) backTo = Number(a.dataset.from);
+  if (e.target.closest && e.target.closest('a[data-to-list]')) toList = true;
 });
 function route(){
   const prevRead = lastRead;
@@ -640,7 +647,12 @@ function route(){
   }
   const link = (backTo !== null && (h === '' || h === 'home')) ? view.querySelector('.index a[href="#t' + backTo + '"]') : null;
   backTo = null;
-  if (link) {
+  const listHead = (toList && onHome) ? document.getElementById('read-h') : null;
+  toList = false;
+  if (listHead) {
+    listHead.scrollIntoView({block:'start'});
+    listHead.setAttribute('tabindex','-1'); listHead.focus({preventScroll:true});
+  } else if (link) {
     link.scrollIntoView({block:'center'});
     link.focus({preventScroll:true});
   } else {

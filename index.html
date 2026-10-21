@@ -224,7 +224,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <footer class="site">
     <span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.8</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.9</span></span>
   </footer>
 </div>
 
@@ -320,7 +320,7 @@ const LIST = {
 const browserLang = () => { const n = (navigator.language || '').toLowerCase(); return n.startsWith('ja') ? 'ja' : n.startsWith('fr') ? 'fr' : 'en'; };
 // Donations: the Cloudflare Worker in donate/ turns the amount into a Stripe
 // Checkout page. Leave empty to show 'Donations will open here soon' instead.
-const DONATE_ENDPOINT = '';
+const DONATE_ENDPOINT = 'https://donate.yoso.one/checkout';
 const DONATE_MIN = 100, DONATE_SUGGEST = [500, 1000, 3000];
 
 // Book wording. Japanese and French are drafts for Yoso to check.

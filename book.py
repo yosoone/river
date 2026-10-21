@@ -73,6 +73,11 @@ def long_date(d):
     return f"{d.day} {d.strftime('%B %Y')}"
 
 
+def about_html(text):
+    """The About text, one <p> per paragraph."""
+    return "".join(f"<p>{escape(p)}</p>" for p in re.split(r"\n\s*\n", text.strip()))
+
+
 def stanzas(v):
     return [s.split("\n") for s in re.split(r"\n\s*\n", v.strip())]
 
@@ -130,6 +135,7 @@ section:last-child { page-break-after: auto; }
 .colophon .name { font-size: 11pt; color: #1C1C1A; }
 
 h2 { margin: 0 0 9mm; font-weight: 400; font-size: 15pt; letter-spacing: .02em; }
+.about p + p { margin-top: 1.1em; }
 .about p { margin: 0; font-size: 10.5pt; line-height: 1.95; color: #3A3A36; text-align: left; }
 
 .toc ol { list-style: none; margin: 0; padding: 0; }
@@ -184,7 +190,7 @@ def build_pdf(texts, ded, about, version, d, path):
         parts.append(f'<section class="dedication"><div class="verse">{verse_html(ded)}</div>'
                      f'<p class="to">{escape(DEDICATION_TO)}</p></section>')
     if about:
-        parts.append(f'<section class="about"><h2>About River</h2><p>{escape(about)}</p></section>')
+        parts.append(f'<section class="about"><h2>About River</h2>{about_html(about)}</section>')
     toc = "".join(f'<li><a href="#t{n}">{escape(t)}</a></li>' for n, t, _ in texts)
     parts.append(f'<section class="toc"><h2>Contents</h2><ol>{toc}</ol></section>')
     for n, t, v in texts:
@@ -216,7 +222,8 @@ h1, h2, h3 { font-weight: normal; }
 .colophon p { margin: 0 0 1em; text-indent: 0; }
 .colophon .name { font-size: 1.2em; }
 h2 { font-size: 1.3em; margin: 2em 0 1.5em; }
-.about p { line-height: 1.95; text-indent: 0; }
+.about p { line-height: 1.95; text-indent: 0; margin: 0; }
+.about p + p { margin-top: 1.1em; }
 .toc ol { list-style: none; padding: 0; }
 .toc li { margin: 0 0 0.6em; }
 .toc a { text-decoration: none; color: inherit; }
@@ -315,7 +322,7 @@ def build_epub(texts, ded, about, version, d, path):
                       False))
     if about:
         pages.append(("about.xhtml", "About River",
-                      xhtml("About River", f'<section class="about"><h2>About River</h2><p>{escape(about)}</p></section>'),
+                      xhtml("About River", f'<section class="about"><h2>About River</h2>{about_html(about)}</section>'),
                       True))
     for n, t, v in texts:
         body = (f'<section class="piece" epub:type="chapter"><h3>{escape(t)}</h3>'

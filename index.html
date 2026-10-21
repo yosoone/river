@@ -104,6 +104,7 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 /* The About page's photo rule (.about img) must not reach the signature. */
 .about .sign img{width:auto;max-width:none;aspect-ratio:auto;object-fit:fill;border-radius:0}
 .about .sign .sig-light{display:inline-block}
+.sig-name{display:block;margin-top:14px;line-height:1.4}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sign .sig-light{display:none}:root:not([data-theme="light"]) .sign .sig-dark{display:inline-block}}
 :root[data-theme="dark"] .sign .sig-light{display:none}:root[data-theme="dark"] .sign .sig-dark{display:inline-block}
 .piece{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -255,7 +256,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.32</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.33</span></span>
   </footer>
 </div>
 
@@ -579,7 +580,7 @@ function about(){
   view.innerHTML =
     '<section class="about"><figure><img src="' + ABOUT_IMG + '" alt="' + esc(u.aboutAlt) + '"><figcaption>' + esc(u.place) + '<br>' + esc(u.credit) + '</figcaption></figure>' +
     '<div class="copy"><h1>' + esc(u.aboutTitle) + '</h1>' + u.aboutText.split(/\n\s*\n/).map(t => '<p>' + esc(t) + '</p>').join('') +
-    '<p class="sign" style="margin-top:36px">' + sig() + '</p>' +
+    '<p class="sign" style="margin-top:36px">' + sig('') + '<span class="sig-name">Yoso</span></p>' +
     '<p class="about-next">' +
       '<a class="btn primary" href="#home" data-to-list>' + esc({en:'Read the texts', ja:'言葉を読む', fr:'Lire les textes'}[lang]) + '</a>' +
       (window.RIVER_BOOK ? '<a class="btn" href="#book">' + esc(BOOK_UI[lang].get) + '</a>' : '') +
@@ -588,7 +589,8 @@ function about(){
 
 // Yoso's signature: the red 川 seal with its ink stroke, with a light stroke
 // for the dark theme. The alt text is the old written signature.
-const sig = () => '<img class="sig-light" src="images/signature.png" alt="' + esc(UI[lang].sign) + '" width="38" height="204">' +
+// Pass '' as alt where the name is also written out in type.
+const sig = (alt = UI[lang].sign) => '<img class="sig-light" src="images/signature.png" alt="' + esc(alt) + '" width="38" height="204">' +
   '<img class="sig-dark" src="images/signature-dark.png" alt="" width="38" height="204">';
 
 function piece(i){

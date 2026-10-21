@@ -287,8 +287,9 @@ const TEXTS = [
   tj:"生まれること以上の衝撃はない", vj:"人生で、生まれること以上の衝撃はない、\n生き延びるための闘い、\n死は解放、"},
  {n:24, t:"Life itself", v:"Life itself...\nIs death itself...\n\nFull circle,\nBalance,\nDance...\n\nTransfer of energy...\nConsciousness...\n\nSurvival...",
   tj:"生そのもの", vj:"生そのものは…\n死そのもの…\n\n円環、\n均衡、\n舞…\n\nエネルギーの移ろい…\n意識…\n\n生存…"},
- {n:25, t:"In modern times", v:"In modern times,\nWe acquire knowledge,\nbelieving that it is the truth,\nonly to realize that it is only part of it!\n\nLife itself is knowledge!\nWithin Life itself resides the knowledge!\nThe multitude of Life forms that created our being!\nIt is when we tune in, that all become one!\n\nWhen we surrender with gratitude,\nwhen we learn to respect!\nthat our knowledge requires energy to survive,\nthat survival itself is ephemeral!\n\nthat each breath matters more than knowledge!\nand that at the end of the day,\nlife itself is the experience!",
+ {n:25, t:"In modern times", v:"In modern times,\nseeking distractions,\nwe acquire knowledge,\nrevealing truth,\nfearing our instincts.",
   tj:"現代において", vj:"現代において、\n私たちは知識を得る、\nそれが真実だと信じて、\nやがて、それが一部にすぎないと気づく！\n\n生そのものが知識！\n生そのものの内に、知識は宿る！\n私たちという存在を形づくった、無数の生命！\n波長を合わせたとき、すべてはひとつになる！\n\n感謝とともに身をゆだねるとき、\n敬うことを学ぶとき！\n私たちの知識は、生きるためにエネルギーを必要とし、\n生きることそのものが儚いのだと！\n\nひと呼吸ひと呼吸が知識よりも大切で、\nそして結局のところ、\n生そのものが経験なのだと！"},
+ {n:50, t:"Eternal wisdom", v:"Within life itself lies the knowledge!\nEternal wisdom,\nif only we listened."},
  {n:26, t:"End of Summer Full moon", v:"End of Summer Full moon,\nBright in the East…\nI could feel the cold wind in the morning rise…\nSummer afternoon…\nFeeling the Rain coming when you set your light…\nIt took me half a century to recognize, that both the Sun and you…\nMade me who I have become…\nA modern man seeking revenge on modern civilisation..\nFor hiding your beauty for so long..\nI am back, and choose to celebrate your dance and gentle light, until the last day of my winter…\nLet me celebrate many sunrises…",
   tj:"夏の終わりの満月", vj:"夏の終わりの満月よ、\n東の空に明るく…\n朝の目覚めに、冷たい風を感じた…\n夏の午後…\nあなたが光を沈めるとき、雨の気配を感じて…\n半世紀かかって気づいた、太陽とあなたの両方が…\n今の私をつくったのだと…\n現代文明に報いを求める、ひとりの現代人…\nあなたの美しさを、これほど長く隠してきたことへの…\n私は戻ってきた。あなたの舞と優しい光を祝おう、私の冬の最後の日まで…\nいくつもの日の出を、祝わせてほしい…"},
  {n:27, t:"Being One", v:"Being One.\nBecoming One.\nOne.",
@@ -500,8 +501,9 @@ try { const s = localStorage.getItem('river-lang'); lang = (s === 'en' || s === 
 
 const view = document.getElementById('view');
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const title = x => lang === 'ja' ? x.tj : lang === 'fr' ? FR[x.n][0] : x.t;
-const verse = x => lang === 'ja' ? x.vj : lang === 'fr' ? FR[x.n][1] : x.v;
+// A text without a translation yet shows in English.
+const title = x => lang === 'ja' ? (x.tj || x.t) : lang === 'fr' ? (FR[x.n] ? FR[x.n][0] : x.t) : x.t;
+const verse = x => lang === 'ja' ? (x.vj || x.v) : lang === 'fr' ? (FR[x.n] ? FR[x.n][1] : x.v) : x.v;
 
 // Longest line in width units (a CJK character counts as two), so long lines get a smaller size and stay whole on wide screens
 function sizeClass(v){

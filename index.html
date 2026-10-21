@@ -56,13 +56,13 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .index{list-style:none;margin:0;padding:0 0 64px;columns:2 320px;column-gap:64px}
 .index li{break-inside:avoid;border-bottom:1px solid var(--rule)}
 .index a{display:flex;gap:20px;align-items:baseline;padding:18px 0;text-decoration:none;color:var(--ink);min-height:44px}
-.index .t{min-width:0;font-family:var(--display);font-size:20px;line-height:1.4;background:linear-gradient(var(--gold),var(--gold)) 0 100%/0 1px no-repeat;padding-bottom:2px;transition:color .35s ease,background-size .45s ease}
-.index a:hover .t,.index a:focus-visible .t{color:var(--gold-ink);background-size:100% 1px}
+.index .t{min-width:0;font-family:var(--display);font-size:20px;line-height:1.4;transition:color .35s ease}
+.index a:hover .t,.index a:focus-visible .t{color:var(--gold-ink)}
 /* The text just read: a soft gold glow that fades as you arrive back at the list */
 .index a.just-read{animation:read-glow 2.6s ease-out both}
 .index a.just-read .t{animation:read-gold 2.6s ease-out both}
 @keyframes read-glow{0%{background:linear-gradient(90deg,rgba(225,186,75,0),rgba(225,186,75,.22) 30%,rgba(225,186,75,0) 100%) -100% 0/200% 100% no-repeat}45%{background:linear-gradient(90deg,rgba(225,186,75,0),rgba(225,186,75,.22) 30%,rgba(225,186,75,0) 100%) 100% 0/200% 100% no-repeat}100%{background:linear-gradient(90deg,rgba(225,186,75,0),rgba(225,186,75,0) 30%,rgba(225,186,75,0) 100%) 100% 0/200% 100% no-repeat}}
-@keyframes read-gold{0%,55%{color:var(--gold-ink);background-size:100% 1px}100%{color:var(--ink);background-size:0 1px}}
+@keyframes read-gold{0%,55%{color:var(--gold-ink)}100%{color:var(--ink)}}
 @media (prefers-reduced-motion:reduce){.index .t{transition:none}.index a.just-read,.index a.just-read .t{animation:none}.index a.just-read .t{color:var(--gold-ink)}}
 
 .about-link{font-size:14px;letter-spacing:.06em;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;color:var(--muted)}
@@ -238,7 +238,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.23</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.24</span></span>
   </footer>
 </div>
 
@@ -654,11 +654,12 @@ function route(){
   firstRoute = false;
 }
 
-// Desktop: left and right arrow keys move between texts
+// Desktop: left and right arrow keys move between texts; up goes back to the list
 document.addEventListener('keydown', e => {
   if (!nav || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
   if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
-  if (e.key === 'ArrowRight') { e.preventDefault(); location.hash = nav.next; }
+  if (e.key === 'ArrowUp' && lastRead !== null) { e.preventDefault(); backTo = lastRead; location.hash = 'home'; }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); location.hash = nav.next; }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); location.hash = nav.prev; }
 });
 

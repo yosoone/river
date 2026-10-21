@@ -45,6 +45,9 @@ SITE = "river.yoso.one"
 DEDICATION_TEXT = 38          # 'A quiet river'
 DEDICATION_TO = "For Yuko"
 HUB = "hub.yoso.one"
+# Half the width of the spine shading on the site (.cover::before, 7%), in
+# cover pixels (1600 wide).
+SITE_COVER_SHIFT = 56
 
 STRING = r'"((?:[^"\\]|\\.)*)"'
 ITEM = re.compile(r"\{n:(\d+),\s*t:" + STRING + r",\s*v:" + STRING)
@@ -264,8 +267,12 @@ def xhtml(title, body, cls=""):
     )
 
 
-def make_cover(version, d):
-    """1600 x 2560 cover image, drawn with the book's own typeface."""
+def make_cover(version, d, shift=0):
+    """1600 x 2560 cover image, drawn with the book's own typeface.
+
+    shift moves everything right by that many pixels: the site draws a shaded
+    spine down the cover's left edge, so its copy is centred on the face.
+    """
     from io import BytesIO
     from PIL import Image, ImageDraw, ImageFont
 
@@ -278,21 +285,21 @@ def make_cover(version, d):
         f = ImageFont.truetype(reg, size)
         if spacing:  # letter-spaced line, drawn one character at a time
             widths = [dr.textlength(c, font=f) for c in text]
-            x = (W - (sum(widths) + spacing * (len(text) - 1))) / 2
+            x = (W - (sum(widths) + spacing * (len(text) - 1))) / 2 + shift
             for c, w in zip(text, widths):
                 dr.text((x, y), c, font=f, fill=fill)
                 x += w + spacing
         else:
-            dr.text(((W - dr.textlength(text, font=f)) / 2, y), text, font=f, fill=fill)
+            dr.text(((W - dr.textlength(text, font=f)) / 2 + shift, y), text, font=f, fill=fill)
 
     mark = Image.open(MARK).convert("RGBA").resize((200, 200), Image.LANCZOS)
-    img.paste(mark, ((W - 200) // 2, 290), mark)
+    img.paste(mark, ((W - 200) // 2 + shift, 290), mark)
 
     big = ImageFont.truetype(reg, 330)
     w1 = dr.textlength(TITLE, font=big)
     w2 = dr.textlength(KANJI, font=big)
     gap = 40
-    x = (W - (w1 + gap + w2)) / 2
+    x = (W - (w1 + gap + w2)) / 2 + shift
     dr.text((x, 840), TITLE, font=big, fill="#1C1C1A")
     dr.text((x + w1 + gap, 840), KANJI, font=big, fill="#5A5A55")
     centred(SUBTITLE, 1400, 72, "#3A3A36", spacing=10)
@@ -441,10 +448,11 @@ def publish(stem, version, d, count):
     for old in PUBLIC.glob("river-beta-*"):
         old.unlink()
     info = {"version": version, "date": d.isoformat(), "texts": count}
-    # The cover, smaller, for the home page's book section.
+    # The cover, smaller, for the home page's book section. The site shades
+    # the left 7% as a spine, so the lettering moves right by half of that.
     from io import BytesIO
     from PIL import Image
-    cover = Image.open(BytesIO(make_cover(version, d))).resize((640, 1024), Image.LANCZOS)
+    cover = Image.open(BytesIO(make_cover(version, d, shift=SITE_COVER_SHIFT))).resize((640, 1024), Image.LANCZOS)
     cover_name = f"{stem}-cover.jpg"
     cover.save(PUBLIC / cover_name, "JPEG", quality=86, optimize=True, progressive=True)
     info["cover"] = f"books/{cover_name}"

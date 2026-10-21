@@ -2,7 +2,7 @@
 
 `donate.yoso.one` is a small Cloudflare Worker (`worker.js`, deployed as `river-donate`). It does two things:
 
-- **`/`** shows the general donation page: what the donation is for (wherever it's needed, the creation of the dojo, River, Shinsei, Yosokuro, On, The Vault), suggested amounts and an amount box, plus the mailing list. The projects are `PROJECTS` in `worker.js`.
+- **`/`** shows the general donation page: what the donation is for (wherever it's needed, the creation of the dojo, River, Shinsei, Yosokuro, On, The Vault), suggested amounts and an amount box. It has no mailing list (Yoso's choice). The projects are `PROJECTS` in `worker.js`.
 - **`/checkout`** takes the amount and project from any of Yoso's sites and opens Stripe Checkout in yen. A form that sends no `for` is treated as River's.
 
 The rest of this note covers River's own download page, which posts here too.

@@ -9,7 +9,7 @@
 //   STRIPE_SECRET_KEY  a Stripe restricted key with 'Checkout Sessions: Write'
 // See donate/README.md for the setup.
 
-const VERSION = 'Beta 0.1';
+const VERSION = 'Beta 0.2';
 const HOME = 'https://donate.yoso.one';
 const ALLOWED_ORIGINS = [
   HOME, 'https://river.yoso.one', 'https://hub.yoso.one', 'https://yosoone.github.io',
@@ -184,20 +184,6 @@ select,.amount input{min-height:44px;width:100%;min-width:0;font:inherit;font-si
 .note{margin:4px 0 0;font-size:13px;color:var(--muted)}
 .err{margin:0;font-size:14px;color:var(--bad)}
 .err:empty{display:none}
-.list{padding:32px 0 8px}
-.list h2{margin:0 0 6px;font-family:var(--display);font-weight:400;font-size:24px}
-.list p{margin:0;color:var(--ink-2)}
-.list form{display:grid;gap:8px;margin-top:16px}
-.list-row{display:flex;flex-wrap:wrap;gap:8px}
-.list-row input{flex:1 1 200px;min-width:0;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:0 12px}
-.list-row button{min-height:44px;padding:0 20px;font:inherit;font-size:14px;letter-spacing:.06em;color:var(--ground);background:var(--ink);border:0;border-radius:3px;cursor:pointer}
-.list-choice{border:0;margin:8px 0 0;padding:0;display:grid;gap:6px}
-.list-choice legend{padding:0;margin-bottom:6px;font-size:13px;letter-spacing:.06em;color:var(--muted)}
-.lc-box{display:flex;gap:10px;align-items:flex-start;color:var(--ink);font-size:15px;letter-spacing:0}
-.lc-box input{margin-top:5px;width:18px;height:18px;accent-color:var(--ink)}
-.lc-name{display:block}
-.lc-desc{display:block;font-size:13px;color:var(--muted)}
-.list .small{font-size:13px;color:var(--muted)}
 footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:32px;padding:28px 0 48px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
 footer p{margin:0}
 </style>
@@ -221,24 +207,6 @@ ${flash}
 <p class="note">Paid through Stripe’s secure checkout. Minimum ¥${MIN_YEN}.</p>
 <p class="err" id="err" role="alert"></p>
 </form>
-<section class="list" aria-labelledby="list-h">
-<h2 id="list-h">Mailing list</h2>
-<p>New work by email, now and then.</p>
-<form action="https://buttondown.com/api/emails/embed-subscribe/yoso" method="post" target="_blank">
-<label for="list-email">Email address</label>
-<div class="list-row"><input id="list-email" name="email" type="email" autocomplete="email" required><button type="submit">Subscribe</button></div>
-<fieldset class="list-choice" data-list-choice>
-<legend>Which newsletters would you like?</legend>
-<label class="lc-box"><input type="checkbox" name="tag" value="one"><span><span class="lc-name">The Vault</span><span class="lc-desc">Notes, essays and research from one.yoso.one</span></span></label>
-<label class="lc-box"><input type="checkbox" name="tag" value="yosokuro"><span><span class="lc-name">Yosokuro</span><span class="lc-desc">Black-and-white photographs of Japan</span></span></label>
-<label class="lc-box"><input type="checkbox" name="tag" value="shinsei"><span><span class="lc-name">Shinsei</span><span class="lc-desc">New paintings, scrolls and exhibitions</span></span></label>
-<label class="lc-box"><input type="checkbox" name="tag" value="river"><span><span class="lc-name">River</span><span class="lc-desc">New short texts</span></span></label>
-<label class="lc-box"><input type="checkbox" name="tag" value="on"><span><span class="lc-name">On</span><span class="lc-desc">Each numbered issue of the magazine</span></span></label>
-</fieldset>
-<input type="hidden" name="embed" value="1">
-<p class="small">Sent through Buttondown. Confirm by email; unsubscribe any time.</p>
-</form>
-</section>
 </main>
 <footer><p>&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</p><p><span class="version" data-version>${VERSION}</span></p></footer>
 </div>
@@ -254,7 +222,6 @@ f.addEventListener('submit',function(ev){var v=n();if(!v||v<${MIN_YEN}){ev.preve
 if(location.search){history.replaceState(null,'',location.pathname)}
 })();
 </script>
-<script src="https://river.yoso.one/assets/list-choice.js" defer></script>
 </body>
 </html>`;
 }

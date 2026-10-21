@@ -156,6 +156,12 @@ nav.pager .mid{color:var(--muted)}
 .list-row button:hover{background:var(--accent)}
 .list .list-note{font-size:13px;color:var(--muted)}
 .mt-note{margin:0;padding-block:20px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted);text-align:center}
+.getbook{margin:0;padding-block:8px 32px;text-align:center}
+.getbook a{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:0 18px;border:1px solid var(--rule);border-radius:999px;font-size:13px;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+.getbook a span{font-size:11px;letter-spacing:.12em;opacity:.8}
+.getbook a:hover{color:var(--ink);border-color:var(--ink)}
+.foot-donate{color:inherit}
+.foot-donate:hover{color:var(--accent)}
 footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-block:32px 48px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
 @media (max-width:560px){nav.pager .mid{order:3;width:100%}}
 @media (prefers-reduced-motion:no-preference){.piece-inner{animation:rise .6s ease both}@keyframes rise{from{opacity:.0001;transform:translateY(8px)}to{opacity:1;transform:none}}}
@@ -206,8 +212,8 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
-    <span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.14</span></span>
+    <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.15</span></span>
   </footer>
 </div>
 
@@ -319,7 +325,7 @@ const BOOK_UI = {
         s2:"New texts by email", tick:"Send me new River texts by email", email:"Email address",
         s2note:"Sent through Buttondown. You’ll get an email to confirm; unsubscribe any time.",
         s3:"Download", pdf:"PDF", pdfNote:"A5, to read or print", epub:"EPUB", epubNote:"for phones and e-readers",
-        need:"Enter your email address, or untick the box.", lDonate:"Donate · optional", otherShort:"Other", lList:"Newsletter · optional", lDl:"Download", tickShort:"Email me new texts", pdfShort:"PDF", epubShort:"EPUB", done:"Thank you. Your download has started.",
+        need:"Enter your email address, or untick the box.", lDonate:"Donate · optional", getSmall:"Download the book", getFmt:"PDF · EPUB", otherShort:"Other", lList:"Newsletter · optional", lDl:"Download", tickShort:"Email me new texts", pdfShort:"PDF", epubShort:"EPUB", done:"Thank you. Your download has started.",
         doneList:"Check your inbox to confirm the mailing list.", back:"← Back to River" },
   ja: { k:"新刊・無料ダウンロード", h:"本になった River", alt:"『River 川』Yoso 短い言葉 の表紙",
         p:"短い言葉を、献辞から始まる一冊の小さな本にまとめました。スマートフォンや電子書籍リーダーで読むことも、印刷することもできます。",
@@ -332,7 +338,7 @@ const BOOK_UI = {
         s2:"新しい言葉をメールで", tick:"River の新しい言葉をメールで受け取る", email:"メールアドレス",
         s2note:"配信は Buttondown を通じて行います。確認メールが届きます。いつでも解除できます。",
         s3:"ダウンロード", pdf:"PDF", pdfNote:"A5・閲覧／印刷用", epub:"EPUB", epubNote:"スマートフォン・電子書籍用",
-        need:"メールアドレスを入力するか、チェックを外してください。", lDonate:"寄付・任意", otherShort:"その他", lList:"ニュースレター・任意", lDl:"ダウンロード", tickShort:"新しい言葉をメールで受け取る", pdfShort:"PDF", epubShort:"EPUB", done:"ありがとうございます。ダウンロードが始まりました。",
+        need:"メールアドレスを入力するか、チェックを外してください。", lDonate:"寄付・任意", getSmall:"本をダウンロード", getFmt:"PDF・EPUB", otherShort:"その他", lList:"ニュースレター・任意", lDl:"ダウンロード", tickShort:"新しい言葉をメールで受け取る", pdfShort:"PDF", epubShort:"EPUB", done:"ありがとうございます。ダウンロードが始まりました。",
         doneList:"メーリングリストの確認メールをご確認ください。", back:"← River に戻る" },
   fr: { k:"Nouveau · téléchargement gratuit", h:"River, le livre", alt:"Couverture de River 川, textes courts de Yoso",
         p:"Les textes courts réunis en un petit livre, qui s’ouvre sur une dédicace. À lire sur un téléphone ou une liseuse, ou à imprimer.",
@@ -345,7 +351,7 @@ const BOOK_UI = {
         s2:"Les nouveaux textes par e-mail", tick:"M’envoyer les nouveaux textes de River par e-mail", email:"Adresse e-mail",
         s2note:"Envoi par Buttondown. Un e-mail de confirmation vous sera envoyé ; désabonnement à tout moment.",
         s3:"Télécharger", pdf:"PDF", pdfNote:"A5, à lire ou imprimer", epub:"EPUB", epubNote:"pour téléphones et liseuses",
-        need:"Saisissez votre adresse e-mail, ou décochez la case.", lDonate:"Don · facultatif", otherShort:"Autre", lList:"Lettre · facultatif", lDl:"Télécharger", tickShort:"Recevoir les nouveaux textes par e-mail", pdfShort:"PDF", epubShort:"EPUB", done:"Merci. Le téléchargement a commencé.",
+        need:"Saisissez votre adresse e-mail, ou décochez la case.", lDonate:"Don · facultatif", getSmall:"Télécharger le livre", getFmt:"PDF · EPUB", otherShort:"Autre", lList:"Lettre · facultatif", lDl:"Télécharger", tickShort:"Recevoir les nouveaux textes par e-mail", pdfShort:"PDF", epubShort:"EPUB", done:"Merci. Le téléchargement a commencé.",
         doneList:"Vérifiez votre boîte mail pour confirmer l’inscription.", back:"← Retour à River" }
 };
 function bookWhen(b, u){
@@ -482,6 +488,7 @@ function chrome(){
     el.append(u.footL.slice(0, i), a, u.footL.slice(i + 4));
   })();
   document.getElementById('foot-r').textContent = u.footR;
+  document.getElementById('foot-donate').textContent = {en:'Donate', ja:'寄付', fr:'Faire un don'}[lang];
   // The Japanese and French texts are machine translations of Yoso's English.
   { const mt = document.getElementById('mt-note'), t = {ja:'日本語の文章は機械翻訳です。', fr:'Les textes en français sont traduits automatiquement.'}[lang];
     mt.hidden = !t; mt.textContent = t || ''; }
@@ -538,7 +545,8 @@ function piece(i){
     '<a href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
     '<a class="mid" href="#home">' + UI[lang].all + '</a>' +
     '<a href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +
-    '</nav>';
+    '</nav>' +
+    (window.RIVER_BOOK ? '<p class="getbook"><a href="#book">' + esc(BOOK_UI[lang].getSmall) + '<span>' + esc(BOOK_UI[lang].getFmt) + '</span></a></p>' : '');
 }
 
 let nav = null; // hashes of the current text's neighbours, for swiping

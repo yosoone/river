@@ -210,7 +210,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <footer class="site">
     <span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.6</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.7</span></span>
   </footer>
 </div>
 
@@ -535,9 +535,9 @@ function render(){
   const i = m ? TEXTS.findIndex(x => x.n === Number(m[1])) : -1;
   document.getElementById('about-link').toggleAttribute('aria-current', h === 'about');
   if (h === 'about') document.getElementById('about-link').setAttribute('aria-current','page');
+  { const ls = document.querySelector('section.list'); if (ls) ls.hidden = (h === 'book'); } // the download page offers the list in step 2
   if (h === 'about') { nav = null; about(); }
   else if (h === 'book') { nav = null; bookPage(); }
-  { const ls = document.querySelector('section.list'); if (ls) ls.hidden = (h === 'book'); } // step 2 already offers the list
   else if (i >= 0) {
     const L = TEXTS.length;
     nav = { prev: 't' + TEXTS[(i - 1 + L) % L].n, next: 't' + TEXTS[(i + 1) % L].n };

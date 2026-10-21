@@ -80,7 +80,7 @@ def main():
         "  <title>River 川</title>\n"
         f"  <link>{SITE}</link>\n"
         f'  <atom:link href="{SITE}feed.xml" rel="self" type="application/rss+xml"/>\n'
-        "  <description>Short texts by Yoso that move like a quiet river: on breath, love, spring and surrendering to the flow.</description>\n"
+        "  <description>Short texts by Yoso that move like a quiet river: fragments of a daily practice, read slowly, one after another.</description>\n"
         "  <language>en</language>\n"
         "  <copyright>© Yoso</copyright>\n"
         f"  <lastBuildDate>{format_datetime(now)}</lastBuildDate>\n"

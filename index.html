@@ -33,7 +33,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 /* Family mark: centred at the top of every Yoso site, linking to the hub */
 .family-mark{display:block;width:48px;margin:24px auto 0;line-height:0}
 .family-mark img{display:block;width:48px;height:48px}
-article.piece:focus,h1[tabindex="-1"]:focus{outline:none}
+[tabindex="-1"]:focus{outline:none}
+/* Arriving at the list from 'Read the texts': the heading glows gold and fades */
+.read-h.arrive{animation:read-gold 2.6s ease-out both}
+@media (prefers-reduced-motion:reduce){.read-h.arrive{animation:none;color:var(--gold-ink)}}
 /* Text links show keyboard focus by turning gold, not with an outline box */
 .family-mark:focus-visible,.mark:focus-visible,.about-link:focus-visible,.lang button:focus-visible,
 .index a:focus-visible,nav.pager a:focus-visible,.getbook a:focus-visible,footer.site a:focus-visible,.bp .back a:focus-visible{outline:none}
@@ -244,7 +247,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.26</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.27</span></span>
   </footer>
 </div>
 
@@ -657,6 +660,7 @@ function route(){
   if (listHead) {
     listHead.scrollIntoView({block:'start'});
     listHead.setAttribute('tabindex','-1'); listHead.focus({preventScroll:true});
+    listHead.classList.add('arrive');
   } else if (link) {
     link.scrollIntoView({block:'center'});
     link.focus({preventScroll:true});

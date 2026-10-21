@@ -83,9 +83,9 @@ nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-betwee
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
 nav.pager .mid{color:var(--muted)}
 /* Book promo (top of the home page) */
-.book{display:flex;flex-wrap:wrap;gap:36px 64px;align-items:center;padding-block:56px;border-bottom:1px solid var(--rule)}
-.book .cover{position:relative;flex:0 0 auto;width:min(260px,52vw);margin:0 auto;line-height:0}
-.book .copy{flex:1 1 320px;min-width:0;max-width:32em}
+.book{display:flex;flex-wrap:wrap;gap:36px 64px;align-items:center;justify-content:center;padding-block:56px;border-bottom:1px solid var(--rule)}
+.book .cover{position:relative;left:-3px;flex:0 0 auto;width:min(260px,52vw);margin:0 auto;line-height:0}
+.book .copy{flex:0 1 30em;min-width:0}
 .book .kicker{margin:0 0 12px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .book h2{margin:0 0 16px;font-family:var(--display);font-weight:400;font-size:clamp(32px,5vw,46px);line-height:1.15}
 .book h2 .kanji{margin-left:.2em;color:var(--muted)}
@@ -104,12 +104,22 @@ nav.pager .mid{color:var(--muted)}
 .book .cover{transition:transform .2s ease}
 .book .cover:hover{transform:translateY(-3px)}
 .bp{max-width:30em;margin:0 auto;padding-block:48px 64px;border-top:1px solid var(--rule);text-align:center}
-.bp-cover{position:relative;display:block;width:min(230px,62vw);margin:0 auto;line-height:0}
+.bp-cover{position:relative;left:-3px;display:block;width:min(230px,62vw);margin:0 auto;line-height:0}
 .bp-cover img,.book .cover img{display:block;width:100%;height:auto;aspect-ratio:5/8;border-radius:1px 3px 3px 1px;outline:1px solid rgba(0,0,0,.07);outline-offset:-1px;box-shadow:2px 2px 0 -1px #F6F5F1,2px 2px 0 0 #CFCCC4,4px 4px 0 -1px #F6F5F1,4px 4px 0 0 #CFCCC4,6px 6px 0 -1px #F6F5F1,6px 6px 0 0 #CFCCC4,0 26px 40px -16px rgba(0,0,0,.38),0 10px 18px -12px rgba(0,0,0,.25)}
 .bp-cover::before,.book .cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7%;z-index:1;pointer-events:none;border-radius:1px 0 0 1px;background:linear-gradient(90deg,rgba(0,0,0,.16),rgba(0,0,0,.04) 45%,rgba(255,255,255,.35) 60%,rgba(0,0,0,0))}
 .bp h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .bp .meta{margin:26px 0 0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
 .bp .grp{margin-top:40px}
+.bp .opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:36px}
+.bp .opt{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;font:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid var(--rule);border-radius:999px;cursor:pointer}
+.bp .opt:hover,.bp .opt[aria-expanded="true"],.bp .opt:has(input:checked){color:var(--ink);border-color:var(--ink)}
+.bp .opt input{width:15px;height:15px;margin:0;accent-color:var(--ink)}
+.bp .opt:focus-visible,.bp .opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.bp .chev{width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .2s}
+.bp .opt[aria-expanded="true"] .chev{transform:translateY(1px) rotate(-135deg)}
+.bp .panel{margin-top:16px}
+.bp .panel[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.bp .chev{transition:none}}
 .bp .lbl{display:block;margin:0 0 12px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .bp .r2{margin-top:10px}
 .bp .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch}
@@ -127,7 +137,7 @@ nav.pager .mid{color:var(--muted)}
 .bp .tick{display:inline-flex;gap:10px;align-items:center;min-height:44px;cursor:pointer;color:var(--ink)}
 .bp .tick input{width:18px;height:18px;margin:0;accent-color:var(--ink)}
 .bp .tick input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.bp .em{max-width:320px;margin:8px auto 0}
+.bp .em{max-width:320px;margin:0 auto}
 .bp .em input{width:100%;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:0 16px;text-align:center}
 .bp .em input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bp .get a{min-width:120px}
@@ -213,7 +223,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.15</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.16</span></span>
   </footer>
 </div>
 
@@ -325,7 +335,7 @@ const BOOK_UI = {
         s2:"New texts by email", tick:"Send me new River texts by email", email:"Email address",
         s2note:"Sent through Buttondown. You’ll get an email to confirm; unsubscribe any time.",
         s3:"Download", pdf:"PDF", pdfNote:"A5, to read or print", epub:"EPUB", epubNote:"for phones and e-readers",
-        need:"Enter your email address, or untick the box.", lDonate:"Donate · optional", getSmall:"Download the book", getFmt:"PDF · EPUB", otherShort:"Other", lList:"Newsletter · optional", lDl:"Download", tickShort:"Email me new texts", pdfShort:"PDF", epubShort:"EPUB", done:"Thank you. Your download has started.",
+        need:"Enter your email address, or untick the box.", lDonate:"Donate · optional", optDonate:"Donate", getSmall:"Download the book", getFmt:"PDF · EPUB", otherShort:"Other", lList:"Newsletter · optional", lDl:"Download", tickShort:"Email me new texts", pdfShort:"PDF", epubShort:"EPUB", done:"Thank you. Your download has started.",
         doneList:"Check your inbox to confirm the mailing list.", back:"← Back to River" },
   ja: { k:"新刊・無料ダウンロード", h:"本になった River", alt:"『River 川』Yoso 短い言葉 の表紙",
         p:"短い言葉を、献辞から始まる一冊の小さな本にまとめました。スマートフォンや電子書籍リーダーで読むことも、印刷することもできます。",
@@ -338,7 +348,7 @@ const BOOK_UI = {
         s2:"新しい言葉をメールで", tick:"River の新しい言葉をメールで受け取る", email:"メールアドレス",
         s2note:"配信は Buttondown を通じて行います。確認メールが届きます。いつでも解除できます。",
         s3:"ダウンロード", pdf:"PDF", pdfNote:"A5・閲覧／印刷用", epub:"EPUB", epubNote:"スマートフォン・電子書籍用",
-        need:"メールアドレスを入力するか、チェックを外してください。", lDonate:"寄付・任意", getSmall:"本をダウンロード", getFmt:"PDF・EPUB", otherShort:"その他", lList:"ニュースレター・任意", lDl:"ダウンロード", tickShort:"新しい言葉をメールで受け取る", pdfShort:"PDF", epubShort:"EPUB", done:"ありがとうございます。ダウンロードが始まりました。",
+        need:"メールアドレスを入力するか、チェックを外してください。", lDonate:"寄付・任意", optDonate:"寄付する", getSmall:"本をダウンロード", getFmt:"PDF・EPUB", otherShort:"その他", lList:"ニュースレター・任意", lDl:"ダウンロード", tickShort:"新しい言葉をメールで受け取る", pdfShort:"PDF", epubShort:"EPUB", done:"ありがとうございます。ダウンロードが始まりました。",
         doneList:"メーリングリストの確認メールをご確認ください。", back:"← River に戻る" },
   fr: { k:"Nouveau · téléchargement gratuit", h:"River, le livre", alt:"Couverture de River 川, textes courts de Yoso",
         p:"Les textes courts réunis en un petit livre, qui s’ouvre sur une dédicace. À lire sur un téléphone ou une liseuse, ou à imprimer.",
@@ -351,7 +361,7 @@ const BOOK_UI = {
         s2:"Les nouveaux textes par e-mail", tick:"M’envoyer les nouveaux textes de River par e-mail", email:"Adresse e-mail",
         s2note:"Envoi par Buttondown. Un e-mail de confirmation vous sera envoyé ; désabonnement à tout moment.",
         s3:"Télécharger", pdf:"PDF", pdfNote:"A5, à lire ou imprimer", epub:"EPUB", epubNote:"pour téléphones et liseuses",
-        need:"Saisissez votre adresse e-mail, ou décochez la case.", lDonate:"Don · facultatif", getSmall:"Télécharger le livre", getFmt:"PDF · EPUB", otherShort:"Autre", lList:"Lettre · facultatif", lDl:"Télécharger", tickShort:"Recevoir les nouveaux textes par e-mail", pdfShort:"PDF", epubShort:"EPUB", done:"Merci. Le téléchargement a commencé.",
+        need:"Saisissez votre adresse e-mail, ou décochez la case.", lDonate:"Don · facultatif", optDonate:"Faire un don", getSmall:"Télécharger le livre", getFmt:"PDF · EPUB", otherShort:"Autre", lList:"Lettre · facultatif", lDl:"Télécharger", tickShort:"Recevoir les nouveaux textes par e-mail", pdfShort:"PDF", epubShort:"EPUB", done:"Merci. Le téléchargement a commencé.",
         doneList:"Vérifiez votre boîte mail pour confirmer l’inscription.", back:"← Retour à River" }
 };
 function bookWhen(b, u){
@@ -393,17 +403,20 @@ function bookPage(){
     '<h1 id="bp-h">River<span class="kanji" lang="ja" style="margin-left:.2em;color:var(--muted)">川</span></h1>' +
     '<p class="meta">' + b.texts + ' ' + esc(u.n) + ' · Beta ' + esc(b.version) + '</p>' +
     (donationMsg ? '<p class="flash' + (donationMsg === 'thanks' ? '' : ' bad') + '" role="status">' + esc(donationMsg === 'thanks' ? u.dThanks : u.dError) + '</p>' : '') +
+    '<div class="opts">' +
+      (DONATE_ENDPOINT ? '<button type="button" class="opt" id="bp-dtoggle" aria-expanded="false" aria-controls="bp-donate">' + esc(u.optDonate) + '<span class="chev" aria-hidden="true"></span></button>' : '') +
+      '<label class="opt"><input type="checkbox" id="bp-tick">' + esc(u.tickShort) + '</label>' +
+    '</div>' +
     (DONATE_ENDPOINT
-      ? '<form id="bp-donate" class="grp" action="' + DONATE_ENDPOINT + '" method="post" target="_blank" novalidate>' +
-        '<span class="lbl">' + esc(u.lDonate) + '</span><div class="row">' +
+      ? '<form id="bp-donate" class="panel" action="' + DONATE_ENDPOINT + '" method="post" target="_blank" novalidate hidden>' +
+        '<div class="row">' +
         DONATE_SUGGEST.map(n => '<button type="button" class="chip" data-yen="' + n + '">' + yen(n) + '</button>').join('') +
         '</div><div class="row r2"><label class="amt"><span aria-hidden="true">¥</span><input id="bp-amount" name="amount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="' + esc(u.otherShort) + '" aria-label="' + esc(u.amount) + '"></label>' +
         '<button type="submit" class="btn" id="bp-donate-btn">' + esc(u.donate) + '</button></div>' +
         '<input type="hidden" name="lang" value="' + lang + '">' +
-        '<p class="err" id="bp-derr" role="alert"></p></form>'
+        '<p class="note">' + esc(u.donateNote) + '</p><p class="err" id="bp-derr" role="alert"></p></form>'
       : '') +
-    '<form id="bp-list" class="grp" action="https://buttondown.com/api/emails/embed-subscribe/yoso" method="post" target="_blank" novalidate>' +
-      '<label class="tick"><input type="checkbox" id="bp-tick"><span>' + esc(u.tickShort) + '</span></label>' +
+    '<form id="bp-list" class="panel" action="https://buttondown.com/api/emails/embed-subscribe/yoso" method="post" target="_blank" novalidate>' +
       '<div class="em" id="bp-email-wrap" hidden><input id="bp-email" name="email" type="email" autocomplete="email" placeholder="' + esc(u.email) + '" aria-label="' + esc(u.email) + '">' +
       '<p class="note">' + esc(u.s2note) + '</p></div>' +
       '<input type="hidden" name="tag" value="river"><input type="hidden" name="embed" value="1">' +
@@ -420,6 +433,12 @@ function bookPage(){
   let subscribed = false;
   const dForm = document.getElementById('bp-donate');
   if (dForm) {
+    const dt = document.getElementById('bp-dtoggle');
+    dt.addEventListener('click', () => {
+      const open = dt.getAttribute('aria-expanded') !== 'true';
+      dt.setAttribute('aria-expanded', String(open)); dForm.hidden = !open;
+      if (open) { const c = dForm.querySelector('.chip'); if (c) c.focus(); }
+    });
     const amt = document.getElementById('bp-amount'), dBtn = document.getElementById('bp-donate-btn'), dErr = document.getElementById('bp-derr');
     const chips = dForm.querySelectorAll('.chip');
     const sync = () => {

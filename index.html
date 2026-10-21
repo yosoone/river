@@ -46,6 +46,8 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .lang button[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px}
 
 /* Home */
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.read-h{margin:0;padding-block:48px 8px;font-family:var(--display);font-weight:400;font-size:clamp(26px,3.4vw,34px);line-height:1.2}
 .intro{padding-block:40px 44px;border-bottom:1px solid var(--rule)}
 .intro h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .intro h1 .kanji{display:inline-block;margin-left:.15em;color:var(--muted)}
@@ -88,7 +90,7 @@ nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-betwee
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
 nav.pager .mid{color:var(--accent)}
 /* Book promo (top of the home page) */
-.book{display:flex;flex-wrap:wrap;gap:36px 64px;align-items:center;justify-content:center;padding-block:56px;border-bottom:1px solid var(--rule)}
+.book{display:flex;flex-wrap:wrap;gap:36px 64px;align-items:center;justify-content:center;padding-block:40px 56px;border-bottom:1px solid var(--rule)}
 .book .cover{position:relative;left:-3px;flex:0 0 auto;width:min(260px,52vw);margin:0 auto;line-height:0}
 .book .copy{flex:0 1 30em;min-width:0}
 .book .kicker{margin:0 0 12px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
@@ -227,7 +229,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.21</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.22</span></span>
   </footer>
 </div>
 
@@ -537,9 +539,9 @@ function chrome(){
 function home(){
   document.title = 'River 川';
   view.innerHTML =
-    '<section class="intro"><h1>River<span class="kanji" lang="ja">川</span></h1>' +
-    '<p>' + esc(UI[lang].intro) + '</p></section>' + bookHTML() +
-    '<ol class="index">' + TEXTS.map(x =>
+    '<h1 class="vh">River 川</h1>' + bookHTML() +
+    '<h2 class="read-h" id="read-h">' + esc({en:'Read now', ja:'今すぐ読む', fr:'Lire maintenant'}[lang]) + '</h2>' +
+    '<ol class="index" aria-labelledby="read-h">' + TEXTS.map(x =>
       '<li><a href="#t' + x.n + '"><span class="t">' + esc(title(x)) + '</span></a></li>'
     ).join('') + '</ol>';
 }

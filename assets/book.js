@@ -1,16 +1,16 @@
 // The book edition offered on the home page. Written by `python3 book.py --publish`;
 // do not edit by hand.
 window.RIVER_BOOK = {
-  "version": "0.21",
+  "version": "0.22",
   "date": "2026-10-21",
   "texts": 25,
-  "cover": "books/river-beta-0.21-2026-10-21-cover.jpg",
+  "cover": "books/river-beta-0.22-2026-10-21-cover.jpg",
   "pdf": {
-    "href": "books/river-beta-0.21-2026-10-21.pdf",
+    "href": "books/river-beta-0.22-2026-10-21.pdf",
     "kb": 49
   },
   "epub": {
-    "href": "books/river-beta-0.21-2026-10-21.epub",
-    "kb": 203
+    "href": "books/river-beta-0.22-2026-10-21.epub",
+    "kb": 204
   }
 };

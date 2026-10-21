@@ -143,7 +143,7 @@ function page(status, forKey) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Support Yoso</title>
+<title>Donate · Yoso</title>
 <meta name="description" content="Support the work of Yoso, an artist in Miyazaki, Japan.">
 <link rel="icon" href="https://river.yoso.one/images/yoso-mark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,7 +164,7 @@ header{padding:32px 0 8px;text-align:center}
 header a{font-family:var(--display);font-size:22px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
 main{padding:24px 0 48px}
 h1{margin:0 0 14px;font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,48px);line-height:1.15}
-.lead{margin:0 0 32px;color:var(--ink-2);font-size:17px}
+.lead{margin:0 0 32px;color:var(--ink-2);font-size:17px}h1{margin-bottom:28px}
 .flash{margin:0 0 24px;padding:14px 16px;border-left:3px solid var(--accent);background:var(--paper)}
 .flash.bad{border-left-color:var(--bad)}
 form.give{display:grid;gap:10px;padding:28px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
@@ -206,8 +206,7 @@ footer p{margin:0}
 <a class="family-mark" href="https://hub.yoso.one"><img src="https://river.yoso.one/images/yoso-mark.png" alt="Yoso" width="48" height="48"></a>
 <header><a href="${HOME}/">Yoso</a></header>
 <main>
-<h1>Support the work</h1>
-<p class="lead">I make tattoos, paintings, photographs and writing in Miyazaki, Japan. Much of it is shared freely. If it means something to you, you can give what you like, once. Any amount helps.</p>
+<h1>Donate</h1>
 ${flash}
 <form class="give" id="give" action="${HOME}/checkout" method="post" novalidate>
 <label for="for">What it’s for</label>

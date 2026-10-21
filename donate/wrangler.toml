@@ -1,0 +1,11 @@
+# Optional: deploy from the terminal with `npx wrangler deploy` in this folder,
+# then add the key with `npx wrangler secret put STRIPE_SECRET_KEY`.
+# The dashboard route in README.md does the same without the terminal.
+name = "river-donate"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+
+routes = [
+  { pattern = "donate.yoso.one", custom_domain = true }
+]

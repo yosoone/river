@@ -35,6 +35,10 @@ Use `--date 2026-11-03` to put a different date on it. The book is set in Shippo
 
 The book opens with 'A quiet river' as its dedication to Yuko (`DEDICATION_TEXT` at the top of `book.py`).
 
+### Download page and donations
+
+The home page's book promo leads to a download page (`#book`) with three steps: an optional donation (amount box, paid through Stripe), an optional tick-box for the River newsletter, then the PDF and EPUB. Donations run through a small Cloudflare Worker; `donate/README.md` explains the setup and how to switch them on.
+
 ### Putting an edition on the home page
 
 The home page offers one edition for free download, under the list of texts. To replace it with a new one, publish a site update first so the beta number moves, then build with `--publish`:

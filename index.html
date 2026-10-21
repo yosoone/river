@@ -120,6 +120,20 @@ nav.pager .mid{color:var(--muted)}
 .steps p{margin:0;color:var(--ink-2)}
 .steps .act{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
 .steps .act small{font-size:13px;color:var(--muted)}
+.donate{margin-top:16px;display:grid;gap:8px}
+.donate>label{font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;min-width:76px;padding:0 16px;font:inherit;font-size:15px;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:999px;cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.amount-row{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.amount-row .yen{display:grid;place-items:center;min-width:40px;border:1px solid var(--rule);border-radius:3px;background:var(--paper);color:var(--muted);font-size:16px}
+.amount-row input{flex:1 1 120px;min-width:0;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:0 12px}
+.amount-row input:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:inherit;cursor:pointer;background:transparent}
+.btn.primary{background:var(--ink);color:var(--ground)}
+.flash{margin:0 0 20px;padding:14px 16px;border-left:3px solid var(--accent);background:var(--paper);color:var(--ink)}
+.flash.bad{border-left-color:#A33A2A}
 .steps .soon{font-size:14px;color:var(--muted);font-style:italic}
 .btn{display:inline-flex;align-items:center;min-height:44px;padding:0 22px;border:1px solid var(--ink);border-radius:3px;text-decoration:none;color:var(--ink);font-size:15px;letter-spacing:.06em}
 .btn:hover{background:var(--accent);border-color:var(--accent);color:var(--ground)}
@@ -210,7 +224,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <footer class="site">
     <span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.7</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.8</span></span>
   </footer>
 </div>
 
@@ -304,9 +318,10 @@ const LIST = {
 };
 
 const browserLang = () => { const n = (navigator.language || '').toLowerCase(); return n.startsWith('ja') ? 'ja' : n.startsWith('fr') ? 'fr' : 'en'; };
-// Donations: Yoso's Stripe Payment Link (customer chooses the amount). Until it
-// is set, the download page says donations will open soon.
-const DONATE_URL = '';
+// Donations: the Cloudflare Worker in donate/ turns the amount into a Stripe
+// Checkout page. Leave empty to show 'Donations will open here soon' instead.
+const DONATE_ENDPOINT = '';
+const DONATE_MIN = 100, DONATE_SUGGEST = [500, 1000, 3000];
 
 // Book wording. Japanese and French are drafts for Yoso to check.
 const BOOK_UI = {
@@ -316,7 +331,8 @@ const BOOK_UI = {
         title:"Download River", intro:"River is free. Before you download, you can support the writing or join the mailing list. Both are optional.",
         s1:"Support River", opt:"optional",
         s1p:"If the texts mean something to you, you can give what you like through Stripe. Any amount helps, and nothing at all is fine too.",
-        donate:"Make a donation", donateNote:"Opens Stripe in a new tab.", donateSoon:"Donations will open here soon.",
+        donate:"Donate", amount:"Amount in yen", other:"or type any amount", donateNote:"Opens Stripe’s secure checkout in a new tab. Minimum ¥100.", donateSoon:"Donations will open here soon.",
+        dMin:"Enter an amount of ¥100 or more, or leave it empty to skip.", dThanks:"Thank you for supporting River. Your book is below.", dError:"The donation didn’t go through and nothing was charged. Please try again.",
         s2:"New texts by email", tick:"Send me new River texts by email", email:"Email address",
         s2note:"Sent through Buttondown. You’ll get an email to confirm; unsubscribe any time.",
         s3:"Download", pdf:"PDF", pdfNote:"A5, to read or print", epub:"EPUB", epubNote:"for phones and e-readers",
@@ -328,7 +344,8 @@ const BOOK_UI = {
         title:"River をダウンロード", intro:"River は無料です。ダウンロードの前に、執筆を支援したり、メーリングリストに登録したりできます。どちらも任意です。",
         s1:"River を支援する", opt:"任意",
         s1p:"言葉が心に届いたなら、Stripe を通じてお好きな金額をお寄せいただけます。どんな金額でも励みになります。もちろん、なしでも構いません。",
-        donate:"寄付する", donateNote:"Stripe が新しいタブで開きます。", donateSoon:"寄付はまもなくここから受け付けます。",
+        donate:"寄付する", amount:"金額（円）", other:"または金額を自由に入力", donateNote:"Stripe の安全な決済画面が新しいタブで開きます。最低 ¥100。", donateSoon:"寄付はまもなくここから受け付けます。",
+        dMin:"¥100 以上の金額を入力してください。寄付しない場合は空欄のままで構いません。", dThanks:"River へのご支援をありがとうございます。本は下からダウンロードできます。", dError:"寄付が完了しませんでした。請求は発生していません。もう一度お試しください。",
         s2:"新しい言葉をメールで", tick:"River の新しい言葉をメールで受け取る", email:"メールアドレス",
         s2note:"配信は Buttondown を通じて行います。確認メールが届きます。いつでも解除できます。",
         s3:"ダウンロード", pdf:"PDF", pdfNote:"A5・閲覧／印刷用", epub:"EPUB", epubNote:"スマートフォン・電子書籍用",
@@ -340,7 +357,8 @@ const BOOK_UI = {
         title:"Télécharger River", intro:"River est gratuit. Avant de le télécharger, vous pouvez soutenir l’écriture ou vous inscrire à la liste de diffusion. Les deux sont facultatifs.",
         s1:"Soutenir River", opt:"facultatif",
         s1p:"Si ces textes comptent pour vous, vous pouvez donner ce que vous voulez via Stripe. Tout montant aide, et rien du tout convient aussi.",
-        donate:"Faire un don", donateNote:"Ouvre Stripe dans un nouvel onglet.", donateSoon:"Les dons seront bientôt possibles ici.",
+        donate:"Faire un don", amount:"Montant en yens", other:"ou saisissez un montant libre", donateNote:"Ouvre le paiement sécurisé Stripe dans un nouvel onglet. Minimum 100 ¥.", donateSoon:"Les dons seront bientôt possibles ici.",
+        dMin:"Saisissez un montant d’au moins 100 ¥, ou laissez vide pour passer.", dThanks:"Merci de soutenir River. Votre livre est ci-dessous.", dError:"Le don n’a pas abouti et rien n’a été prélevé. Veuillez réessayer.",
         s2:"Les nouveaux textes par e-mail", tick:"M’envoyer les nouveaux textes de River par e-mail", email:"Adresse e-mail",
         s2note:"Envoi par Buttondown. Un e-mail de confirmation vous sera envoyé ; désabonnement à tout moment.",
         s3:"Télécharger", pdf:"PDF", pdfNote:"A5, à lire ou imprimer", epub:"EPUB", epubNote:"pour téléphones et liseuses",
@@ -366,6 +384,13 @@ function bookHTML(){
     '<div class="get"><a class="primary" href="#book">' + esc(u.get) + '<small>' + esc(u.getNote) + '</small></a></div>' +
     '</div></section>';
 }
+// After Stripe, the Worker sends readers back with ?donation=thanks|error|invalid.
+let donationMsg = '';
+try {
+  const q = new URLSearchParams(location.search).get('donation');
+  if (q) { donationMsg = q === 'thanks' ? 'thanks' : 'error'; history.replaceState(null, '', location.pathname + location.hash); }
+} catch(e) {}
+function yen(n){ return '¥' + Number(n).toLocaleString('en'); }
 // Download page: (1) optional donation, (2) optional newsletter, (3) download.
 function bookPage(){
   const b = window.RIVER_BOOK, u = BOOK_UI[lang];
@@ -378,10 +403,19 @@ function bookPage(){
     '<section class="bookpage" aria-labelledby="bp-h">' +
     '<div class="bp-cover">' + bookCover(b, u, '') + '<p class="meta">' + b.texts + ' ' + esc(u.n) + ' · Beta ' + esc(b.version) + '<br>' + esc(bookWhen(b, u)) + '</p></div>' +
     '<div class="bp-steps"><h1 id="bp-h">' + esc(u.title) + '</h1><p class="bp-intro">' + esc(u.intro) + (u.only ? (lang === 'ja' ? '' : ' ') + esc(u.only) : '') + '</p>' +
+    (donationMsg ? '<p class="flash' + (donationMsg === 'thanks' ? '' : ' bad') + '" role="status">' + esc(donationMsg === 'thanks' ? u.dThanks : u.dError) + '</p>' : '') +
     '<ol class="steps">' +
     '<li><h2>' + esc(u.s1) + opt + '</h2><p>' + esc(u.s1p) + '</p>' +
-      (DONATE_URL
-        ? '<p class="act"><a class="btn" href="' + DONATE_URL + '" target="_blank" rel="noopener">' + esc(u.donate) + '</a><small>' + esc(u.donateNote) + '</small></p>'
+      (DONATE_ENDPOINT
+        ? '<form id="bp-donate" class="donate" action="' + DONATE_ENDPOINT + '" method="post" target="_blank" novalidate>' +
+          '<div class="chips" role="group" aria-label="' + esc(u.amount) + '">' +
+          DONATE_SUGGEST.map(n => '<button type="button" class="chip" data-yen="' + n + '">' + yen(n) + '</button>').join('') + '</div>' +
+          '<label for="bp-amount">' + esc(u.other) + '</label>' +
+          '<div class="amount-row"><span class="yen" aria-hidden="true">¥</span>' +
+          '<input id="bp-amount" name="amount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1,000" aria-label="' + esc(u.amount) + '">' +
+          '<button type="submit" class="btn primary" id="bp-donate-btn">' + esc(u.donate) + '</button></div>' +
+          '<input type="hidden" name="lang" value="' + lang + '">' +
+          '<p class="note">' + esc(u.donateNote) + '</p><p class="err" id="bp-derr" role="alert"></p></form>'
         : '<p class="act soon">' + esc(u.donateSoon) + '</p>') + '</li>' +
     '<li><h2>' + esc(u.s2) + opt + '</h2>' +
       '<form id="bp-list" action="https://buttondown.com/api/emails/embed-subscribe/yoso" method="post" target="_blank" novalidate>' +
@@ -400,6 +434,26 @@ function bookPage(){
         email = document.getElementById('bp-email'), err = document.getElementById('bp-err'),
         form = document.getElementById('bp-list'), done = document.getElementById('bp-done');
   let subscribed = false;
+  const dForm = document.getElementById('bp-donate');
+  if (dForm) {
+    const amt = document.getElementById('bp-amount'), dBtn = document.getElementById('bp-donate-btn'), dErr = document.getElementById('bp-derr');
+    const chips = dForm.querySelectorAll('.chip');
+    const sync = () => {
+      const n = parseInt(amt.value.replace(/[^\d]/g, ''), 10);
+      dBtn.textContent = n ? u.donate + ' ' + yen(n) : u.donate;
+      chips.forEach(c => c.setAttribute('aria-pressed', String(Number(c.dataset.yen) === n)));
+      dErr.textContent = '';
+    };
+    chips.forEach(c => c.addEventListener('click', () => { amt.value = Number(c.dataset.yen).toLocaleString('en'); sync(); }));
+    amt.addEventListener('input', sync);
+    sync();
+    dForm.addEventListener('submit', e => {
+      const n = parseInt(amt.value.replace(/[^\d]/g, ''), 10);
+      if (!n || n < DONATE_MIN) { e.preventDefault(); dErr.textContent = u.dMin; amt.focus(); return; }
+      amt.value = String(n);              // send plain digits
+      setTimeout(() => { amt.value = n.toLocaleString('en'); }, 0);
+    });
+  }
   tick.addEventListener('change', () => { wrap.hidden = !tick.checked; err.textContent = ''; if (tick.checked) email.focus(); });
   form.addEventListener('submit', e => e.preventDefault()); // Enter in the email field does not send on its own
   view.querySelectorAll('[data-dl]').forEach(a => a.addEventListener('click', e => {

@@ -38,11 +38,12 @@ article.piece:focus,h1[tabindex="-1"]:focus{outline:none}
 header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:32px 24px}
 .mark{font-family:var(--display);font-size:26px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
 .mark span{color:var(--muted);margin-left:.35em}
-.head-right{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.head-right{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
 .byline{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
-.lang{display:inline-flex;border:1px solid var(--rule);border-radius:999px;padding:3px}
-.lang button{font:inherit;font-size:13px;letter-spacing:.06em;min-height:36px;min-width:44px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
-.lang button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.lang{display:inline-flex;align-items:center;gap:2px;padding-left:18px;border-left:1px solid var(--rule)}
+.lang button{font:inherit;font-size:14px;letter-spacing:.06em;min-height:44px;min-width:40px;padding:0 8px;border:0;background:transparent;color:var(--muted);cursor:pointer;text-decoration:none;text-underline-offset:6px}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px}
 
 /* Home */
 .intro{padding-block:56px 48px;border-bottom:1px solid var(--rule)}
@@ -55,8 +56,9 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .index .t{min-width:0;font-family:var(--display);font-size:20px;line-height:1.4}
 .index a:hover .t{color:var(--accent)}
 
-.about-link{font-size:14px;letter-spacing:.06em;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
-.about-link[aria-current="page"]{text-decoration:underline;text-underline-offset:6px}
+.about-link{font-size:14px;letter-spacing:.06em;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;color:var(--muted)}
+.about-link:hover{color:var(--ink)}
+.about-link[aria-current="page"]{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px}
 
 /* About */
 .about{display:flex;flex-wrap:wrap;gap:48px 64px;align-items:center;padding-block:56px 88px;border-top:1px solid var(--rule)}
@@ -187,7 +189,6 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
     <a class="mark" href="#home">River<span lang="ja">川</span></a>
     <div class="head-right">
       <a class="about-link" id="about-link" href="#about">About</a>
-      <span class="byline" id="byline">Yoso · Miyazaki</span>
       <div class="lang" role="group" aria-label="Language">
         <button type="button" id="btn-en" lang="en" aria-pressed="true">EN</button>
         <button type="button" id="btn-ja" lang="ja" aria-pressed="false">日本語</button>
@@ -225,7 +226,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.19</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.20</span></span>
   </footer>
 </div>
 
@@ -497,7 +498,6 @@ function verseHTML(v){
 function chrome(){
   const u = UI[lang];
   document.documentElement.lang = lang;
-  document.getElementById('byline').textContent = u.byline;
   document.getElementById('about-link').textContent = u.about;
   // Footer: keep 'Yoso' as the link back to the hub in every language.
   (function(){

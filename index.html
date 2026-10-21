@@ -46,10 +46,11 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .lang button[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px}
 
 /* Home */
-.intro{padding-block:56px 48px;border-bottom:1px solid var(--rule)}
-.intro h1{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(56px,11vw,128px);line-height:1;letter-spacing:.02em;text-wrap:balance}
+.intro{padding-block:40px 44px;border-bottom:1px solid var(--rule)}
+.intro h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .intro h1 .kanji{display:inline-block;margin-left:.15em;color:var(--muted)}
-.intro p{margin:20px 0 0;max-width:30em;color:var(--ink-2);font-size:17px}
+.intro p{margin:0;max-width:22em;font-family:var(--display);font-size:clamp(24px,3.4vw,34px);line-height:1.5;color:var(--ink);text-wrap:balance}
+.intro p:lang(ja){font-size:clamp(20px,2.8vw,28px);line-height:1.8}
 .index{list-style:none;margin:0;padding:0 0 64px;columns:2 320px;column-gap:64px}
 .index li{break-inside:avoid;border-bottom:1px solid var(--rule)}
 .index a{display:flex;gap:20px;align-items:baseline;padding:18px 0;text-decoration:none;color:var(--ink);min-height:44px}
@@ -226,7 +227,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.20</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.21</span></span>
   </footer>
 </div>
 
@@ -327,7 +328,7 @@ const DONATE_MIN = 100, DONATE_SUGGEST = [500, 1000, 3000];
 
 // Book wording. Japanese and French are drafts for Yoso to check.
 const BOOK_UI = {
-  en: { k:"New · free download", h:"River, the book", alt:"Cover of River 川, short texts by Yoso",
+  en: { k:"New · free download", h:"The book", alt:"Cover of River 川, short texts by Yoso",
         p:"The short texts gathered as a small book, opening with a dedication. Read it on a phone or e-reader, or print it.",
         n:"texts", get:"Download the book", getNote:"Free · PDF and EPUB", locale:"en-GB", only:"",
         title:"Download River", intro:"River is free. Before you download, you can support the writing or join the mailing list. Both are optional.",
@@ -340,7 +341,7 @@ const BOOK_UI = {
         s3:"Download", pdf:"PDF", pdfNote:"A5, to read or print", epub:"EPUB", epubNote:"for phones and e-readers",
         need:"Enter your email address, or untick the box.", lDonate:"Donate · optional", optDonate:"Donate", getSmall:"Download the book", getFmt:"PDF · EPUB", otherShort:"Other", lList:"Newsletter · optional", lDl:"Download", tickShort:"Email me new texts", pdfShort:"PDF", epubShort:"EPUB", done:"Thank you. Your download has started.",
         doneList:"Check your inbox to confirm the mailing list.", back:"← Back to River" },
-  ja: { k:"新刊・無料ダウンロード", h:"本になった River", alt:"『River 川』Yoso 短い言葉 の表紙",
+  ja: { k:"新刊・無料ダウンロード", h:"本", alt:"『River 川』Yoso 短い言葉 の表紙",
         p:"短い言葉を、献辞から始まる一冊の小さな本にまとめました。スマートフォンや電子書籍リーダーで読むことも、印刷することもできます。",
         n:"篇", get:"本をダウンロード", getNote:"無料・PDF と EPUB", locale:"ja-JP", only:"本は現在、英語版のみです。",
         title:"River をダウンロード", intro:"River は無料です。ダウンロードの前に、執筆を支援したり、メーリングリストに登録したりできます。どちらも任意です。",
@@ -353,7 +354,7 @@ const BOOK_UI = {
         s3:"ダウンロード", pdf:"PDF", pdfNote:"A5・閲覧／印刷用", epub:"EPUB", epubNote:"スマートフォン・電子書籍用",
         need:"メールアドレスを入力するか、チェックを外してください。", lDonate:"寄付・任意", optDonate:"寄付する", getSmall:"本をダウンロード", getFmt:"PDF・EPUB", otherShort:"その他", lList:"ニュースレター・任意", lDl:"ダウンロード", tickShort:"新しい言葉をメールで受け取る", pdfShort:"PDF", epubShort:"EPUB", done:"ありがとうございます。ダウンロードが始まりました。",
         doneList:"メーリングリストの確認メールをご確認ください。", back:"← River に戻る" },
-  fr: { k:"Nouveau · téléchargement gratuit", h:"River, le livre", alt:"Couverture de River 川, textes courts de Yoso",
+  fr: { k:"Nouveau · téléchargement gratuit", h:"Le livre", alt:"Couverture de River 川, textes courts de Yoso",
         p:"Les textes courts réunis en un petit livre, qui s’ouvre sur une dédicace. À lire sur un téléphone ou une liseuse, ou à imprimer.",
         n:"textes", get:"Télécharger le livre", getNote:"Gratuit · PDF et EPUB", locale:"fr-FR", only:"Le livre n’existe pour l’instant qu’en anglais.",
         title:"Télécharger River", intro:"River est gratuit. Avant de le télécharger, vous pouvez soutenir l’écriture ou vous inscrire à la liste de diffusion. Les deux sont facultatifs.",

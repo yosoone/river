@@ -17,14 +17,14 @@ img{max-width:100%}
 <style>
 /* Layout: one quiet column; the home page is a running index like a river's course, each text sits alone on its own page */
 :root{
-  --ground:#EEEDE8; --paper:#F6F5F1; --ink:#1C1C1A; --ink-2:#3A3A36; --muted:#5A5A55; --rule:#D3D1CA; --accent:#2F3E5C;
+  --ground:#EEEDE8; --paper:#F6F5F1; --ink:#1C1C1A; --ink-2:#3A3A36; --muted:#5A5A55; --rule:#D3D1CA; --accent:#2F3E5C; --gold:#E1BA4B; --gold-ink:#9C761C;
   --display:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
   --body:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; color-scheme:dark}}
+  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; --gold:#E1BA4B; --gold-ink:#E1BA4B; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; color-scheme:dark}
+  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; --gold:#E1BA4B; --gold-ink:#E1BA4B; color-scheme:dark}
 body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7}
 :lang(ja){line-break:strict;word-break:normal}
 a{color:var(--accent)}
@@ -56,8 +56,14 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .index{list-style:none;margin:0;padding:0 0 64px;columns:2 320px;column-gap:64px}
 .index li{break-inside:avoid;border-bottom:1px solid var(--rule)}
 .index a{display:flex;gap:20px;align-items:baseline;padding:18px 0;text-decoration:none;color:var(--ink);min-height:44px}
-.index .t{min-width:0;font-family:var(--display);font-size:20px;line-height:1.4}
-.index a:hover .t{color:var(--accent)}
+.index .t{min-width:0;font-family:var(--display);font-size:20px;line-height:1.4;background:linear-gradient(var(--gold),var(--gold)) 0 100%/0 1px no-repeat;padding-bottom:2px;transition:color .35s ease,background-size .45s ease}
+.index a:hover .t,.index a:focus-visible .t{color:var(--gold-ink);background-size:100% 1px}
+/* The text just read: a soft gold glow that fades as you arrive back at the list */
+.index a.just-read{animation:read-glow 2.6s ease-out both}
+.index a.just-read .t{animation:read-gold 2.6s ease-out both}
+@keyframes read-glow{0%{background:linear-gradient(90deg,rgba(225,186,75,0),rgba(225,186,75,.22) 30%,rgba(225,186,75,0) 100%) -100% 0/200% 100% no-repeat}45%{background:linear-gradient(90deg,rgba(225,186,75,0),rgba(225,186,75,.22) 30%,rgba(225,186,75,0) 100%) 100% 0/200% 100% no-repeat}100%{background:linear-gradient(90deg,rgba(225,186,75,0),rgba(225,186,75,0) 30%,rgba(225,186,75,0) 100%) 100% 0/200% 100% no-repeat}}
+@keyframes read-gold{0%,55%{color:var(--gold-ink);background-size:100% 1px}100%{color:var(--ink);background-size:0 1px}}
+@media (prefers-reduced-motion:reduce){.index .t{transition:none}.index a.just-read,.index a.just-read .t{animation:none}.index a.just-read .t{color:var(--gold-ink)}}
 
 .about-link{font-size:14px;letter-spacing:.06em;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;color:var(--muted)}
 .about-link:hover{color:var(--ink)}
@@ -89,6 +95,9 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;padding-block:28px;border-top:1px solid var(--rule);font-size:15px}
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
 nav.pager .mid{color:var(--accent)}
+nav.pager a{transition:color .3s ease}
+nav.pager a:hover{color:var(--gold-ink)}
+@media (prefers-reduced-motion:reduce){nav.pager a{transition:none}}
 /* Book promo (top of the home page) */
 .book{display:flex;flex-wrap:wrap;gap:36px 64px;align-items:center;justify-content:center;padding-block:40px 56px;border-bottom:1px solid var(--rule)}
 .book .cover{position:relative;left:-3px;flex:0 0 auto;width:min(260px,52vw);margin:0 auto;line-height:0}
@@ -229,7 +238,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.22</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.23</span></span>
   </footer>
 </div>
 
@@ -612,6 +621,7 @@ function render(){
   } else { nav = null; home(); }
 }
 
+let lastRead = null;  // the text shown before returning to the list
 let backTo = null;   // text number to land on in the list after 'All texts'
 let firstRoute = true;
 document.addEventListener('click', e => {
@@ -619,8 +629,15 @@ document.addEventListener('click', e => {
   if (a) backTo = Number(a.dataset.from);
 });
 function route(){
+  const prevRead = lastRead;
   render();
   const h = location.hash.replace('#','');
+  const onHome = (h === '' || h === 'home');
+  const mt = /^t(\d+)$/.exec(h); lastRead = mt ? Number(mt[1]) : null;
+  if (onHome && prevRead !== null) {
+    const r = view.querySelector('.index a[href="#t' + prevRead + '"]');
+    if (r) r.classList.add('just-read');
+  }
   const link = (backTo !== null && (h === '' || h === 'home')) ? view.querySelector('.index a[href="#t' + backTo + '"]') : null;
   backTo = null;
   if (link) {

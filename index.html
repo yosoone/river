@@ -34,7 +34,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 .family-mark{display:block;width:48px;margin:24px auto 0;line-height:0}
 .family-mark img{display:block;width:48px;height:48px}
 article.piece:focus,h1[tabindex="-1"]:focus{outline:none}
-.family-mark:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+/* Text links show keyboard focus by turning gold, not with an outline box */
+.family-mark:focus-visible,.mark:focus-visible,.about-link:focus-visible,.lang button:focus-visible,
+.index a:focus-visible,nav.pager a:focus-visible,.getbook a:focus-visible,footer.site a:focus-visible,.bp .back a:focus-visible{outline:none}
+.mark:focus-visible,.about-link:focus-visible,.lang button:focus-visible,nav.pager a:focus-visible,
+.getbook a:focus-visible,footer.site a:focus-visible,.bp .back a:focus-visible{color:var(--gold-ink)}
+.family-mark:focus-visible img{filter:drop-shadow(0 0 6px rgba(225,186,75,.7))}
 header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:32px 24px}
 .mark{font-family:var(--display);font-size:26px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
 .mark span{color:var(--muted);margin-left:.35em}
@@ -239,7 +244,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.25</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.26</span></span>
   </footer>
 </div>
 

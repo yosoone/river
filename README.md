@@ -31,7 +31,20 @@ It reads the texts from `TEXTS` in `index.html` (English only for now), the Abou
 
 Use `--date 2026-11-03` to put a different date on it. The book is set in Shippori Mincho, the site's own typeface, kept small in `book/fonts` (see `book/make_fonts.py`). It needs WeasyPrint and Pillow: `pip3 install weasyprint pillow`.
 
-`editions/` is not committed, so the books are not public on the site. Keep the copies you want on the backup drive.
+`editions/` is not committed. Keep the copies you want on the backup drive.
+
+The book opens with 'A quiet river' as its dedication to Yuko (`DEDICATION_TEXT` at the top of `book.py`).
+
+### Putting an edition on the home page
+
+The home page offers one edition for free download, under the list of texts. To replace it with a new one, publish a site update first so the beta number moves, then build with `--publish`:
+
+```
+python3 release.py --no-commit "New book edition"
+python3 book.py --publish
+```
+
+`--publish` copies the PDF and EPUB into `books/` (removing the previous edition there) and writes `assets/book.js`, which the home page reads for the links, sizes, beta number and date. Then commit and push as usual. The download wording is in `BOOK_UI` in `index.html`; the Japanese and French are drafts.
 
 ## Publishing an update (beta number)
 

@@ -1,4 +1,12 @@
-# River donations (Stripe through Cloudflare)
+# Yoso donations (Stripe through Cloudflare)
+
+`donate.yoso.one` is a small Cloudflare Worker (`worker.js`, deployed as `river-donate`). It does two things:
+
+- **`/`** shows the general donation page: what the donation is for (wherever it's needed, River, Shinsei, Yosokuro, On, The Vault), suggested amounts and an amount box, plus the mailing list. The projects are `PROJECTS` in `worker.js`.
+- **`/checkout`** takes the amount and project from any of Yoso's sites and opens Stripe Checkout in yen. A form that sends no `for` is treated as River's.
+
+The rest of this note covers River's own download page, which posts here too.
+
 
 The download page (`river.yoso.one/#book`) has an amount box. When a reader presses **Donate**, the amount goes to a small Cloudflare Worker at `donate.yoso.one`. The Worker (`worker.js`) asks Stripe for a checkout page at exactly that amount, in yen, and sends the reader there in a new tab. After paying, Stripe brings them back to the download page with a thank-you. Nothing about the reader is stored on the site.
 
@@ -19,7 +27,7 @@ A restricted key can only create checkout pages, so even if it leaked it could n
 ### 2. Create the Worker in Cloudflare
 
 1. In the Cloudflare dashboard, go to **Workers & Pages › Create › Create Worker**.
-2. Name it `river-donate` and choose **Deploy**.
+2. Name it `river-donate` and choose **Deploy**. (Already done; to update, open the Worker, choose **Edit code**, paste in `worker.js` and **Deploy**.)
 3. Choose **Edit code**, replace everything with the contents of `worker.js`, then **Deploy**.
 4. In the Worker's **Settings › Variables and Secrets**, choose **Add**, type **Secret**, name `STRIPE_SECRET_KEY`, and paste the key from step 1. Save and deploy.
 5. In **Settings › Domains & Routes**, choose **Add › Custom domain** and enter `donate.yoso.one`.

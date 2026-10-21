@@ -38,7 +38,8 @@ TITLE = "River"
 KANJI = "川"
 AUTHOR = "Yoso"
 SUBTITLE = "Short texts"
-SIGN = "— Yoso"
+SIGN = "— Yoso"      # alt text for the signature image
+SIGNATURE = HERE / "images" / "signature.png"   # the red 川 seal and ink stroke
 SITE = "river.yoso.one"
 # The book opens with this text as its dedication (it is left out of the
 # sequence of texts). Set DEDICATION_TEXT = None for no dedication page.
@@ -155,7 +156,8 @@ h2 { margin: 0 0 9mm; font-weight: 400; font-size: 15pt; letter-spacing: .02em; 
 .verse.longer { font-size: 11.5pt; }
 .verse .stanza { margin: 0; }
 .verse .stanza + .stanza { margin-top: 1.4em; }
-.sign { margin: 11mm 0 0; font-size: 8.5pt; letter-spacing: .12em; color: #5A5A55; }
+.sign { margin: 9mm 0 0; line-height: 0; }
+.sign img { height: 17mm; width: auto; }
 
 .dedication { page: front; height: 164mm; display: flex; flex-direction: column;
   justify-content: center; text-align: center; }
@@ -200,7 +202,7 @@ def build_pdf(texts, ded, about, version, d, path):
         parts.append(
             f'<section class="piece" id="t{n}"><h3>{escape(t)}</h3>'
             f'<div class="verse {size_class(v)}">{verse_html(v)}</div>'
-            f'<p class="sign">{escape(SIGN)}</p></section>'
+            f'<p class="sign"><img src="images/signature.png" alt="{escape(SIGN)}"/></p></section>'
         )
     parts.append(f'<section class="end"><img src="images/yoso-mark.png" alt=""/>'
                  f'<p>{SITE}</p></section>')
@@ -251,7 +253,8 @@ h2 { font-size: 1.3em; margin: 2em 0 1.5em; }
   .dedication { margin-top: 0; min-height: 88vh; display: flex; flex-direction: column; justify-content: center; } }
 .dedication .verse { font-size: 1.05em; line-height: 1.85; }
 .dedication .to { margin: 2.5em 0 0; font-size: 0.75em; letter-spacing: 0.14em; opacity: 0.75; }
-.sign { margin: 2.5em 0 0; font-size: 0.75em; letter-spacing: 0.12em; opacity: 0.75; }
+.sign { margin: 2em 0 0; line-height: 0; }
+.sign img { height: 4.5em; width: auto; }
 """
 
 
@@ -334,7 +337,7 @@ def build_epub(texts, ded, about, version, d, path):
     for n, t, v in texts:
         body = (f'<section class="piece" epub:type="chapter"><h3>{escape(t)}</h3>'
                 f'<div class="verse {size_class(v)}">{verse_html(v)}</div>'
-                f'<p class="sign">{escape(SIGN)}</p></section>')
+                f'<p class="sign"><img src="signature.png" alt="{escape(SIGN)}"/></p></section>')
         pages.append((f"t{n}.xhtml", t, xhtml(t, body), True))
 
     toc_items = "".join(f'<li><a href="{f}">{escape(t)}</a></li>' for f, t, _, in_toc in pages if in_toc)
@@ -350,6 +353,7 @@ def build_epub(texts, ded, about, version, d, path):
         '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
         '<item id="css" href="style.css" media-type="text/css"/>',
         '<item id="cover-image" href="cover.jpg" media-type="image/jpeg" properties="cover-image"/>',
+        '<item id="signature" href="signature.png" media-type="image/png"/>',
         '<item id="font-r" href="fonts/ShipporiMincho-Regular-Latin.ttf" media-type="font/ttf"/>',
         '<item id="font-b" href="fonts/ShipporiMincho-SemiBold-Latin.ttf" media-type="font/ttf"/>',
     ]
@@ -397,6 +401,7 @@ def build_epub(texts, ded, about, version, d, path):
         z.writestr("OEBPS/nav.xhtml", nav, compress_type=zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/style.css", EPUB_CSS, compress_type=zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/cover.jpg", make_cover(version, d), compress_type=zipfile.ZIP_STORED)
+        z.write(SIGNATURE, "OEBPS/signature.png", compress_type=zipfile.ZIP_STORED)
         for name in ("ShipporiMincho-Regular-Latin.ttf", "ShipporiMincho-SemiBold-Latin.ttf"):
             z.write(FONTS / name, f"OEBPS/fonts/{name}", compress_type=zipfile.ZIP_DEFLATED)
         for f, _, x, _ in pages:

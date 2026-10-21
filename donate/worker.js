@@ -23,6 +23,7 @@ const LOCALES = ['en', 'ja', 'fr'];
 // where readers land afterwards. A form that sends no 'for' is River's.
 const PROJECTS = {
   yoso:     { label: 'Wherever it’s needed', name: 'Donation to Yoso', back: `${HOME}/` },
+  dojo:     { label: 'The creation of the dojo', name: 'Donation to the dojo', back: `${HOME}/` },
   river:    { label: 'River 川 · short texts', name: 'Donation to River 川', back: 'https://river.yoso.one/#book' },
   shinsei:  { label: 'Shinsei · paintings and scrolls', name: 'Donation to Shinsei', back: `${HOME}/` },
   yosokuro: { label: 'Yosokuro · photographs of Japan', name: 'Donation to Yosokuro', back: `${HOME}/` },

@@ -434,6 +434,13 @@ def publish(stem, version, d, count):
     for old in PUBLIC.glob("river-beta-*"):
         old.unlink()
     info = {"version": version, "date": d.isoformat(), "texts": count}
+    # The cover, smaller, for the home page's book section.
+    from io import BytesIO
+    from PIL import Image
+    cover = Image.open(BytesIO(make_cover(version, d))).resize((640, 1024), Image.LANCZOS)
+    cover_name = f"{stem}-cover.jpg"
+    cover.save(PUBLIC / cover_name, "JPEG", quality=86, optimize=True, progressive=True)
+    info["cover"] = f"books/{cover_name}"
     for ext in ("pdf", "epub"):
         shutil.copy2(OUT / f"{stem}.{ext}", PUBLIC / f"{stem}.{ext}")
         size = (PUBLIC / f"{stem}.{ext}").stat().st_size

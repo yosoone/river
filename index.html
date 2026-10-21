@@ -33,6 +33,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 /* Family mark: centred at the top of every Yoso site, linking to the hub */
 .family-mark{display:block;width:48px;margin:24px auto 0;line-height:0}
 .family-mark img{display:block;width:48px;height:48px}
+article.piece:focus,h1[tabindex="-1"]:focus{outline:none}
 .family-mark:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:32px 24px}
 .mark{font-family:var(--display);font-size:26px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
@@ -82,7 +83,7 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 @media (hover:none) and (pointer:coarse){.hint{display:block}}
 nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;padding-block:28px;border-top:1px solid var(--rule);font-size:15px}
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
-nav.pager .mid{color:var(--muted)}
+nav.pager .mid{color:var(--accent)}
 /* Book promo (top of the home page) */
 .book{display:flex;flex-wrap:wrap;gap:36px 64px;align-items:center;justify-content:center;padding-block:56px;border-bottom:1px solid var(--rule)}
 .book .cover{position:relative;left:-3px;flex:0 0 auto;width:min(260px,52vw);margin:0 auto;line-height:0}
@@ -224,7 +225,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.17</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.18</span></span>
   </footer>
 </div>
 
@@ -563,7 +564,7 @@ function piece(i){
     '<nav class="pager" aria-label="More texts">' +
     '<p class="hint">' + UI[lang].hint + '</p>' +
     '<a href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
-    '<a class="mid" href="#home">' + UI[lang].all + '</a>' +
+    '<a class="mid" href="#home" data-from="' + x.n + '">↑ ' + UI[lang].all + '</a>' +
     '<a href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +
     '</nav>' +
     (window.RIVER_BOOK ? '<p class="getbook"><a href="#book">' + esc(BOOK_UI[lang].getSmall) + '<span>' + esc(BOOK_UI[lang].getFmt) + '</span></a></p>' : '');
@@ -608,7 +609,38 @@ function render(){
   } else { nav = null; home(); }
 }
 
-function route(){ render(); window.scrollTo(0,0); }
+let backTo = null;   // text number to land on in the list after 'All texts'
+let firstRoute = true;
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[data-from]');
+  if (a) backTo = Number(a.dataset.from);
+});
+function route(){
+  render();
+  const h = location.hash.replace('#','');
+  const link = (backTo !== null && (h === '' || h === 'home')) ? view.querySelector('.index a[href="#t' + backTo + '"]') : null;
+  backTo = null;
+  if (link) {
+    link.scrollIntoView({block:'center'});
+    link.focus({preventScroll:true});
+  } else {
+    window.scrollTo(0,0);
+    // Move focus to the new page so keyboard and screen-reader users start there.
+    if (!firstRoute) {
+      const t = view.querySelector('article.piece, h1');
+      if (t) { t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); }
+    }
+  }
+  firstRoute = false;
+}
+
+// Desktop: left and right arrow keys move between texts
+document.addEventListener('keydown', e => {
+  if (!nav || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); location.hash = nav.next; }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); location.hash = nav.prev; }
+});
 
 function setLang(l){
   lang = l;

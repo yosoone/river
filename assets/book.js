@@ -4,7 +4,7 @@ window.RIVER_BOOK = {
   "version": "0.28",
   "date": "2026-10-21",
   "texts": 24,
-  "cover": "books/river-beta-0.28-2026-10-21-cover.jpg",
+  "cover": "books/river-beta-0.28-2026-10-21-cover-awakening.jpg",
   "pdf": {
     "href": "books/river-beta-0.28-2026-10-21.pdf",
     "kb": 48

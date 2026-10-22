@@ -17,14 +17,14 @@ img{max-width:100%}
 <style>
 /* Layout: one quiet column; the home page is a running index like a river's course, each text sits alone on its own page */
 :root{
-  --ground:#EEEDE8; --paper:#F6F5F1; --ink:#1C1C1A; --ink-2:#3A3A36; --muted:#5A5A55; --rule:#D3D1CA; --accent:#2F3E5C; --gold:#E1BA4B; --gold-ink:#9C761C;
+  --ground:#EEEDE8; --paper:#F6F5F1; --ink:#1C1C1A; --ink-2:#3A3A36; --muted:#5A5A55; --rule:#D3D1CA; --accent:#2F3E5C; --gold:#E1BA4B; --gold-ink:#9C761C; --btn:#4A4944; --btn-ink:#F6F5F1; --glow:rgba(225,186,75,.28);
   --display:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
   --body:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; --gold:#E1BA4B; --gold-ink:#E1BA4B; color-scheme:dark}}
+  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; --gold:#E1BA4B; --gold-ink:#E1BA4B; --btn:#C9C8C1; --btn-ink:#181816; --glow:rgba(225,186,75,.22); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; --gold:#E1BA4B; --gold-ink:#E1BA4B; color-scheme:dark}
+  --ground:#181816; --paper:#20201D; --ink:#ECEBE5; --ink-2:#C9C8C1; --muted:#9A998F; --rule:#34332F; --accent:#A9B8D6; --gold:#E1BA4B; --gold-ink:#E1BA4B; --btn:#C9C8C1; --btn-ink:#181816; --glow:rgba(225,186,75,.22); color-scheme:dark}
 body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7}
 :lang(ja){line-break:strict;word-break:normal}
 a{color:var(--accent)}
@@ -79,7 +79,8 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 
 /* About */
 .about{display:flex;flex-wrap:wrap;gap:48px 64px;align-items:center;padding-block:56px 88px;border-top:1px solid var(--rule)}
-.about figure{flex:1 1 300px;max-width:440px;margin:0}
+.about figure{flex:0 0 auto;width:min(333px,100%);margin:0 auto}
+@media (min-width:720px){.about figure{margin:0}}
 .about figcaption{margin-top:12px;font-size:13px;letter-spacing:.04em;color:var(--muted)}
 .about img{display:block;width:100%;max-width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:3px}
 .about .copy{flex:1 1 360px;min-width:0;max-width:34em}
@@ -110,7 +111,11 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 .piece{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hint{display:none;width:100%;margin:0;text-align:center;font-size:12px;letter-spacing:.14em;color:var(--muted)}
 @media (hover:none) and (pointer:coarse){.hint{display:block}}
-nav.pager{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;padding-block:28px;border-top:1px solid var(--rule);font-size:15px}
+nav.pager{display:grid;grid-template-columns:1fr auto 1fr;gap:16px 32px;align-items:center;padding-block:28px;border-top:1px solid var(--rule);font-size:15px}
+nav.pager .hint{grid-column:1/-1}
+nav.pager .prev{justify-self:start}
+nav.pager .next{justify-self:end;text-align:right}
+nav.pager .mid{justify-self:center;text-align:center}
 nav.pager a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center;max-width:100%}
 nav.pager .mid{color:var(--accent)}
 nav.pager a{transition:color .3s ease}
@@ -126,12 +131,13 @@ nav.pager a:hover{color:var(--gold-ink)}
 .book p{margin:0;color:var(--ink-2);font-size:17px}
 .book .meta{margin-top:14px;font-size:13px;letter-spacing:.06em;color:var(--muted)}
 .book .get{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
-.book .get a{display:inline-flex;flex-direction:column;justify-content:center;min-height:52px;padding:8px 22px;border:1px solid var(--ink);border-radius:3px;text-decoration:none;color:var(--ink);font-size:15px;letter-spacing:.06em;line-height:1.35}
-.book .get a.primary{background:var(--ink);color:var(--ground)}
+.book .get a{display:inline-flex;flex-direction:column;justify-content:center;min-height:52px;padding:8px 22px;border:1px solid var(--rule);border-radius:8px;text-decoration:none;color:var(--ink);font-size:15px;letter-spacing:.06em;line-height:1.35}
+.book .get a.primary{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
 .book .get a small{font-size:12px;letter-spacing:.04em;color:var(--muted)}
-.book .get a.primary small{color:var(--ground);opacity:.75}
-.book .get a:hover{background:var(--accent);border-color:var(--accent);color:var(--ground)}
-.book .get a:hover small{color:var(--ground)}
+.book .get a.primary small{color:var(--btn-ink);opacity:.75}
+.book .get a:hover{border-color:var(--gold-ink);color:var(--ink)}
+.book .get a.primary:hover{background:var(--gold);border-color:var(--gold);color:#1C1C1A;box-shadow:0 0 0 4px var(--glow),0 6px 22px -6px var(--glow)}
+.book .get a.primary:hover small{color:#1C1C1A}
 @media (min-width:720px){.book .cover{margin:0}}
 @media (max-width:560px){.book{text-align:center}.book .copy{margin:0 auto}.book .get a{flex:1 1 140px}}
 /* Download page (#book) */
@@ -144,9 +150,9 @@ nav.pager a:hover{color:var(--gold-ink)}
 .bp h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .bp .meta{margin:26px 0 0;font-size:13px;letter-spacing:.06em;color:var(--muted)}
 .bp .grp{margin-top:40px}
-.bp .opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:36px}
-.bp .opt{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;font:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid var(--rule);border-radius:999px;cursor:pointer}
-.bp .opt:hover,.bp .opt[aria-expanded="true"],.bp .opt:has(input:checked){color:var(--ink);border-color:var(--ink)}
+.bp .opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:40px}
+.bp .opt{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;font:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid var(--rule);border-radius:8px;cursor:pointer}
+.bp .opt:hover,.bp .opt[aria-expanded="true"],.bp .opt:has(input:checked){color:var(--ink);border-color:var(--gold-ink)}
 .bp .opt input{width:15px;height:15px;margin:0;accent-color:var(--ink)}
 .bp .opt:focus-visible,.bp .opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 .bp .chev{width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .2s}
@@ -157,22 +163,24 @@ nav.pager a:hover{color:var(--gold-ink)}
 .bp .lbl{display:block;margin:0 0 12px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .bp .r2{margin-top:10px}
 .bp .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch}
-.chip{min-height:44px;min-width:72px;padding:0 14px;font:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:999px;cursor:pointer}
+.chip{min-height:44px;min-width:72px;padding:0 14px;font:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:8px;cursor:pointer}
 .chip:hover{color:var(--ink);border-color:var(--rule)}
-.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
-.bp .amt{display:flex;flex:0 1 150px;min-width:120px;border:1px solid var(--rule);border-radius:999px;background:var(--paper);overflow:hidden}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--gold-ink)}
+.bp .amt{display:flex;flex:0 1 150px;min-width:120px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);overflow:hidden}
 .bp .amt span{display:grid;place-items:center;padding-left:14px;color:var(--muted)}
 .bp .amt input{flex:1;min-width:0;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:transparent;border:0;padding:0 14px 0 6px}
 .bp .amt:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .bp .amt input:focus-visible{outline:none}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;font:inherit;font-size:15px;letter-spacing:.06em;color:var(--ink);background:transparent;border:1px solid var(--ink);border-radius:999px;text-decoration:none;cursor:pointer}
-.btn.primary{background:var(--ink);color:var(--ground)}
-.btn:hover{background:var(--accent);border-color:var(--accent);color:var(--ground)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;font:inherit;font-size:15px;letter-spacing:.06em;color:var(--ink-2);background:transparent;border:1px solid var(--rule);border-radius:8px;text-decoration:none;cursor:pointer;transition:background .35s ease,border-color .35s ease,color .35s ease,box-shadow .35s ease}
+.btn:hover{border-color:var(--gold-ink);color:var(--ink)}
+.btn.primary{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
+.btn.primary:hover{background:var(--gold);border-color:var(--gold);color:#1C1C1A;box-shadow:0 0 0 4px var(--glow),0 6px 22px -6px var(--glow)}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
 .bp .tick{display:inline-flex;gap:10px;align-items:center;min-height:44px;cursor:pointer;color:var(--ink)}
 .bp .tick input{width:18px;height:18px;margin:0;accent-color:var(--ink)}
 .bp .tick input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bp .em{max-width:320px;margin:0 auto}
-.bp .em input{width:100%;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:0 16px;text-align:center}
+.bp .em input{width:100%;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:0 16px;text-align:center}
 .bp .em input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bp .get a{min-width:120px}
 .bp .note{margin:10px 0 0;font-size:12px;color:var(--muted)}
@@ -193,21 +201,23 @@ nav.pager a:hover{color:var(--gold-ink)}
 .list form{flex:1 1 320px;max-width:460px;display:grid;gap:8px}
 .list label{font-size:13px;letter-spacing:.06em;color:var(--muted)}
 .list-row{display:flex;flex-wrap:wrap;gap:8px}
-.list-row input{flex:1 1 200px;min-width:0;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:0 12px}
+.list-row input{flex:1 1 200px;min-width:0;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:0 12px}
 .list-row input::placeholder{color:var(--muted)}
 .list-row input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
-.list-row button{min-height:44px;padding:0 20px;font:inherit;font-size:14px;letter-spacing:.06em;color:var(--ground);background:var(--ink);border:0;border-radius:3px;cursor:pointer}
-.list-row button:hover{background:var(--accent)}
+.list-row button{min-height:44px;padding:0 20px;font:inherit;font-size:14px;letter-spacing:.06em;color:var(--ink-2);background:transparent;border:1px solid var(--rule);border-radius:8px;cursor:pointer;transition:color .35s ease,border-color .35s ease}
+.list-row button:hover{color:var(--ink);border-color:var(--gold-ink)}
 .list .list-note{font-size:13px;color:var(--muted)}
 .mt-note{margin:0;padding-block:20px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted);text-align:center}
-.getbook{margin:0;padding-block:8px 32px;text-align:center}
-.getbook a{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:0 18px;border:1px solid var(--rule);border-radius:999px;font-size:13px;letter-spacing:.06em;color:var(--muted);text-decoration:none}
+.getbook{display:flex;flex-direction:column;align-items:center;gap:10px;margin:0;padding-block:8px 32px;text-align:center}
+.getbook a{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:0 18px;border:1px solid var(--rule);border-radius:8px;transition:color .35s ease,border-color .35s ease;font-size:13px;letter-spacing:.06em;color:var(--muted);text-decoration:none}
 .getbook a span{font-size:11px;letter-spacing:.12em;opacity:.8}
-.getbook a:hover{color:var(--ink);border-color:var(--ink)}
+.getbook a:hover{color:var(--ink);border-color:var(--gold-ink)}
+.getbook a.give{min-height:36px;padding:0 14px;font-size:12px;border-color:transparent}
+.getbook a.give:hover{border-color:var(--rule)}
 .foot-donate{color:inherit}
 .foot-donate:hover{color:var(--accent)}
 footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-block:32px 48px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
-@media (max-width:560px){nav.pager .mid{order:3;width:100%}}
+@media (max-width:560px){nav.pager{grid-template-columns:1fr 1fr}nav.pager .mid{grid-column:1/-1;grid-row:3}}
 @media (prefers-reduced-motion:no-preference){.piece-inner{animation:rise .6s ease both}@keyframes rise{from{opacity:.0001;transform:translateY(8px)}to{opacity:1;transform:none}}}
 </style>
 </head>
@@ -221,8 +231,8 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
       <a class="about-link" id="about-link" href="#about">About</a>
       <div class="lang" role="group" aria-label="Language">
         <button type="button" id="btn-en" lang="en" aria-pressed="true">EN</button>
-        <button type="button" id="btn-ja" lang="ja" aria-pressed="false">日本語</button>
         <button type="button" id="btn-fr" lang="fr" aria-pressed="false">FR</button>
+        <button type="button" id="btn-ja" lang="ja" aria-pressed="false">日本語</button>
       </div>
     </div>
   </header>
@@ -256,70 +266,78 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.36</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.37</span></span>
   </footer>
 </div>
 
-<script src="assets/book.js?v=0.28-awakening"></script>
+<script src="assets/book.js?v=0.37"></script>
 <script>
 // First version of each draft in River 川/Desk/Draft, in file order. English as written; Japanese translations (ja) for review.
 const TEXTS = [
  {n:0, t:"Before reaching the shore", v:"Before reaching the shore,\nin the quiet sea of abstraction;\nseize the mind.",
   tj:"岸にたどり着く前に", vj:"岸にたどり着く前に、\n抽象の静かな海で、\n心をつかめ。"},
- {n:1, t:"To feel with opened eyes", v:"To feel with opened eyes,\nto listen with the heart,\nto speak with truth.",
-  tj:"開いた目で感じ", vj:"開いた目で感じ、\n心で聴き、\n真実をもって語る。"},
- {n:2, t:"Wind’s Natural Soul", v:"Wind’s natural soul…\nLeading me into the unknown…\nTranscendental flow.",
-  tj:"風の自然な魂", vj:"風の自然な魂…\n私を未知へと導く…\n超越の流れ。"},
- {n:3, t:"Breathe in", v:"Breathe in…\nBreathe out…\nThe energy that connects all forms…\nInfinite chains of chemical reactions…\nTrillions of cells living within…\nWhat am I?",
-  tj:"息を吸う", vj:"息を吸う…\n息を吐く…\nすべての形をつなぐエネルギー…\n果てしなく連なる化学反応…\n内に生きる何兆もの細胞…\n私とは何か？"},
- {n:4, t:"Kind loving love", v:"Kind loving love,\nKind loving love,\nKind loving love.",
-  tj:"優しく慈しむ愛", vj:"優しく慈しむ愛、\n優しく慈しむ愛、\n優しく慈しむ愛。"},
  {n:5, t:"Submissiveness", v:"Submissiveness,\nalien to the shining soul,\nbreathing union is.",
   tj:"服従", vj:"服従、\n輝く魂には無縁のもの、\n息づく合一こそが在る。"},
- {n:6, t:"I surrender to the flow", v:"I surrender to the flow…\nReaching the depths of my heart…\nUnion’s Embrace.",
-  tj:"流れに身をゆだねる", vj:"流れに身をゆだねる…\n心の奥深くに届き…\n合一の抱擁。"},
- {n:7, t:"Spring Energy", v:"Spring Energy,\nBlessing our hearts with auspicious light.\nEach blossom, a vow of harmony.\nWith gratitude, I honour your transience.",
-  tj:"春のエネルギー", vj:"春のエネルギーよ、\n約束の光で私たちの心を祝福する。\nひとつひとつの花は、調和の誓い。\n感謝とともに、あなたの儚さを敬う。"},
- {n:17, t:"Awakening Mind", v:"Awakening mind…\nThat which is conscious…\nFor the good of sentience.",
-  tj:"目覚める心", vj:"目覚める心…\n意識あるもの…\n生きとし生けるものの幸せのために。"},
  {n:18, t:"Present, mindful now", v:"Present, mindful now.\nPeaceful heart, a quiet mind.\nHarmony’s embrace.",
   tj:"今ここに", vj:"今ここに、気づきとともに。\n穏やかな心、静かな精神。\n調和の抱擁。"},
  {n:20, t:"To each cell", v:"Hands in prayer,\nI bow respectfully to each cell in my body,\nand to the life in you.",
   tj:"ひとつひとつの細胞に", vj:"手を合わせ、\n私の体のひとつひとつの細胞に、\nそしてあなたの中の命に、敬意をもって礼をする。"},
- {n:21, t:"Heal yourself to heal others", v:"Heal yourself to heal others,\nheal others to heal yourself.",
-  tj:"自らを癒し、他者を癒す", vj:"他者を癒すために、自らを癒し、\n自らを癒すために、他者を癒す。"},
+ {n:2, t:"Wind’s Natural Soul", v:"Wind’s natural soul…\nLeading me into the unknown…\nTranscendental flow.",
+  tj:"風の自然な魂", vj:"風の自然な魂…\n私を未知へと導く…\n超越の流れ。"},
  {n:22, t:"First Love, Then Form", v:"First love, then form.",
   tj:"まず愛、そして形", vj:"まず愛、そして形。"},
- {n:23, t:"There is no greater shock in life than birth", v:"There is no greater shock in life than birth,\nunable to survive alone,\nwe believe in independence.\nDeath is clemency.",
+ {n:1, t:"To feel with opened eyes", v:"To feel with opened eyes,\nto listen with the heart,\nto speak with truth.",
+  tj:"開いた目で感じ", vj:"開いた目で感じ、\n心で聴き、\n真実をもって語る。"},
+ {n:7, t:"Spring Energy", v:"Spring Energy,\nBlessing our hearts with auspicious light.\nEach blossom, a vow of harmony.\nWith gratitude, I honour your transience.",
+  tj:"春のエネルギー", vj:"春のエネルギーよ、\n約束の光で私たちの心を祝福する。\nひとつひとつの花は、調和の誓い。\n感謝とともに、あなたの儚さを敬う。"},
+ {n:3, t:"Breathe in", v:"Breathe in…\nBreathe out…\nThe energy that connects all forms…\nInfinite chains of chemical reactions…\nTrillions of cells living within…\nWhat am I?",
+  tj:"息を吸う", vj:"息を吸う…\n息を吐く…\nすべての形をつなぐエネルギー…\n果てしなく連なる化学反応…\n内に生きる何兆もの細胞…\n私とは何か？"},
+ {n:4, t:"Kind loving love", v:"Kind loving love,\nKind loving love,\nKind loving love.",
+  tj:"優しく慈しむ愛", vj:"優しく慈しむ愛、\n優しく慈しむ愛、\n優しく慈しむ愛。"},
+ {n:69, t:"With each blossom", v:"With each blossom,\nI vow to dedicate myself to prosperity and harmony for sentient life.",
+  tj:"花ひとつひとつに", vj:"花ひとつひとつに、\n生きとし生けるものの繁栄と調和に、この身を捧げることを誓う。"},
+ {n:21, t:"Heal yourself to heal others", v:"Heal yourself to heal others,\nheal others to heal yourself.",
+  tj:"自らを癒し、他者を癒す", vj:"他者を癒すために、自らを癒し、\n自らを癒すために、他者を癒す。"},
+ {n:6, t:"I surrender to the flow", v:"I surrender to the flow…\nReaching the depths of my heart…\nUnion’s Embrace.",
+  tj:"流れに身をゆだねる", vj:"流れに身をゆだねる…\n心の奥深くに届き…\n合一の抱擁。"},
+ {n:64, t:"Thank you for always being by my side", v:"Thank you for always being by my side.\nWith you, my heart flows like a tranquil river.",
+  tj:"いつもそばにいてくれて", vj:"いつもそばにいてくれて、ありがとう。\nあなたといると、心は穏やかな川のように流れます。"},
+ {n:23, t:"Death is clemency", v:"There is no greater shock in life than birth,\nunable to survive alone,\nwe invest in independence.",
   tj:"生まれること以上の衝撃はない", vj:"人生で、生まれること以上の衝撃はない、\n生き延びるための闘い、\n死は解放、"},
- {n:24, t:"Existence itself", v:"Existence itself…\nis death in its essence…\nThere is no presence without breath.",
-  tj:"生そのもの", vj:"生そのものは…\n死そのもの…\n\n円環、\n均衡、\n舞…\n\nエネルギーの移ろい…\n意識…\n\n生存…"},
- {n:25, t:"In modern times", v:"In modern times,\nseeking distractions,\nwe acquire knowledge,\nrevealing truth,\nfearing our instincts.",
-  tj:"現代において", vj:"現代において、\n私たちは知識を得る、\nそれが真実だと信じて、\nやがて、それが一部にすぎないと気づく！\n\n生そのものが知識！\n生そのものの内に、知識は宿る！\n私たちという存在を形づくった、無数の生命！\n波長を合わせたとき、すべてはひとつになる！\n\n感謝とともに身をゆだねるとき、\n敬うことを学ぶとき！\n私たちの知識は、生きるためにエネルギーを必要とし、\n生きることそのものが儚いのだと！\n\nひと呼吸ひと呼吸が知識よりも大切で、\nそして結局のところ、\n生そのものが経験なのだと！"},
- {n:50, t:"Eternal wisdom", v:"Within life itself lies the knowledge!\nEternal wisdom,\nif only we listened.",
+ {n:50, t:"Eternal wisdom", v:"Life itself is the knowledge!\nEternal wisdom,\nif only we listened.",
   tj:"永遠の叡智", vj:"生そのものの内に、知識は宿る！\n永遠の叡智、\n耳を傾けさえすれば。"},
- {n:26, t:"End of Summer Full moon", v:"End of Summer Full moon,\nBright in the East…\nI could feel the cold wind in the morning rise…\nSummer afternoon…\nFeeling the Rain coming when you set your light…\nIt took me half a century to recognize, that both the Sun and you…\nMade me who I have become…\nA modern man seeking revenge on modern civilisation..\nFor hiding your beauty for so long..\nI am back, and choose to celebrate your dance and gentle light, until the last day of my winter…\nLet me celebrate many sunrises…",
-  tj:"夏の終わりの満月", vj:"夏の終わりの満月よ、\n東の空に明るく…\n朝の目覚めに、冷たい風を感じた…\n夏の午後…\nあなたが光を沈めるとき、雨の気配を感じて…\n半世紀かかって気づいた、太陽とあなたの両方が…\n今の私をつくったのだと…\n現代文明に報いを求める、ひとりの現代人…\nあなたの美しさを、これほど長く隠してきたことへの…\n私は戻ってきた。あなたの舞と優しい光を祝おう、私の冬の最後の日まで…\nいくつもの日の出を、祝わせてほしい…"},
- {n:27, t:"Being One", v:"Being One.\nBecoming One.\nOne.",
+ {n:24, t:"Life itself is death itself", v:"Existence itself…\nresides with death…\nThere is no presence without breath.",
+  tj:"生そのもの", vj:"生そのものは…\n死そのもの…\n\n円環、\n均衡、\n舞…\n\nエネルギーの移ろい…\n意識…\n\n生存…"},
+ {n:25, t:"Modern times", v:"Scanning for knowledge,\nseeking distractions,\nfearing our instincts.",
+  tj:"現代において", vj:"現代において、\n私たちは知識を得る、\nそれが真実だと信じて、\nやがて、それが一部にすぎないと気づく！\n\n生そのものが知識！\n生そのものの内に、知識は宿る！\n私たちという存在を形づくった、無数の生命！\n波長を合わせたとき、すべてはひとつになる！\n\n感謝とともに身をゆだねるとき、\n敬うことを学ぶとき！\n私たちの知識は、生きるためにエネルギーを必要とし、\n生きることそのものが儚いのだと！\n\nひと呼吸ひと呼吸が知識よりも大切で、\nそして結局のところ、\n生そのものが経験なのだと！"},
+ {n:27, t:"Being One", v:"Becoming One.\nBeing One.\nAlways One.",
   tj:"ひとつで在る", vj:"ひとつで在る。\nひとつになる。\n小宇宙と大宇宙。\nひとつ"},
- {n:28, t:"With each petal in the wind", v:"With each petal in the wind,\nI vow to dedicate myself to prosperity and harmony for sentient life.",
-  tj:"風に舞うひとひらごとに", vj:"風に舞うひとひらごとに、\n生きとし生けるものの繁栄と調和に、この身を捧げることを誓う。"},
  {n:30, t:"Do not love Love", v:"Do not love Love,\nbe love,\nlove.",
   tj:"愛を愛するな", vj:"愛を愛するな、\n愛であれ、\n愛せよ。"},
- {n:31, t:"The spring awakes", v:"The spring awakes,\nThe Golden Heart is here!\nPure Consciousness.",
+ {n:31, t:"The spring awakes", v:"The spring awakens,\ngolden heart,\npure Consciousness.",
   tj:"春が目覚める", vj:"春が目覚める、\n黄金の心がここに！\n純粋な意識。"},
- {n:32, t:"Your Mind is your home", v:"Your mind is your home.\nBring it light,\nbring it air,\nbring it love.",
+ {n:32, t:"Your mind is your home", v:"Your mind is your home.\nBring it light,\nbring it air,\nbring it love,\nbring it you.",
   tj:"心は、あなたの家", vj:"あなたの心は、あなたの家"},
- {n:33, t:"With each blossom", v:"With each blossom,\nI vow to dedicate myself to prosperity and harmony for sentient life.",
-  tj:"花ひとつひとつに", vj:"花ひとつひとつに、\n生きとし生けるものの繁栄と調和に、この身を捧げることを誓う。"},
- {n:38, t:"A quiet river", v:"Thank you for always being by my side.\nWith you, my heart flows like a quiet river.",
-  tj:"静かな川", vj:"いつもそばにいてくれて、ありがとう。\nあなたといると、心が静かな川のように流れていきます。"}
+ {n:54, t:"Finally, a voice", v:"Finally, a voice.\nAll is Light,\nTo those who awake.",
+  tj:"ついに、声", vj:"ついに、ひとつの声。\nすべては光、\n目覚める者に。"},
+ {n:55, t:"Do not judge your experiences", v:"Do not judge your experiences,\nunion of presence, past and future;\nAll there is is now.",
+  tj:"経験を裁かずに", vj:"自らの経験を裁かずに、\n今と、過去と、未来がひとつに結ばれる。\nあるのは、ただ今だけ。"},
+ {n:26, t:"End of Summer Full moon", v:"End of summer full moon,\nbright in the East…\nI could feel the cold morning wind rise…",
+  tj:"夏の終わりの満月", vj:"夏の終わりの満月よ、\n東の空に明るく…\n朝の目覚めに、冷たい風を感じた…\n夏の午後…\nあなたが光を沈めるとき、雨の気配を感じて…\n半世紀かかって気づいた、太陽とあなたの両方が…\n今の私をつくったのだと…\n現代文明に報いを求める、ひとりの現代人…\nあなたの美しさを、これほど長く隠してきたことへの…\n私は戻ってきた。あなたの舞と優しい光を祝おう、私の冬の最後の日まで…\nいくつもの日の出を、祝わせてほしい…"},
+ {n:102, t:"There is a time in the day", v:"There is a time in the day,\nwhen the sun watches the moon;\nWhat is the time?",
+  tj:"一日のうちに", vj:"一日のうちには、\n太陽が月を見つめる時がある。\nそれは、どんな時？"},
+ {n:19, t:"Beyond Knowledge", v:"Before knowledge, integrity,\nBefore judgement,\nAwakening.",
+  tj:"知識を超えて", vj:"知識の前に、誠実さ、\n判断の前に、\n目覚め。"},
+ {n:33, t:"I Dedicate my breath", v:"I dedicate my breath\nto harmony.",
+  tj:"この息を捧げる", vj:"この息を、\n調和に捧げる。"},
+ {n:106, t:"The light reveals the shadows of the ego", v:"The light reveals the shadows of the ego.",
+  tj:"光は自我の影を照らし出す", vj:"光は、自我の影を照らし出す。"}
 ];
 
 const UI = {
   en: { intro:"Short texts that move like a quiet river: fragments of a daily practice, read slowly, one after another.",
         all:"All texts", about:"About", aboutTitle:"About River", place:"Kougenji Temple, Kumamoto", credit:"Photograph by Qualishu", aboutAlt:"Yoso in profile, silhouetted against a bright window",
-        aboutText:"River 川 is a collection of short texts written by Yoso in Miyazaki, Japan. Fragments and reflections of a daily practice – exploring aspects such as morning meditation, the breath, the warmth of light, and the rhythm of the seasons.\n\nA few lines each, inspirations kept close to the moment they were written, as random as thoughts might seem. Signs or illusions? Each is given a page of its own, to be read slowly, one after another, the way a river reflects light as it moves from one thing to the next.\n\nWishing you happiness and prosperity.\n\nGassho",
+        aboutText:"River 川 is a collection of short texts written in Miyazaki, Japan. Fragments and reflections of my daily practice – the mind: reflecting on the morning, meditation, the breath, the warmth of light, and the seasons.\n\nA few lines each, inspirations kept close to the moment they were written. To be read slowly, the way a calm river reflects the light, revealing our emotions from the one to the next.\n\nWishing you happiness and prosperity.\n\nGassho",
         byline:"Yoso · Miyazaki", footL:"© Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"– Yoso", hint:"Swipe or tap to navigate" },
   ja: { intro:"静かな川のように流れる、短い言葉たち。息のこと、愛のこと、春のこと、そして流れに身をゆだねること。",
         all:"一覧へ", about:"このページについて", aboutTitle:"River 川について", place:"熊本・廣現寺", credit:"写真：Qualishu", aboutAlt:"明るい窓を背に、横顔のシルエットになったYoso",
@@ -327,7 +345,7 @@ const UI = {
         byline:"Yoso · 宮崎", footL:"© Yoso · 宮崎", footR:"心は家", sign:"– Yoso", hint:"スワイプまたはタップで移動" }
 };
 
-const FR = {"0": ["Avant d'atteindre le rivage", "Avant d'atteindre le rivage,\ndans la mer tranquille de l'abstraction ;\nSaisis l'esprit."], "1": ["Ressentir les yeux ouverts", "Ressentir les yeux ouverts,\nécouter avec le cœur,\nparler avec vérité."], "2": ["Âme naturelle du vent", "Âme naturelle du vent…\nMe menant vers l'inconnu…\nFlux transcendantal."], "3": ["Inspire", "Inspire…\nExpire…\nL'énergie qui relie toutes les formes…\nD'infinies chaînes de réactions chimiques…\nDes milliers de milliards de cellules vivant en moi…\nQue suis-je ?"], "4": ["Doux amour aimant", "Doux amour aimant,\nDoux amour aimant,\nDoux amour aimant."], "5": ["La soumission", "La soumission,\nétrangère à l'âme rayonnante,\nest l'union qui respire."], "6": ["Je m'abandonne au courant", "Je m'abandonne au courant…\nAtteignant les profondeurs de mon cœur…\nL'étreinte de l'Union."], "7": ["Énergie du printemps", "Énergie du printemps,\nBénissant nos cœurs d'une lumière prometteuse.\nChaque fleur, un vœu d'harmonie.\nAvec gratitude, j'honore ta fugacité."], "17": ["Esprit qui s'éveille", "Esprit qui s'éveille…\nCe qui est conscient…\nPour le bien de tous les êtres sensibles."], "18": ["Présent, attentif, maintenant", "Présent, attentif, maintenant.\nCœur paisible, esprit tranquille.\nL'étreinte de l'harmonie."], "20": ["À chaque cellule", "Mains jointes en prière,\nje m'incline avec respect devant chaque cellule de mon corps,\net devant la vie en toi."], "21": ["Se guérir pour guérir les autres", "Se guérir soi-même pour guérir les autres,\nGuérir les autres pour se guérir soi-même."], "22": ["D'abord l'Amour, puis la Forme", "D'abord l'Amour, puis la Forme."], "23": ["Il n'est pas de plus grand choc que la naissance", "Il n'est pas de plus grand choc dans la vie que la naissance,\nLutter pour survivre,\nLa mort est délivrance,"], "24": ["La vie elle-même", "La vie elle-même...\nEst la mort elle-même...\n\nCercle complet,\nÉquilibre,\nDanse...\n\nTransfert d'énergie...\nConscience...\n\nSurvie..."], "25": ["À l'époque moderne", "À l'époque moderne,\nNous acquérons le savoir,\ncroyant qu'il est la vérité,\npour découvrir qu'il n'en est qu'une partie !\n\nLa vie elle-même est savoir !\nAu sein de la Vie elle-même réside le savoir !\nLa multitude des formes de Vie qui ont créé notre être !\nC'est lorsque nous nous accordons que tout devient un !\n\nQuand nous nous abandonnons avec gratitude,\nquand nous apprenons à respecter !\nque notre savoir a besoin d'énergie pour survivre,\nque la survie elle-même est éphémère !\n\nque chaque souffle compte plus que le savoir !\net qu'au bout du compte,\nla vie elle-même est l'expérience !"], "26": ["Pleine lune de fin d'été", "Pleine lune de fin d'été,\nBrillante à l'Est…\nJe sentais le vent froid au lever du matin…\nAprès-midi d'été…\nSentant venir la Pluie quand tu couches ta lumière…\nIl m'a fallu un demi-siècle pour reconnaître que le Soleil et toi…\nM'avez fait celui que je suis devenu…\nUn homme moderne en quête de revanche sur la civilisation moderne..\nPour avoir caché ta beauté si longtemps..\nJe suis de retour, et je choisis de célébrer ta danse et ta douce lumière, jusqu'au dernier jour de mon hiver…\nLaisse-moi célébrer bien des levers de soleil…"], "27": ["Être Un", "Être Un.\nDevenir un.\nmicrocosme et Macrocosme.\nUn"], "28": ["À chaque pétale dans le vent", "À chaque pétale dans le vent,\nje fais le vœu de me consacrer à la prospérité et à l'harmonie de toute vie sensible."], "30": ["N'aime pas l'Amour", "N'aime pas l'Amour,\nSois amour,\nAime."], "31": ["Le printemps s'éveille", "Le printemps s'éveille,\nLe Cœur d'Or est Ici !\nPure Conscience."], "32": ["Ton Esprit est ta demeure", "Ton Esprit est ta demeure"], "33": ["À chaque fleur", "À chaque fleur,\nje fais le vœu de me consacrer à la prospérité et à l'harmonie de toute vie sensible."], "38": ["Une rivière tranquille", "Merci d'être toujours à mes côtés.\nAvec toi, mon cœur coule comme une rivière tranquille."], "50": ["Sagesse éternelle", "Au cœur de la vie même réside la connaissance !\nSagesse éternelle,\nsi seulement nous écoutions."]};
+const FR = {"0": ["Avant d'atteindre le rivage", "Avant d'atteindre le rivage,\ndans la mer tranquille de l'abstraction ;\nSaisis l'esprit."], "5": ["La soumission", "La soumission,\nétrangère à l'âme rayonnante,\nest l'union qui respire."], "18": ["Présent, attentif, maintenant", "Présent, attentif, maintenant.\nCœur paisible, esprit tranquille.\nL'étreinte de l'harmonie."], "20": ["À chaque cellule", "Mains jointes en prière,\nje m'incline avec respect devant chaque cellule de mon corps,\net devant la vie en toi."], "2": ["Âme naturelle du vent", "Âme naturelle du vent…\nMe menant vers l'inconnu…\nFlux transcendantal."], "22": ["D'abord l'Amour, puis la Forme", "D'abord l'Amour, puis la Forme."], "1": ["Ressentir les yeux ouverts", "Ressentir les yeux ouverts,\nécouter avec le cœur,\nparler avec vérité."], "7": ["Énergie du printemps", "Énergie du printemps,\nBénissant nos cœurs d'une lumière prometteuse.\nChaque fleur, un vœu d'harmonie.\nAvec gratitude, j'honore ta fugacité."], "3": ["Inspire", "Inspire…\nExpire…\nL'énergie qui relie toutes les formes…\nD'infinies chaînes de réactions chimiques…\nDes milliers de milliards de cellules vivant en moi…\nQue suis-je ?"], "4": ["Doux amour aimant", "Doux amour aimant,\nDoux amour aimant,\nDoux amour aimant."], "69": ["À chaque fleur", "À chaque fleur,\nje fais le vœu de me consacrer à la prospérité et à l'harmonie de toute vie sensible."], "21": ["Se guérir pour guérir les autres", "Se guérir soi-même pour guérir les autres,\nGuérir les autres pour se guérir soi-même."], "6": ["Je m'abandonne au courant", "Je m'abandonne au courant…\nAtteignant les profondeurs de mon cœur…\nL'étreinte de l'Union."], "64": ["Merci d’être toujours à mes côtés", "Merci d’être toujours à mes côtés.\nAvec toi, mon cœur coule comme une rivière paisible."], "23": ["Il n'est pas de plus grand choc que la naissance", "Il n'est pas de plus grand choc dans la vie que la naissance,\nLutter pour survivre,\nLa mort est délivrance,"], "50": ["Sagesse éternelle", "Au cœur de la vie même réside la connaissance !\nSagesse éternelle,\nsi seulement nous écoutions."], "24": ["La vie elle-même", "La vie elle-même...\nEst la mort elle-même...\n\nCercle complet,\nÉquilibre,\nDanse...\n\nTransfert d'énergie...\nConscience...\n\nSurvie..."], "25": ["À l'époque moderne", "À l'époque moderne,\nNous acquérons le savoir,\ncroyant qu'il est la vérité,\npour découvrir qu'il n'en est qu'une partie !\n\nLa vie elle-même est savoir !\nAu sein de la Vie elle-même réside le savoir !\nLa multitude des formes de Vie qui ont créé notre être !\nC'est lorsque nous nous accordons que tout devient un !\n\nQuand nous nous abandonnons avec gratitude,\nquand nous apprenons à respecter !\nque notre savoir a besoin d'énergie pour survivre,\nque la survie elle-même est éphémère !\n\nque chaque souffle compte plus que le savoir !\net qu'au bout du compte,\nla vie elle-même est l'expérience !"], "27": ["Être Un", "Être Un.\nDevenir un.\nmicrocosme et Macrocosme.\nUn"], "30": ["N'aime pas l'Amour", "N'aime pas l'Amour,\nSois amour,\nAime."], "31": ["Le printemps s'éveille", "Le printemps s'éveille,\nLe Cœur d'Or est Ici !\nPure Conscience."], "32": ["Ton Esprit est ta demeure", "Ton Esprit est ta demeure"], "54": ["Enfin, une voix", "Enfin, une voix.\nTout est Lumière,\npour ceux qui s’éveillent."], "55": ["Ne juge pas tes expériences", "Ne juge pas tes expériences,\nunion du présent, du passé et de l’avenir ;\nTout ce qui est, c’est maintenant."], "26": ["Pleine lune de fin d'été", "Pleine lune de fin d'été,\nBrillante à l'Est…\nJe sentais le vent froid au lever du matin…\nAprès-midi d'été…\nSentant venir la Pluie quand tu couches ta lumière…\nIl m'a fallu un demi-siècle pour reconnaître que le Soleil et toi…\nM'avez fait celui que je suis devenu…\nUn homme moderne en quête de revanche sur la civilisation moderne..\nPour avoir caché ta beauté si longtemps..\nJe suis de retour, et je choisis de célébrer ta danse et ta douce lumière, jusqu'au dernier jour de mon hiver…\nLaisse-moi célébrer bien des levers de soleil…"], "102": ["Il est un moment du jour", "Il est un moment du jour,\noù le soleil regarde la lune ;\nQuel est ce moment ?"], "19": ["Au-delà du savoir", "Avant le savoir, l’intégrité,\navant le jugement,\nl’éveil."], "33": ["Je dédie mon souffle", "Je dédie mon souffle\nà l’harmonie."], "106": ["La lumière révèle les ombres de l’ego", "La lumière révèle les ombres de l’ego."]};
 
 UI.fr = {"intro": "Des textes courts qui coulent comme une rivière tranquille : sur le souffle, l'amour, le printemps et l'abandon au courant.", "all": "Tous les textes", "about": "À propos", "aboutTitle": "À propos de River", "place": "Temple Kougenji, Kumamoto", "credit": "Photographie de Qualishu", "aboutAlt": "Yoso de profil, en silhouette devant une fenêtre lumineuse", "aboutText": "River 川 est un recueil de textes courts écrits par Yoso à Miyazaki, au Japon. Des réflexions sur la pratique quotidienne : la méditation du matin, le souffle, le passage des saisons, la profondeur du cœur. Quelques lignes chacun, des inspirations gardées au plus près de l'instant où elles ont été écrites, chacune avec sa propre page, à lire lentement, l'une après l'autre, comme une rivière emporte une chose, puis la suivante.", "byline": "Yoso · Miyazaki", "footL": "© Yoso · Miyazaki, Japon", "footR": "L'esprit est la demeure", "sign": "– Yoso", "hint": "Balayez ou touchez pour naviguer"};
 
@@ -355,9 +373,9 @@ const DONATE_MIN = 100, DONATE_SUGGEST = [500, 1000, 3000];
 
 // Book wording. Japanese and French are drafts for Yoso to check.
 const BOOK_UI = {
-  en: { k:"New", h:"The Collection", alt:"Cover of River 川, short texts by Yoso",
-        p:"A collection of short texts gathered as a small volume, updated as the reflection evolves. Dedicated to my love of life. Free to download for your phone or e-reader.",
-        n:"texts", get:"Download the book", getNote:"Free · PDF and EPUB", locale:"en-GB", only:"",
+  en: { k:"New", h:"Awakening Mind", alt:"Cover of River 川, Awakening Mind, by Yoso",
+        p:"A collection of short texts gathered as a small volume, updated as the reflection evolves. Dedicated to my love of life. Read below or download for your phone or e-reader.",
+        n:"texts", pages:"pages", read:"min read", get:"Download the book", getNote:"Free · PDF and EPUB", locale:"en-GB", only:"",
         title:"Download River", intro:"River is free. Before you download, you can support the writing or join the mailing list. Both are optional.",
         s1:"Support River", opt:"optional",
         s1p:"If the texts mean something to you, you can give what you like through Stripe. Any amount helps, and nothing at all is fine too.",
@@ -367,10 +385,10 @@ const BOOK_UI = {
         s2note:"Sent through Buttondown. You’ll get an email to confirm; unsubscribe any time.",
         s3:"Download", pdf:"PDF", pdfNote:"A5, to read or print", epub:"EPUB", epubNote:"for phones and e-readers",
         need:"Enter your email address, or untick the box.", lDonate:"Donate · optional", optDonate:"Donate", getSmall:"Download the book", getFmt:"PDF · EPUB", otherShort:"Other", lList:"Newsletter · optional", lDl:"Download", tickShort:"Email me new texts", pdfShort:"PDF", epubShort:"EPUB", done:"Thank you. Your download has started.",
-        doneList:"Check your inbox to confirm the mailing list.", back:"← Back to River" },
-  ja: { k:"新刊・無料ダウンロード", h:"本", alt:"『River 川』Yoso 短い言葉 の表紙",
-        p:"短い言葉を、献辞から始まる一冊の小さな本にまとめました。スマートフォンや電子書籍リーダーで読むことも、印刷することもできます。",
-        n:"篇", get:"本をダウンロード", getNote:"無料・PDF と EPUB", locale:"ja-JP", only:"本は現在、英語版のみです。",
+        doneList:"Check your inbox to confirm the mailing list.", back:"← Read online" },
+  ja: { k:"新刊", h:"目覚める心", alt:"『River 川　目覚める心』Yoso の表紙",
+        p:"短い言葉を一冊の小さな本にまとめました。思いの深まりとともに、更新されていきます。生きることへの愛に捧げて。下で読むことも、スマートフォンや電子書籍リーダー用にダウンロードすることもできます。",
+        n:"篇", pages:"頁", read:"分で読めます", get:"本をダウンロード", getNote:"無料・PDF と EPUB", locale:"ja-JP", only:"本は現在、英語版のみです。",
         title:"River をダウンロード", intro:"River は無料です。ダウンロードの前に、執筆を支援したり、メーリングリストに登録したりできます。どちらも任意です。",
         s1:"River を支援する", opt:"任意",
         s1p:"言葉が心に届いたなら、Stripe を通じてお好きな金額をお寄せいただけます。どんな金額でも励みになります。もちろん、なしでも構いません。",
@@ -380,10 +398,10 @@ const BOOK_UI = {
         s2note:"配信は Buttondown を通じて行います。確認メールが届きます。いつでも解除できます。",
         s3:"ダウンロード", pdf:"PDF", pdfNote:"A5・閲覧／印刷用", epub:"EPUB", epubNote:"スマートフォン・電子書籍用",
         need:"メールアドレスを入力するか、チェックを外してください。", lDonate:"寄付・任意", optDonate:"寄付する", getSmall:"本をダウンロード", getFmt:"PDF・EPUB", otherShort:"その他", lList:"ニュースレター・任意", lDl:"ダウンロード", tickShort:"新しい言葉をメールで受け取る", pdfShort:"PDF", epubShort:"EPUB", done:"ありがとうございます。ダウンロードが始まりました。",
-        doneList:"メーリングリストの確認メールをご確認ください。", back:"← River に戻る" },
-  fr: { k:"Nouveau · téléchargement gratuit", h:"Le livre", alt:"Couverture de River 川, textes courts de Yoso",
-        p:"Les textes courts réunis en un petit livre, qui s’ouvre sur une dédicace. À lire sur un téléphone ou une liseuse, ou à imprimer.",
-        n:"textes", get:"Télécharger le livre", getNote:"Gratuit · PDF et EPUB", locale:"fr-FR", only:"Le livre n’existe pour l’instant qu’en anglais.",
+        doneList:"メーリングリストの確認メールをご確認ください。", back:"← オンラインで読む" },
+  fr: { k:"Nouveau", h:"L’Éveil de l’esprit", alt:"Couverture de River 川, L’Éveil de l’esprit, de Yoso",
+        p:"Un recueil de textes courts réunis en un petit volume, mis à jour à mesure que la réflexion évolue. Dédié à mon amour de la vie. À lire ci-dessous ou à télécharger pour votre téléphone ou votre liseuse.",
+        n:"textes", pages:"pages", read:"min de lecture", get:"Télécharger le livre", getNote:"Gratuit · PDF et EPUB", locale:"fr-FR", only:"Le livre n’existe pour l’instant qu’en anglais.",
         title:"Télécharger River", intro:"River est gratuit. Avant de le télécharger, vous pouvez soutenir l’écriture ou vous inscrire à la liste de diffusion. Les deux sont facultatifs.",
         s1:"Soutenir River", opt:"facultatif",
         s1p:"Si ces textes comptent pour vous, vous pouvez donner ce que vous voulez via Stripe. Tout montant aide, et rien du tout convient aussi.",
@@ -393,7 +411,7 @@ const BOOK_UI = {
         s2note:"Envoi par Buttondown. Un e-mail de confirmation vous sera envoyé ; désabonnement à tout moment.",
         s3:"Télécharger", pdf:"PDF", pdfNote:"A5, à lire ou imprimer", epub:"EPUB", epubNote:"pour téléphones et liseuses",
         need:"Saisissez votre adresse e-mail, ou décochez la case.", lDonate:"Don · facultatif", optDonate:"Faire un don", getSmall:"Télécharger le livre", getFmt:"PDF · EPUB", otherShort:"Autre", lList:"Lettre · facultatif", lDl:"Télécharger", tickShort:"Recevoir les nouveaux textes par e-mail", pdfShort:"PDF", epubShort:"EPUB", done:"Merci. Le téléchargement a commencé.",
-        doneList:"Vérifiez votre boîte mail pour confirmer l’inscription.", back:"← Retour à River" }
+        doneList:"Vérifiez votre boîte mail pour confirmer l’inscription.", back:"← Lire en ligne" }
 };
 function bookWhen(b, u){
   try { return new Intl.DateTimeFormat(u.locale, {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'}).format(new Date(b.date + 'T00:00:00Z')); }
@@ -410,7 +428,7 @@ function bookHTML(){
     (b.cover ? '<a class="cover" href="#book">' + bookCover(b, u, '') + '</a>' : '') +
     '<div class="copy"><p class="kicker">' + esc(u.k) + '</p>' +
     '<h2 id="book-h">' + esc(u.h) + '</h2><p>' + esc(u.p) + (u.only ? (lang === 'ja' ? '' : ' ') + esc(u.only) : '') + '</p>' +
-    '<p class="meta">' + b.texts + ' ' + esc(u.n) + ' · Beta ' + esc(b.version) + ' · ' + esc(bookWhen(b, u)) + '</p>' +
+    '<p class="meta">' + b.texts + ' ' + esc(u.n) + (b.pages ? ' · ' + b.pages + ' ' + esc(u.pages) : '') + ' · Beta ' + esc(b.version) + ' · ' + esc(bookWhen(b, u)) + (b.minutes ? ' · ' + b.minutes + ' ' + esc(u.read) : '') + '</p>' +
     '<div class="get"><a class="primary" href="#book">' + esc(u.get) + '<small>' + esc(u.getNote) + '</small></a></div>' +
     '</div></section>';
 }
@@ -434,6 +452,10 @@ function bookPage(){
     '<h1 id="bp-h">River<span class="kanji" lang="ja" style="margin-left:.2em;color:var(--muted)">川</span></h1>' +
     '<p class="meta">' + b.texts + ' ' + esc(u.n) + ' · Beta ' + esc(b.version) + '</p>' +
     (donationMsg ? '<p class="flash' + (donationMsg === 'thanks' ? '' : ' bad') + '" role="status">' + esc(donationMsg === 'thanks' ? u.dThanks : u.dError) + '</p>' : '') +
+    '<div class="grp"><span class="lbl">' + esc(u.lDl) + '</span><div class="row get">' +
+      '<a class="btn primary" data-dl href="' + b.pdf.href + '" download="' + name(b.pdf.href) + '" type="application/pdf" title="' + size(b.pdf.kb) + '">' + u.pdfShort + '</a>' +
+      '<a class="btn" data-dl href="' + b.epub.href + '" download="' + name(b.epub.href) + '" type="application/epub+zip" title="' + size(b.epub.kb) + '">' + u.epubShort + '</a>' +
+      '</div>' + (u.only ? '<p class="note">' + esc(u.only) + '</p>' : '') + '<p class="done" id="bp-done" role="status"></p></div>' +
     '<div class="opts">' +
       (DONATE_ENDPOINT ? '<button type="button" class="opt" id="bp-dtoggle" aria-expanded="false" aria-controls="bp-donate">' + esc(u.optDonate) + '<span class="chev" aria-hidden="true"></span></button>' : '') +
       '<label class="opt"><input type="checkbox" id="bp-tick">' + esc(u.tickShort) + '</label>' +
@@ -452,10 +474,6 @@ function bookPage(){
       '<p class="note">' + esc(u.s2note) + '</p></div>' +
       '<input type="hidden" name="tag" value="river"><input type="hidden" name="embed" value="1">' +
       '<p class="err" id="bp-err" role="alert"></p></form>' +
-    '<div class="grp"><span class="lbl">' + esc(u.lDl) + '</span><div class="row get">' +
-      '<a class="btn primary" data-dl href="' + b.pdf.href + '" download="' + name(b.pdf.href) + '" type="application/pdf" title="' + esc(u.pdfNote) + ' · ' + size(b.pdf.kb) + '">' + u.pdfShort + '</a>' +
-      '<a class="btn" data-dl href="' + b.epub.href + '" download="' + name(b.epub.href) + '" type="application/epub+zip" title="' + esc(u.epubNote) + ' · ' + size(b.epub.kb) + '">' + u.epubShort + '</a>' +
-      '</div><p class="note">' + esc(u.pdfNote) + ' · ' + esc(u.epubNote) + (u.only ? '<br>' + esc(u.only) : '') + '</p><p class="done" id="bp-done" role="status"></p></div>' +
     '<p class="back"><a href="#home">' + esc(u.back) + '</a></p></section>';
 
   const tick = document.getElementById('bp-tick'), wrap = document.getElementById('bp-email-wrap'),
@@ -580,7 +598,7 @@ function about(){
   view.innerHTML =
     '<section class="about"><figure><img src="' + ABOUT_IMG + '" alt="' + esc(u.aboutAlt) + '"><figcaption>' + esc(u.place) + '<br>' + esc(u.credit) + '</figcaption></figure>' +
     '<div class="copy"><h1>' + esc(u.aboutTitle) + '</h1>' + u.aboutText.split(/\n\s*\n/).map(t => '<p>' + esc(t) + '</p>').join('') +
-    '<p class="sign" style="margin-top:36px">' + sig('') + '<span class="sig-name">Yoso</span></p>' +
+    '<p class="sign" style="margin-top:36px">' + sig('') + '<span class="sig-name">Yoso<br>' + esc({en:'Miyazaki, Japan', ja:'宮崎', fr:'Miyazaki, Japon'}[lang]) + '</span></p>' +
     '<p class="about-next">' +
       '<a class="btn primary" href="#home" data-to-list>' + esc({en:'Read the texts', ja:'言葉を読む', fr:'Lire les textes'}[lang]) + '</a>' +
       (window.RIVER_BOOK ? '<a class="btn" href="#book">' + esc(BOOK_UI[lang].get) + '</a>' : '') +
@@ -598,15 +616,15 @@ function piece(i){
   document.title = title(x) + ' · River 川';
   view.innerHTML =
     '<article class="piece" aria-label="' + esc(title(x)) + '"><div class="piece-inner">' +
-    '<p class="verse' + sizeClass(verse(x)) + '">' + verseHTML(verse(x)) + '</p>' +
-    '<p class="sign">' + sig() + '</p></div></article>' +
+    '<p class="verse' + sizeClass(verse(x)) + '">' + verseHTML(verse(x)) + '</p></div></article>' +
     '<nav class="pager" aria-label="More texts">' +
     '<p class="hint">' + UI[lang].hint + '</p>' +
-    '<a href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
+    '<a class="prev" href="#t' + prev.n + '">← ' + esc(title(prev)) + '</a>' +
     '<a class="mid" href="#home" data-from="' + x.n + '">↑ ' + UI[lang].all + '</a>' +
-    '<a href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +
+    '<a class="next" href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +
     '</nav>' +
-    (window.RIVER_BOOK ? '<p class="getbook"><a href="#book">' + esc(BOOK_UI[lang].getSmall) + '<span>' + esc(BOOK_UI[lang].getFmt) + '</span></a></p>' : '');
+    '<p class="getbook">' + (window.RIVER_BOOK ? '<a href="#book">' + esc(BOOK_UI[lang].getSmall) + '<span>' + esc(BOOK_UI[lang].getFmt) + '</span></a>' : '') +
+    '<a class="give" href="https://donate.yoso.one/?for=river">' + esc({en:'Donate', ja:'寄付', fr:'Faire un don'}[lang]) + '</a></p>';
 }
 
 let nav = null; // hashes of the current text's neighbours, for swiping

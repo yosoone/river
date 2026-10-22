@@ -31,6 +31,7 @@ from pathlib import Path
 import book as B
 
 HERE = Path(__file__).resolve().parent
+SUBTITLE = "Awakening Mind"
 PHOTO = HERE / "about.jpg"
 
 COLLECTION = {"collection", "best of", "refine"}
@@ -99,7 +100,7 @@ def collection(entries):
             continue
         v, signed = first_version(e["raw"])
         if v:
-            texts.append((e["n"], e["title"], v))
+            texts.append((e["n"], TITLE_FIX.get(e["title"], e["title"]), v))
     return texts
 
 
@@ -118,78 +119,113 @@ def copyright_lines(raw, version, d):
 
 
 # ---------------------------------------------------------------- html parts
+# Front and back matter follow the notes in Scrivener, in order. Each note
+# becomes one page. Markers written in a note are replaced:
+#   'insert photograph'                 -> the author photograph
+#   'Claude Insert Signature with Seal' -> the signature with the red seal
+#   'Golden mark'                       -> the golden mark
+# A note titled 'Insert' is a blank page (kept in the EPUB too).
+# 'Copyright' fills in 'Beta version', 'Date' and 'year'.
 
 def paras(text):
     return "".join('<p class="stanza">' + "<br/>".join(escape(x) for x in st.split("\n")) + "</p>"
                    for st in re.split(r"\n\s*\n", text.strip()))
 
 
-def front_back(entries, version, d, img):
-    """(id, title, body-html, classes, pdf_only) for every page outside the collection.
-    img(name) gives the image path to use (differs between PDF and EPUB)."""
-    sig = f'<p class="sign"><img src="{img("signature.png")}" alt="— Yoso"/></p>'
-    pages = {}
+MARKERS = [
+    (re.compile(r"^[‘'\"]?\s*insert photograph\s*[’'\"]?$", re.I), "photo"),
+    (re.compile(r"^[‘'\"]?\s*Claude Insert Signature with Seal\s*[’'\"]?$", re.I), "seal"),
+    (re.compile(r"^[‘'\"]?\s*Golden mark\s*[’'\"]?$", re.I), "gold"),
+]
+SITE_RE = re.compile(r"^(https?://)?([a-z0-9-]+\.)+[a-z]{2,}(/\S*)?$", re.I)
 
-    epi, _ = first_version(pick(entries, "Awakening Mind")["raw"])
-    pages["epigraph"] = ("Awakening mind", f'<div class="verse">{B.verse_html(epi)}</div>{sig}', "centre epi")
 
-    cl = copyright_lines(pick(entries, "Copyright")["raw"], version, d)
-    body = f'<p class="name">{escape(cl[0])}</p>' + "".join(
-        f"<p>{escape(l)}</p>" if not l.startswith(B.SITE) else
-        f'<p><a href="https://{B.SITE}">{escape(l)}</a></p>' for l in cl[1:])
-    pages["copyright"] = ("Copyright", f'<div class="colophon">{body}</div>', "colo")
+def blank_page():
+    # A non-breaking space keeps e-readers from skipping an empty page.
+    return ("Blank", '<div class="blank">&#160;</div>', "blank")
 
-    ty, _ = first_version(pick(entries, "Thank you Japan")["raw"])
-    head, rest = ty.split("\n", 1)
-    pages["japan"] = (head.strip(), f'<h2 class="ptitle">{escape(head.strip())}</h2>'
-                      f'<div class="verse small">{paras(rest)}</div>{sig}', "centre")
 
-    half = pick(entries, "Half Title Page")["raw"].strip() or B.KANJI
-    pages["half"] = ("Half title", f'<p class="half">{escape(half)}</p>', "centre")
+def marker_html(line, img):
+    for rx, kind in MARKERS:
+        if rx.match(line):
+            if kind == "photo":
+                return f'<p class="pic"><img class="portrait" src="{img("about.jpg")}" alt="Yoso"/></p>'
+            if kind == "seal":
+                return f'<p class="sign seal"><img src="{img("signature.png")}" alt="Signature and seal of Yoso"/></p>'
+            return f'<p class="pic"><img class="gold" src="{img("yoso-mark.png")}" alt="Yoso"/></p>'
+    return None
 
-    ded = pick(entries, "Dedication")["raw"].strip()
-    pages["dedication"] = ("Dedication", f'<p class="to">{escape(ded)}</p>', "centre ded")
 
-    tq, _ = first_version(pick(entries, "Thank You")["raw"])
-    pages["thanks"] = ("Thank you", f'<div class="verse quiet">{B.verse_html(tq)}</div>', "centre")
-
-    pages["mark"] = ("River", f'<img class="gold" src="{img("yoso-mark.png")}" alt="Yoso"/>'
-                     f'<p class="url"><a href="https://{B.SITE}">{B.SITE}</a></p>', "centre")
-
-    # back matter
-    tr = pick(entries, "Thank You for reading")["raw"].replace(" ", "\n").strip()
-    blocks = [b.strip() for b in re.split(r"\n\s*\n", tr) if b.strip()]
-    html = []
-    for b in blocks:
-        if "Signature" in b and "Claude" in b:
-            html.append(f'<p class="sign seal"><img src="{img("signature.png")}" alt="Signature and seal of Yoso"/></p>')
+def block_html(block, img):
+    """One paragraph of a note. Marker lines become images, web addresses links."""
+    out, run = [], []
+    def flush():
+        if run:
+            cls = ' class="stanza name"' if run == ["YOSO"] else ' class="stanza"'
+            out.append(f"<p{cls}>" + "<br/>".join(run) + "</p>"); run.clear()
+    for l in (x.strip() for x in block.split("\n") if x.strip()):
+        m = marker_html(l, img)
+        if m:
+            flush(); out.append(m); continue
+        if SITE_RE.match(l):
+            url = l if l.startswith("http") else "https://" + l
+            run.append(f'<a href="{escape(url)}">{escape(l.split("//")[-1])}</a>')
         else:
-            html.append('<p class="stanza">' + "<br/>".join(escape(x.strip()) for x in b.split("\n")) + "</p>")
-    pages["reading"] = ("Thank you for reading", f'<div class="letter">{"".join(html)}</div>', "centre")
-
-    dn = [l.strip() for l in pick(entries, "Donate")["raw"].split("\n") if l.strip()]
-    link = next((l for l in dn if l.startswith("http")), "https://donate.yoso.one")
-    words = " ".join(l for l in dn if not l.startswith("http"))
-    pages["donate"] = ("Donate", f'<p class="stanza">{escape(words)}</p>'
-                       f'<p class="url"><a href="{escape(link)}">{escape(link.split("//")[-1])}</a></p>', "centre")
-
-    end = pick(entries, "End")["raw"].strip()
-    pages["end"] = ("The End", f'<p class="theend">{escape(end)}</p>', "centre")
-
-    pages["author"] = ("About the author",
-                       f'<img class="portrait" src="{img("about.jpg")}" alt="Yoso"/>'
-                       f'<p class="aname">{B.AUTHOR}</p><p class="anote">{escape(AUTHOR_NOTE)}</p>'
-                       f'<p class="url"><a href="https://{B.SITE}">{B.SITE}</a></p>', "centre author")
-    return pages
+            run.append(escape(l))
+    flush()
+    return "".join(out)
 
 
-FRONT_ORDER = ["epigraph", "copyright", "japan", "half", "blank", "dedication", "blank", "thanks", "mark"]
-BACK_ORDER = ["reading", "donate", "end", "author"]
+def matter_page(e, version, d, img):
+    title, raw = e["title"], e["raw"].replace("\u2028", "\n").replace("\r\n", "\n").strip()
+    if title.lower() == "insert":
+        return blank_page()
+    if title.lower() == "copyright":
+        stamp = {"Beta version": f"Beta {version}", "Date": B.long_date(d), "year": str(d.year)}
+        raw = re.sub(r"[‘']\s*(Beta version|Date|year)\s*[’']", lambda m: stamp[m.group(1)], raw)
+        lines = [l.strip() for l in raw.split("\n") if l.strip()]
+        body = f'<p class="name">{escape(lines[0])}</p>' + "".join(
+            (f'<p><a href="https://{escape(l)}">{escape(l)}</a></p>' if SITE_RE.match(l) else f'<p>{escape(l)}</p>') for l in lines[1:])
+        return (title, f'<div class="colophon">{body}</div>', "colo")
+    if title.lower().startswith("half title"):
+        return (title, f'<p class="half">{escape(raw or B.KANJI)}</p>', "centre")
+    signed = bool(re.search(r"^\s*[—―]\s*Yoso\s*$", raw, re.M))
+    if signed:      # texts in the front matter: first version, signed in type
+        v, _ = first_version(raw)
+        return (title, f'<div class="verse quiet">{paras(v)}</div><p class="byline">— Yoso</p>', "centre")
+    blocks = [b for b in re.split(r"\n\s*\n", raw) if b.strip()]
+    if len(blocks) == 1 and "\n" not in blocks[0].strip() and len(blocks[0]) < 40 and not marker_html(blocks[0].strip(), img):
+        return (title, f'<p class="lone">{escape(blocks[0].strip())}</p>', "centre")
+    cls = "centre letter" + (" author" if any(MARKERS[0][0].match(l.strip()) for b in blocks for l in b.split("\n")) else "")
+    return (title, '<div class="letter">' + "".join(block_html(b, img) for b in blocks) + "</div>", cls)
+
+
+def matter(entries, section, version, d, img):
+    return [matter_page(e, version, d, img) for e in entries if e["section"] == section]
+
+
+def collection_pages(entries):
+    """Texts and Insert pages of the collection, in Scrivener order."""
+    out = []
+    for e in entries:
+        if e["section"] in NEVER or e["section"] not in COLLECTION:
+            continue
+        if e["title"].lower() == "insert":
+            out.append(("blank", e["n"], None, None)); continue
+        if e["title"].lower() in FRONT_ONLY:
+            continue
+        v, _ = first_version(e["raw"])
+        if v:
+            out.append(("text", e["n"], TITLE_FIX.get(e["title"], e["title"]), v))
+    return out
+
+
+TITLE_FIX = {"Deach is clemency": "Death is clemency"}
 
 
 def piece(n, t, v, img):
-    return (f'<h3>{escape(t)}</h3><div class="verse {B.size_class(v)}">{B.verse_html(v)}</div>'
-            f'<p class="sign"><img src="{img("signature.png")}" alt="— Yoso"/></p>')
+    # No signature on the texts (Book Design note).
+    return f'<h3>{escape(t)}</h3><div class="verse {B.size_class(v)}">{B.verse_html(v)}</div>'
 
 
 # ---------------------------------------------------------------- PDF
@@ -222,13 +258,26 @@ a { color: inherit; text-decoration: none; }
 .author .portrait { width: 52mm; height: auto; margin: 0 auto 8mm; }
 .aname { font-size: 10pt; letter-spacing: .3em; text-transform: uppercase; margin: 0 0 4mm; }
 .anote { font-size: 9.5pt; line-height: 1.8; color: #3A3A36; margin: 0 8mm; }
+.blank { height: 1px; }
+.lone { font-size: 13pt; letter-spacing: .04em; color: #3A3A36; margin: 0; }
+.byline { margin: 8mm 0 0; font-size: 9pt; letter-spacing: .12em; color: #5A5A55; }
+.letter .pic { margin: 0 0 6mm; }
+.letter .portrait { width: 34mm; height: auto; }
+.letter .gold { width: 14mm; height: 14mm; margin: 0 auto; }
+.letter .name { font-size: 9.5pt; letter-spacing: .3em; }
+.letter .seal { margin: 2mm 0 5mm; line-height: 0; }
+.letter .seal img { height: 18mm; }
+.author.letter { font-size: 8.8pt; line-height: 1.6; }
+.author .pic { margin: 0 0 4mm; }
+.author .seal img { height: 14mm; }
+.author .seal { margin: 1mm 0 3mm; }
+.author .stanza { margin: 0 0 .7em; }
 """
 
 
 def build_pdf(entries, texts, version, d, path):
     from weasyprint import HTML
     img = lambda n: str(HERE / ("images/" + n if n != "about.jpg" else n))
-    fb = front_back(entries, version, d, img)
     if COVER_PNG:
         import base64
         uri = "data:image/png;base64," + base64.b64encode(COVER_PNG).decode()
@@ -239,16 +288,13 @@ def build_pdf(entries, texts, version, d, path):
              f'<div class="title"><h1>{B.TITLE}<span>{B.KANJI}</span></h1><p class="sub">{B.SUBTITLE}</p></div>'
              f'<p class="author">{B.AUTHOR}</p>'
              f'<p class="edition">Beta {version} · {B.long_date(d)}</p></section>']
-    for k in FRONT_ORDER:
-        if k == "blank":
-            parts.append('<section class="front page"></section>')
-            continue
-        _, body, cls = fb[k]
+    pages = matter(entries, "front matters", version, d, img)
+    for t, body, cls in pages:
         parts.append(f'<section class="front page {cls}">{body}</section>')
-    for n, t, v in texts:
-        parts.append(f'<section class="piece" id="t{n}">{piece(n, t, v, img)}</section>')
-    for k in BACK_ORDER:
-        _, body, cls = fb[k]
+    for kind, n, t, v in collection_pages(entries):
+        parts.append('<section class="front page blank"></section>' if kind == "blank" else
+                     f'<section class="piece" id="t{n}">{piece(n, t, v, img)}</section>')
+    for t, body, cls in matter(entries, "back matters", version, d, img):
         parts.append(f'<section class="front page {cls}">{body}</section>')
     doc = (f'<!doctype html><html lang="en-GB"><head><meta charset="utf-8"/>'
            f'<title>{B.TITLE} {B.KANJI} — Beta {version}</title><meta name="author" content="{B.AUTHOR}"/>'
@@ -280,39 +326,50 @@ a { color: inherit; text-decoration: none; }
 .author .portrait { width: 55%; max-width: 16em; height: auto; margin: 0 auto 1.5em; }
 .aname { font-size: 0.85em; letter-spacing: 0.3em; text-transform: uppercase; margin: 0 0 1em; }
 .anote { font-size: 0.9em; line-height: 1.8; margin: 0 6%; }
+.blank { min-height: 80vh; }
+.lone { font-size: 1.15em; letter-spacing: 0.04em; margin: 0; }
+.byline { margin: 2em 0 0; font-size: 0.8em; letter-spacing: 0.12em; opacity: 0.8; }
+.letter .pic { margin: 0 0 1.4em; }
+.letter .portrait { width: 50%; max-width: 14em; height: auto; }
+.letter .gold { width: 3.5em; height: 3.5em; margin: 0 auto; }
+.letter .name { font-size: 0.85em; letter-spacing: 0.3em; }
+.letter .seal { margin: 0.4em 0 1.2em; line-height: 0; }
+.letter .stanza { margin: 0 0 1em; }
 """
 
 
 def build_epub(entries, texts, version, d, path):
     img = lambda n: n
-    fb = front_back(entries, version, d, img)
     book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, f"https://{B.SITE}/book/beta-{version}-{d}"))
     modified = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     pages = [("cover.xhtml", "Cover", B.xhtml("Cover", f'<img src="cover.jpg" alt="{B.TITLE} {B.KANJI}, '
-                                                    f'{B.SUBTITLE.lower()} by {B.AUTHOR}"/>', "cover"), False)]
-    types = {"epigraph": "epigraph", "copyright": "copyright-page", "dedication": "dedication",
-             "half": "halftitlepage", "author": "contributors"}
-    for k in FRONT_ORDER:
-        if k == "blank":
-            continue
-        t, body, cls = fb[k]
-        et = f' epub:type="{types[k]}"' if k in types else ""
-        pages.append((f"{k}.xhtml", t, B.xhtml(t, f'<section class="page {cls}"{et}>{body}</section>'), False))
+                                                    f'{SUBTITLE} by {B.AUTHOR}"/>', "cover"), False)]
+    start = None
+    for i, (t, body, cls) in enumerate(matter(entries, "front matters", version, d, img)):
+        f = f"front{i + 1:02d}.xhtml"
+        et = ' epub:type="copyright-page"' if t.lower() == "copyright" else ' epub:type="halftitlepage"' if t.lower().startswith("half title") else ""
+        if t.lower().startswith("half title"):
+            start = f
+        pages.append((f, t, B.xhtml(t, f'<section class="page {cls}"{et}>{body}</section>'), False))
     first = None
-    for n, t, v in texts:
+    for kind, n, t, v in collection_pages(entries):
+        if kind == "blank":
+            f = f"blank{n}.xhtml"
+            pages.append((f, "Blank", B.xhtml("Blank page", '<section class="page blank"><div class="blank">&#160;</div></section>'), False))
+            continue
         f = f"t{n}.xhtml"
         first = first or f
         pages.append((f, t, B.xhtml(t, f'<section class="piece" epub:type="chapter">{piece(n, t, v, img)}</section>'), True))
-    for k in BACK_ORDER:
-        t, body, cls = fb[k]
-        et = f' epub:type="{types[k]}"' if k in types else ""
-        pages.append((f"{k}.xhtml", t, B.xhtml(t, f'<section class="page {cls}"{et}>{body}</section>'), k != "end"))
+    for i, (t, body, cls) in enumerate(matter(entries, "back matters", version, d, img)):
+        f = f"back{i + 1:02d}.xhtml"
+        pages.append((f, t, B.xhtml(t, f'<section class="page {cls}">{body}</section>'), t.lower() not in ("insert", "blank")))
+    start = start or first
 
     toc = "".join(f'<li><a href="{f}">{escape(t)}</a></li>' for f, t, _, inc in pages if inc)
     nav = B.xhtml("Contents", f'<nav epub:type="toc" id="toc" class="toc"><h2>Contents</h2><ol>{toc}</ol></nav>'
                   '<nav epub:type="landmarks" hidden="hidden"><ol>'
                   '<li><a epub:type="cover" href="cover.xhtml">Cover</a></li>'
-                  f'<li><a epub:type="bodymatter" href="{first}">Texts</a></li></ol></nav>')
+                  f'<li><a epub:type="bodymatter" href="{start}">Start</a></li></ol></nav>')
     manifest = [
         '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
         '<item id="css" href="style.css" media-type="text/css"/>',
@@ -333,11 +390,11 @@ def build_epub(entries, texts, version, d, path):
         '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en-GB">\n'
         '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
         f'<dc:identifier id="bookid">{book_id}</dc:identifier>\n'
-        f"<dc:title>{B.TITLE} {B.KANJI}</dc:title>\n<dc:creator>{B.AUTHOR}</dc:creator>\n"
+        f"<dc:title>{B.TITLE} {B.KANJI}: {SUBTITLE}</dc:title>\n<dc:creator>{B.AUTHOR}</dc:creator>\n"
         f"<dc:language>en-GB</dc:language>\n<dc:date>{d.isoformat()}</dc:date>\n"
         f"<dc:publisher>{B.AUTHOR}</dc:publisher>\n"
         f"<dc:rights>© {d.year} {B.AUTHOR}. All rights reserved.</dc:rights>\n"
-        f"<dc:description>{B.SUBTITLE} by {B.AUTHOR}. Beta {version}, {B.long_date(d)}.</dc:description>\n"
+        f"<dc:description>{SUBTITLE}, short texts by {B.AUTHOR}. Beta {version}, {B.long_date(d)}.</dc:description>\n"
         f'<meta property="dcterms:modified">{modified}</meta>\n<meta name="cover" content="cover-image"/>\n'
         "</metadata>\n<manifest>\n" + "\n".join(manifest) + "\n</manifest>\n"
         "<spine>\n" + "\n".join(spine) + "\n</spine>\n</package>\n")

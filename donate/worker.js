@@ -9,7 +9,7 @@
 //   STRIPE_SECRET_KEY  a Stripe restricted key with 'Checkout Sessions: Write'
 // See donate/README.md for the setup.
 
-const VERSION = 'Beta 0.2';
+const VERSION = 'Beta 0.3';
 const HOME = 'https://donate.yoso.one';
 const ALLOWED_ORIGINS = [
   HOME, 'https://river.yoso.one', 'https://hub.yoso.one', 'https://yosoone.github.io',
@@ -170,27 +170,30 @@ h1{margin:0 0 14px;font-family:var(--display);font-weight:400;font-size:clamp(34
 .flash.bad{border-left-color:var(--bad)}
 form.give{display:grid;gap:10px;padding:28px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 label,.lbl{font-size:13px;letter-spacing:.06em;color:var(--muted)}
-select,.amount input{min-height:44px;width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:0 12px}
+select,.amount input{min-height:44px;width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:0 12px}
 .gap{margin-top:12px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{min-height:44px;min-width:80px;padding:0 16px;font:inherit;font-size:15px;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:999px;cursor:pointer}
-.chip:hover{border-color:var(--ink)}
-.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.chip{min-height:44px;min-width:80px;padding:0 16px;font:inherit;font-size:15px;color:var(--ink-2);background:transparent;border:1px solid var(--rule);border-radius:8px;cursor:pointer}
+.chip:hover{border-color:#9C761C;color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:#9C761C;color:var(--ink)}
 .amount{display:flex;flex-wrap:wrap;gap:8px}
-.amount .yen{display:grid;place-items:center;min-width:44px;border:1px solid var(--rule);border-radius:3px;background:var(--paper);color:var(--muted)}
+.amount .yen{display:grid;place-items:center;min-width:44px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--muted)}
 .amount input{flex:1 1 140px;width:auto}
-.amount button{min-height:44px;padding:0 24px;font:inherit;font-size:15px;letter-spacing:.06em;color:var(--ground);background:var(--ink);border:0;border-radius:3px;cursor:pointer}
-.amount button:hover{background:var(--accent)}
+.amount button{min-height:44px;padding:0 24px;font:inherit;font-size:15px;letter-spacing:.06em;color:#F6F5F1;background:#4A4944;border:0;border-radius:8px;cursor:pointer;transition:background .35s ease,box-shadow .35s ease,color .35s ease}
+.amount button:hover{background:#E1BA4B;color:#1C1C1A;box-shadow:0 0 0 4px rgba(225,186,75,.28),0 6px 22px -6px rgba(225,186,75,.28)}
 .note{margin:4px 0 0;font-size:13px;color:var(--muted)}
 .err{margin:0;font-size:14px;color:var(--bad)}
 .err:empty{display:none}
+.back{margin:28px 0 0;text-align:center;font-size:14px}
+.back a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;color:var(--muted);text-decoration:none;border:1px solid transparent;border-radius:8px}
+.back a:hover{color:var(--ink);border-color:var(--rule)}
 footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:32px;padding:28px 0 48px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
 footer p{margin:0}
 </style>
 </head>
 <body>
 <div class="wrap">
-<a class="family-mark" href="https://hub.yoso.one"><img src="https://river.yoso.one/images/yoso-mark.png" alt="Yoso" width="48" height="48"></a>
+<span class="family-mark"><img src="https://river.yoso.one/images/yoso-mark.png" alt="Yoso" width="48" height="48"></span>
 <header><a href="${HOME}/">Yoso</a></header>
 <main>
 <h1>Donate</h1>
@@ -208,6 +211,7 @@ ${flash}
 <p class="err" id="err" role="alert"></p>
 </form>
 </main>
+<p class="back" id="back" hidden><a href="#">← Back</a></p>
 <footer><p>&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</p><p><span class="version" data-version>${VERSION}</span></p></footer>
 </div>
 <script>
@@ -219,6 +223,14 @@ function sync(){var v=n();b.textContent=v?'Donate '+y(v):'Donate';c.forEach(func
 c.forEach(function(x){x.addEventListener('click',function(){a.value=Number(x.dataset.yen).toLocaleString('en');sync()})});
 a.addEventListener('input',sync);sync();
 f.addEventListener('submit',function(ev){var v=n();if(!v||v<${MIN_YEN}){ev.preventDefault();e.textContent='Please enter an amount of ¥${MIN_YEN} or more.';a.focus();return}a.value=String(v)});
+// Back link: only for readers who arrived from one of Yoso's sites. The
+// address is kept for the visit, so it survives the trip to Stripe and back.
+var bk=document.getElementById('back'),HOMES={river:'https://river.yoso.one/',shinsei:'https://shinsei.yoso.one/',yosokuro:'https://yosokuro.yoso.one/',on:'https://on.yoso.one/',one:'https://one.yoso.one/'};
+function ours(u){try{var h=new URL(u).hostname;return h!=='donate.yoso.one'&&(h==='yoso.one'||/\.yoso\.one$/.test(h)||h==='yosoone.github.io')}catch(x){return false}}
+var from='';try{from=sessionStorage.getItem('yoso-from')||''}catch(x){}
+if(ours(document.referrer)){from=document.referrer}
+else if(!from){var k=new URLSearchParams(location.search).get('for');if(HOMES[k])from=HOMES[k]}
+if(from){try{sessionStorage.setItem('yoso-from',from)}catch(x){}bk.querySelector('a').href=from;bk.hidden=false}
 if(location.search){history.replaceState(null,'',location.pathname)}
 })();
 </script>

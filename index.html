@@ -292,11 +292,11 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.48</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.49</span></span>
   </footer>
 </div>
 
-<script src="assets/book.js?v=0.37"></script>
+<script src="assets/book.js?v=0.47"></script>
 <script>
 // First version of each draft in River 川/Desk/Draft, in file order. English as written; Japanese translations (ja) for review.
 const TEXTS = [
@@ -495,7 +495,7 @@ const BOOK_UI = {
         doneList:"Check your inbox to confirm the mailing list.", back:"← Read online" },
   ja: { k:"新刊", h:"目覚める心", alt:"『River 川　目覚める心』Yoso の表紙",
         p:"短い言葉を一冊の小さな本にまとめました。思いの深まりとともに、更新されていきます。生きることへの愛に捧げて。下で読むことも、スマートフォンや電子書籍リーダー用にダウンロードすることもできます。",
-        n:"篇", pages:"頁", read:"分で読めます", get:"本をダウンロード", getNote:"無料・PDF と EPUB", locale:"ja-JP", only:"本は現在、英語版のみです。",
+        n:"篇", pages:"頁", read:"分で読めます", get:"本をダウンロード", getNote:"無料・PDF と EPUB", locale:"ja-JP", only:"",
         title:"River をダウンロード", intro:"River は無料です。ダウンロードの前に、執筆を支援したり、メーリングリストに登録したりできます。どちらも任意です。",
         s1:"River を支援する", opt:"任意",
         s1p:"言葉が心に届いたなら、Stripe を通じてお好きな金額をお寄せいただけます。どんな金額でも励みになります。もちろん、なしでも構いません。",
@@ -508,7 +508,7 @@ const BOOK_UI = {
         doneList:"メーリングリストの確認メールをご確認ください。", back:"← オンラインで読む" },
   fr: { k:"Nouveau", h:"L’Éveil de l’esprit", alt:"Couverture de River 川, L’Éveil de l’esprit, de Yoso",
         p:"Un recueil de textes courts réunis en un petit volume, mis à jour à mesure que la réflexion évolue. Dédié à mon amour de la vie. À lire ci-dessous ou à télécharger pour votre téléphone ou votre liseuse.",
-        n:"textes", pages:"pages", read:"min de lecture", get:"Télécharger le livre", getNote:"Gratuit · PDF et EPUB", locale:"fr-FR", only:"Le livre n’existe pour l’instant qu’en anglais.",
+        n:"textes", pages:"pages", read:"min de lecture", get:"Télécharger le livre", getNote:"Gratuit · PDF et EPUB", locale:"fr-FR", only:"",
         title:"Télécharger River", intro:"River est gratuit. Avant de le télécharger, vous pouvez soutenir l’écriture ou vous inscrire à la liste de diffusion. Les deux sont facultatifs.",
         s1:"Soutenir River", opt:"facultatif",
         s1p:"Si ces textes comptent pour vous, vous pouvez donner ce que vous voulez via Stripe. Tout montant aide, et rien du tout convient aussi.",
@@ -520,6 +520,13 @@ const BOOK_UI = {
         need:"Saisissez votre adresse e-mail, ou décochez la case.", lDonate:"Don · facultatif", optDonate:"Faire un don", getSmall:"Télécharger le livre", getFmt:"PDF · EPUB", otherShort:"Autre", lList:"Lettre · facultatif", lDl:"Télécharger", tickShort:"Recevoir les nouveaux textes par e-mail", pdfShort:"PDF", epubShort:"EPUB", done:"Merci. Le téléchargement a commencé.",
         doneList:"Vérifiez votre boîte mail pour confirmer l’inscription.", back:"← Lire en ligne" }
 };
+// The edition in the reader's language, falling back to English.
+function bookFor(){
+  const b = window.RIVER_BOOK;
+  if (!b) return null;
+  const e = b.editions && (b.editions[lang] || b.editions.en);
+  return e ? Object.assign({}, b, e) : b;
+}
 function bookWhen(b, u){
   try { return new Intl.DateTimeFormat(u.locale, {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'}).format(new Date(b.date + 'T00:00:00Z')); }
   catch(e) { return b.date; }
@@ -529,7 +536,7 @@ function bookCover(b, u, cls){
 }
 // Home page promo: cover and one button, leading to the download page (#book).
 function bookHTML(){
-  const b = window.RIVER_BOOK, u = BOOK_UI[lang];
+  const b = bookFor(), u = BOOK_UI[lang];
   if (!b) return '';
   return '<section class="book" aria-labelledby="book-h">' +
     (b.cover ? '<a class="cover" href="#book">' + bookCover(b, u, '') + '</a>' : '') +
@@ -548,7 +555,7 @@ try {
 function yen(n){ return '¥' + Number(n).toLocaleString('en'); }
 // Download page: (1) optional donation, (2) optional newsletter, (3) download.
 function bookPage(){
-  const b = window.RIVER_BOOK, u = BOOK_UI[lang];
+  const b = bookFor(), u = BOOK_UI[lang];
   if (!b) { location.hash = 'home'; return; }
   document.title = u.title + ' · River 川';
   const size = kb => kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb + ' KB';

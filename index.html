@@ -96,7 +96,7 @@ header.site{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify
 /* Text page */
 .piece{min-height:calc(100svh - 260px);display:flex;flex-direction:column;justify-content:center;padding-block:64px 80px;border-top:1px solid var(--rule)}
 .piece-inner{width:fit-content;max-width:100%;margin:0 auto;text-align:center}
-/* Each text: its title above, the typed signature below (no seal) */
+/* Each text: the name in type below (no seal). .piece-title is kept for when titles return. */
 .piece-title{margin:0 0 2.2em;font-family:var(--display);font-weight:400;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .piece-title:lang(ja){font-size:14px;letter-spacing:.12em;text-transform:none}
 .piece-sign{margin:2.4em 0 0;font-family:var(--display);font-size:15px;letter-spacing:.12em;color:var(--muted)}
@@ -271,7 +271,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.42</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.43</span></span>
   </footer>
 </div>
 
@@ -627,7 +627,6 @@ function piece(i){
   document.title = title(x) + ' · River 川';
   view.innerHTML =
     '<article class="piece" aria-label="' + esc(title(x)) + '"><div class="piece-inner">' +
-    '<h1 class="piece-title">' + esc(title(x)) + '</h1>' +
     '<p class="verse' + sizeClass(verse(x)) + '">' + verseHTML(verse(x)) + '</p>' +
     '<p class="piece-sign">Yoso</p></div></article>' +
     '<nav class="pager" aria-label="More texts">' +

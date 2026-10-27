@@ -203,13 +203,25 @@ SITE_RE = re.compile(r"^(https?://)?([a-z0-9-]+\.)+[a-z]{2,}(/\S*)?$", re.I)
 INLINE_SITE = re.compile(r"(?<![\w@/.])((?:https?://)?(?:[a-z0-9-]+\.)+(?:one|com|org|net|jp|io)(?:/[^\s<]*)?)(?<![.,;:])", re.I)
 
 
+def site_url(u):
+    """Full address for a web address in the text, opening Yoso's sites in the book's language."""
+    url = u if u.startswith("http") else "https://" + u
+    host = re.sub(r"^https?://", "", url).split("/")[0].lower()
+    code = "en" if L["tag"].startswith("en") else L["tag"]
+    if host == "river.yoso.one":
+        return url.rstrip("/") + f"/?lang={code}"
+    if host == "donate.yoso.one":
+        return url.rstrip("/") + f"/?for=river&lang={code}"
+    return url
+
+
 def linkify(line):
     """Escape a line and turn any web address in it into a link."""
     out, last = [], 0
     for m in INLINE_SITE.finditer(line):
         u = m.group(1)
         out.append(escape(line[last:m.start(1)]))
-        out.append(f'<a href="{escape(u if u.startswith("http") else "https://" + u)}">{escape(u.split("//")[-1])}</a>')
+        out.append(f'<a href="{escape(site_url(u))}">{escape(u.split("//")[-1])}</a>')
         last = m.end(1)
     out.append(escape(line[last:]))
     return "".join(out)
@@ -243,8 +255,7 @@ def block_html(block, img):
         if m:
             flush(); out.append(m); continue
         if SITE_RE.match(l):
-            url = l if l.startswith("http") else "https://" + l
-            run.append(f'<a href="{escape(url)}">{escape(l.split("//")[-1])}</a>')
+            run.append(f'<a href="{escape(site_url(l))}">{escape(l.split("//")[-1])}</a>')
         else:
             run.append(linkify(l))
     flush()
@@ -260,7 +271,7 @@ def matter_page(e, version, d, img):
         raw = re.sub(r"[‘']\s*(Beta version|Date|year)\s*[’']", lambda m: stamp[m.group(1)], raw)
         lines = [l.strip() for l in raw.split("\n") if l.strip()]
         body = f'<p class="name">{escape(lines[0])}</p>' + "".join(
-            (f'<p><a href="https://{escape(l)}">{escape(l)}</a></p>' if SITE_RE.match(l) else f'<p>{linkify(l)}</p>') for l in lines[1:])
+            (f'<p><a href="{escape(site_url(l))}">{escape(l)}</a></p>' if SITE_RE.match(l) else f'<p>{linkify(l)}</p>') for l in lines[1:])
         return (title, f'<div class="colophon">{body}</div>', "colo")
     if title.lower().startswith("half title"):
         return (title, f'<p class="half">{escape(raw or B.KANJI)}</p>', "centre")

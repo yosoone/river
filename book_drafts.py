@@ -32,6 +32,50 @@ import book as B
 
 HERE = Path(__file__).resolve().parent
 SUBTITLE = "Awakening Mind"
+
+# Wording that changes with the book's language (--lang).
+LANGS = {
+    "en": {"tag": "en-GB", "subtitle": "Awakening Mind", "contents": "Contents", "cover": "Cover", "start": "Start",
+           "blank": "Blank page", "photo": "Photograph", "caption": "Kougenji Temple, Kumamoto",
+           "desc": "{sub}, short texts by {a}. Beta {v}, {date}.", "rights": "All rights reserved.",
+           "months": None},
+    "fr": {"tag": "fr", "subtitle": "L’Éveil de l’esprit", "contents": "Sommaire", "cover": "Couverture", "start": "Début",
+           "blank": "Page blanche", "photo": "Photographie", "caption": "Temple Kōgen-ji, Kumamoto",
+           "desc": "{sub}, textes courts de {a}. Bêta {v}, {date}.", "rights": "Tous droits réservés.",
+           "months": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
+                      "septembre", "octobre", "novembre", "décembre"]},
+}
+L = LANGS["en"]
+
+
+def set_lang(code):
+    """Switch the builder's wording (and dates) to another language."""
+    global L, SUBTITLE
+    L, SUBTITLE = LANGS[code], LANGS[code]["subtitle"]
+    if L["months"]:
+        B.long_date = lambda d: f"{d.day}{'er' if d.day == 1 else ''} {L['months'][d.month - 1]} {d.year}"
+    xh = B.xhtml
+    B.xhtml = lambda *a, **k: xh(*a, **k).replace('lang="en-GB" xml:lang="en-GB"', f'lang="{L["tag"]}" xml:lang="{L["tag"]}"')
+
+
+def french_typography(t):
+    """Curly apostrophes, and the thin non-breaking space French puts before ; : ? !"""
+    t = re.sub(r"(?<=\w)'(?=\w)", "’", t)
+    return re.sub(r"\s*([;:?!])", "\u202f\\1", t)
+
+
+def translate(entries, path):
+    """Replace each note's text with its translation, keyed by Scrivener ID."""
+    import json
+    tr = json.loads(Path(path).read_text(encoding="utf-8"))
+    for e in entries:
+        i = str(scriv_id(e))
+        if i in tr["texts"]:
+            t, v = tr["texts"][i]
+            e["title"], e["raw"] = french_typography(t), french_typography(v) + "\n— Yoso\n"
+        elif i in tr["matter"]:
+            e["raw"] = tr["matter"][i] if "‘" in tr["matter"][i] else french_typography(tr["matter"][i])
+    return entries
 PHOTO = HERE / "about.jpg"
 
 COLLECTION = {"collection", "best of", "refine"}
@@ -328,7 +372,7 @@ def build_pdf(entries, texts, version, d, path):
                      f'<section class="piece" id="t{n}">{piece(n, t, v, img)}</section>')
     for t, body, cls in matter(entries, "back matters", version, d, img):
         parts.append(f'<section class="front page {cls}">{body}</section>')
-    doc = (f'<!doctype html><html lang="en-GB"><head><meta charset="utf-8"/>'
+    doc = (f'<!doctype html><html lang="{L['tag']}"><head><meta charset="utf-8"/>'
            f'<title>{B.TITLE} {B.KANJI} — Beta {version}</title><meta name="author" content="{B.AUTHOR}"/>'
            f'<style>{B.PDF_CSS}{PDF_EXTRA}</style></head><body>{"".join(parts)}</body></html>')
     HTML(string=doc, base_url=str(HERE)).write_pdf(path)
@@ -374,14 +418,13 @@ a { color: inherit; text-decoration: none; }
 """
 
 
-PHOTO_CAPTION = "Kougenji Temple, Kumamoto"   # under the author photograph (EPUB)
 
 
 def build_epub(entries, texts, version, d, path):
     img = lambda n: n
-    book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, f"https://{B.SITE}/book/beta-{version}-{d}"))
+    book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, f"https://{B.SITE}/book/beta-{version}-{d}" + ("" if L["tag"] == "en-GB" else "/" + L["tag"])))
     modified = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    pages = [("cover.xhtml", "Cover", B.xhtml("Cover", f'<img src="cover.jpg" alt="{B.TITLE} {B.KANJI}, '
+    pages = [("cover.xhtml", L["cover"], B.xhtml(L["cover"], f'<img src="cover.jpg" alt="{B.TITLE} {B.KANJI}, '
                                                     f'{SUBTITLE} by {B.AUTHOR}"/>', "cover"), False)]
     start = None
     for i, (t, body, cls) in enumerate(matter(entries, "front matters", version, d, img)):
@@ -394,7 +437,7 @@ def build_epub(entries, texts, version, d, path):
     for kind, n, t, v in collection_pages(entries):
         if kind == "blank":
             f = f"blank{n}.xhtml"
-            pages.append((f, "Blank", B.xhtml("Blank page", '<section class="page blank"><div class="blank">&#160;</div></section>'), False))
+            pages.append((f, "Blank", B.xhtml(L["blank"], '<section class="page blank"><div class="blank">&#160;</div></section>'), False))
             continue
         f = f"t{n}.xhtml"
         first = first or f
@@ -408,17 +451,17 @@ def build_epub(entries, texts, version, d, path):
             # EPUB only: the photograph goes on the blank page before, as the left
             # page of the spread, and the text faces it on the right.
             pf = pages[-1][0]
-            pages[-1] = (pf, "Photograph", B.xhtml("Photograph", f'<section class="page centre photo-page">{pic.group(0)}<p class="caption">{escape(PHOTO_CAPTION)}</p></section>'), False)
+            pages[-1] = (pf, L["photo"], B.xhtml(L["photo"], f'<section class="page centre photo-page">{pic.group(0)}<p class="caption">{escape(L["caption"])}</p></section>'), False)
             body = pic_rx.sub("", body, count=1)
             spread[pf], spread[f] = "page-spread-left", "page-spread-right"
         pages.append((f, t, B.xhtml(t, f'<section class="page {cls}">{body}</section>'), t.lower() not in ("insert", "blank")))
     start = start or first
 
     toc = "".join(f'<li><a href="{f}">{escape(t)}</a></li>' for f, t, _, inc in pages if inc)
-    nav = B.xhtml("Contents", f'<nav epub:type="toc" id="toc" class="toc"><h2>Contents</h2><ol>{toc}</ol></nav>'
+    nav = B.xhtml(L["contents"], f'<nav epub:type="toc" id="toc" class="toc"><h2>{L["contents"]}</h2><ol>{toc}</ol></nav>'
                   '<nav epub:type="landmarks" hidden="hidden"><ol>'
-                  '<li><a epub:type="cover" href="cover.xhtml">Cover</a></li>'
-                  f'<li><a epub:type="bodymatter" href="{start}">Start</a></li></ol></nav>')
+                  '<li><a epub:type="cover" href="cover.xhtml">{L["cover"]}</a></li>'
+                  f'<li><a epub:type="bodymatter" href="{start}">{L["start"]}</a></li></ol></nav>')
     manifest = [
         '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
         '<item id="css" href="style.css" media-type="text/css"/>',
@@ -436,14 +479,14 @@ def build_epub(entries, texts, version, d, path):
         spine.append(f'<itemref idref="{pid}"' + (f' properties="{spread[f]}"' if f in spread else "") + '/>')
     opf = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
-        '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en-GB">\n'
+        f'<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="{L["tag"]}">\n'
         '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
         f'<dc:identifier id="bookid">{book_id}</dc:identifier>\n'
         f"<dc:title>{B.TITLE} {B.KANJI}: {SUBTITLE}</dc:title>\n<dc:creator>{B.AUTHOR}</dc:creator>\n"
-        f"<dc:language>en-GB</dc:language>\n<dc:date>{d.isoformat()}</dc:date>\n"
+        f"<dc:language>{L['tag']}</dc:language>\n<dc:date>{d.isoformat()}</dc:date>\n"
         f"<dc:publisher>{B.AUTHOR}</dc:publisher>\n"
-        f"<dc:rights>© {d.year} {B.AUTHOR}. All rights reserved.</dc:rights>\n"
-        f"<dc:description>{SUBTITLE}, short texts by {B.AUTHOR}. Beta {version}, {B.long_date(d)}.</dc:description>\n"
+        f"<dc:rights>© {d.year} {B.AUTHOR}. {L['rights']}</dc:rights>\n"
+        f"<dc:description>{L['desc'].format(sub=SUBTITLE, a=B.AUTHOR, v=version, date=B.long_date(d))}</dc:description>\n"
         f'<meta property="dcterms:modified">{modified}</meta>\n<meta name="cover" content="cover-image"/>\n'
         "</metadata>\n<manifest>\n" + "\n".join(manifest) + "\n</manifest>\n"
         "<spine>\n" + "\n".join(spine) + "\n</spine>\n</package>\n")
@@ -489,6 +532,23 @@ def render_svg(svg, w, h):
         return out.read_bytes()
 
 
+def recentre_text(svg, tid, new):
+    """Replace the text of <text id=tid> and keep it centred on the same point."""
+    from fontTools.ttLib import TTFont
+    m = re.search(r'(<text id="' + tid + r'" transform="matrix\(1 0 0 1 )([\d.]+)( [\d.]+\)" class="([^"]+)">)([^<]*)(</text>)', svg)
+    if not m or m.group(5) == new:
+        return svg
+    style = dict(re.findall(r"\.(st\d+)\{([^}]*)\}", svg))
+    css = ";".join(style.get(c, "") for c in m.group(4).split())
+    size = float(re.search(r"font-size:([\d.]+)px", css).group(1))
+    sp = float((re.search(r"letter-spacing:([\d.]+)", css) or [0, 0])[1])
+    ft = TTFont(str(B.FONTS / "ShipporiMincho-Regular-Latin.ttf"))
+    cm, hm, upm = ft.getBestCmap(), ft["hmtx"], ft["head"].unitsPerEm
+    wid = lambda t: sum((hm[cm[ord(c)]][0] if ord(c) in cm else upm / 2) * size / upm + sp for c in t)
+    centre = float(m.group(2)) + wid(m.group(5)) / 2
+    return svg.replace(m.group(0), f"{m.group(1)}{centre - wid(new) / 2:.4f}{m.group(3)}{escape(new)}{m.group(6)}")
+
+
 def cover_from_svg(svg_path, version, d):
     """Use Yoso's Illustrator cover (1600 x 2560 SVG). The Edition line is
     rewritten with this edition's beta number and date and kept centred on the
@@ -499,8 +559,9 @@ def cover_from_svg(svg_path, version, d):
     svg = Path(svg_path).read_text(encoding="utf-8")
     # Illustrator names the font by its PostScript name; renderers want the family name.
     svg = re.sub(r"font-family:\s*'?ShipporiMincho-[A-Za-z]+'?", "font-family:'Shippori Mincho'", svg)
-    m = re.search(r'(<text id="Edition" transform="matrix\(1 0 0 1 )([\d.]+)( [\d.]+\)" class="([^"]+)">)([^<]*)(</text>)', svg)
-    if m:
+    for tid, new in (("Edition", f"Beta {version} · {B.long_date(d)}"), ("Subtitle", SUBTITLE)):
+        svg = recentre_text(svg, tid, new)
+    if False:
         classes = m.group(4).split()
         style = dict(re.findall(r"\.(st\d+)\{([^}]*)\}", svg))
         css = ";".join(style.get(c, "") for c in classes)
@@ -530,13 +591,18 @@ def main():
     ap.add_argument("--version", required=True)
     ap.add_argument("--date")
     ap.add_argument("--out", default=str(HERE / "editions"))
+    ap.add_argument("--lang", default="en", choices=sorted(LANGS))
+    ap.add_argument("--translations", help="JSON of translated texts and notes by Scrivener ID (book_fr.json)")
     a = ap.parse_args()
+    set_lang(a.lang)
     d = date.fromisoformat(a.date) if a.date else datetime.now(B.JST).date()
     entries = read_drafts(a.drafts)
+    if a.lang != "en":
+        entries = translate(entries, a.translations or HERE / f"book_{a.lang}.json")
     texts = collection(entries)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    stem = f"river-beta-{a.version}-{d.isoformat()}"
+    stem = f"river-{a.lang + '-' if a.lang != 'en' else ''}beta-{a.version}-{d.isoformat()}"
     global COVER_JPG, COVER_PNG
     if a.cover:
         COVER_JPG, COVER_PNG = cover_from_svg(a.cover, a.version, d)

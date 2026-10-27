@@ -39,6 +39,7 @@ FRONT = {"front matters"}
 BACK = {"back matters"}
 NEVER = {"seeds", "rework"}
 FRONT_ONLY = {"thank you for always being by my side"}
+FRONT_ONLY_IDS = {64}   # in the front matter of the book; on the site only
 
 AUTHOR_NOTE = (
     "Yoso is a tattoo artist and multimedia practitioner living in Miyazaki, Japan. "
@@ -50,14 +51,24 @@ AUTHOR_NOTE = (
 # ---------------------------------------------------------------- source
 
 def clean_title(stem):
+    stem = stem.rstrip(".")          # Scrivener now exports "Title [id]..md"
     t = re.sub(r"^\d+\s+", "", stem)
     t = re.sub(r"\s*\[\d+\]$", "", t)
     t = re.sub(r"\s+_new$", "", t)
     return t.strip()
 
 
+def undouble(raw):
+    """Scrivener's newer export puts a blank line after every line. When no
+    two text lines sit next to each other, the blank lines are just line
+    breaks, so they are collapsed."""
+    lines = raw.split("\n")
+    adjacent = any(a.strip() and b.strip() for a, b in zip(lines, lines[1:]))
+    return raw if adjacent else re.sub(r"\n[ \t]*\n", "\n", raw)
+
+
 def first_version(raw):
-    raw = raw.replace(" ", "\n").replace("\r\n", "\n")
+    raw = undouble(raw.replace("\u2028", "\n").replace("\r\n", "\n"))
     lines = []
     for l in raw.split("\n"):
         if l.strip().startswith("— Yoso") or l.strip().startswith("― Yoso"):
@@ -84,6 +95,11 @@ def read_drafts(folder):
     return out
 
 
+def scriv_id(e):
+    m = re.search(r"\[(\d+)\]\.*$", e["path"].stem)
+    return int(m.group(1)) if m else None
+
+
 def pick(entries, key):
     for e in entries:
         if e["title"].lower() == key.lower():
@@ -96,7 +112,7 @@ def collection(entries):
     for e in entries:
         if e["section"] in NEVER or e["section"] not in COLLECTION:
             continue
-        if e["title"].lower() in FRONT_ONLY:
+        if e["title"].lower() in FRONT_ONLY or scriv_id(e) in FRONT_ONLY_IDS:
             continue
         v, signed = first_version(e["raw"])
         if v:
@@ -212,7 +228,7 @@ def collection_pages(entries):
             continue
         if e["title"].lower() == "insert":
             out.append(("blank", e["n"], None, None)); continue
-        if e["title"].lower() in FRONT_ONLY:
+        if e["title"].lower() in FRONT_ONLY or scriv_id(e) in FRONT_ONLY_IDS:
             continue
         v, _ = first_version(e["raw"])
         if v:
@@ -220,7 +236,7 @@ def collection_pages(entries):
     return out
 
 
-TITLE_FIX = {"Deach is clemency": "Death is clemency"}
+TITLE_FIX = {}
 
 
 def piece(n, t, v, img):

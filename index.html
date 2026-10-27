@@ -292,7 +292,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.51</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.52</span></span>
   </footer>
 </div>
 
@@ -844,6 +844,7 @@ function setLang(l){
   lang = l;
   try { localStorage.setItem('river-lang', l); } catch(e) {}
   render();
+  if (window.goatView) window.goatView();
 }
 document.getElementById('btn-en').addEventListener('click', () => setLang('en'));
 document.getElementById('btn-ja').addEventListener('click', () => setLang('ja'));
@@ -866,10 +867,11 @@ if (GOAT) {
   s.async = true; s.src = 'https://gc.zgo.at/count.js';
   s.dataset.goatcounter = 'https://' + GOAT + '.goatcounter.com/count';
   s.dataset.goatcounterSettings = '{"no_onload": true}';
-  // River is one page: each text or page (#t5, #about…) is counted as its own path.
-  const view = () => goat({ path: location.hash || '#home', title: document.title });
-  s.onload = view;
-  window.addEventListener('hashchange', view);
+  // River is one page: each text or page (#t5, #about…) is counted as its own path,
+  // with the language it was read in: river/fr/#book. A language switch counts again.
+  window.goatView = () => goat({ path: lang + '/' + (location.hash || '#home'), title: document.title });
+  s.onload = window.goatView;
+  window.addEventListener('hashchange', window.goatView);
   document.head.appendChild(s);
 }
 </script>

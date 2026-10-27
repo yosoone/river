@@ -63,7 +63,7 @@ def main():
         guid = f"river-t{n}"
         # New texts: list order, first text newest, one second apart.
         date = dates.get(guid) or format_datetime(now - timedelta(seconds=i))
-        body = verse_html(v) + "<p>– Yoso</p>"
+        body = verse_html(v) + "<p>Yoso</p>"
         out.append(
             "  <item>\n"
             f"    <title>{xml_escape(t)}</title>\n"

@@ -28,19 +28,19 @@ const T = {
         min: 'Please enter an amount of ¥{m} or more.', thanks: 'Thank you for your support. It means a great deal.',
         error: 'The donation didn’t go through and nothing was charged. Please try again.', back: '← Back',
         place: 'Miyazaki, Japan', desc: 'Support the work of Yoso, an artist in Miyazaki, Japan.',
-        labels: { yoso: 'Wherever it’s needed', dojo: 'The creation of the dojo', river: 'River 川 · short texts', shinsei: 'Shinsei · paintings and scrolls', yosokuro: 'Yosokuro · photographs of Japan', on: 'On · the magazine', one: 'The Vault · notes and essays' } },
+        labels: { yoso: 'Wherever it’s needed', dojo: 'The creation of the dojo', river: 'River 川 · short texts by Yoso', shinsei: 'Shinsei · paintings and scrolls', yosokuro: 'Yosokuro · photographs of Japan', on: 'On · the magazine', one: 'The Vault · notes and essays' } },
   fr: { html: 'fr', title: 'Faire un don', what: 'À quoi il est destiné', amount: 'Montant en yens', other: 'ou saisissez un montant libre',
         btn: 'Faire un don', btnAmt: 'Donner {a}', note: 'Paiement par le service sécurisé de Stripe. Minimum {m}\u00a0¥.',
         min: 'Veuillez saisir un montant d’au moins {m}\u00a0¥.', thanks: 'Merci de votre soutien. Il compte beaucoup.',
         error: 'Le don n’a pas abouti et rien n’a été prélevé. Veuillez réessayer.', back: '← Retour',
         place: 'Miyazaki, Japon', desc: 'Soutenir le travail de Yoso, artiste à Miyazaki, au Japon.',
-        labels: { yoso: 'Là où c’est nécessaire', dojo: 'La création du dojo', river: 'River 川 · textes courts', shinsei: 'Shinsei · peintures et rouleaux', yosokuro: 'Yosokuro · photographies du Japon', on: 'On · le magazine', one: 'The Vault · notes et essais' } },
+        labels: { yoso: 'Là où c’est nécessaire', dojo: 'La création du dojo', river: 'River 川 · textes courts de Yoso', shinsei: 'Shinsei · peintures et rouleaux', yosokuro: 'Yosokuro · photographies du Japon', on: 'On · le magazine', one: 'The Vault · notes et essais' } },
   ja: { html: 'ja', title: '寄付', what: '寄付の用途', amount: '金額（円）', other: 'または金額を自由に入力',
         btn: '寄付する', btnAmt: '{a} を寄付する', note: 'Stripe の安全な決済画面でお支払いいただけます。最低 ¥{m}。',
         min: '¥{m} 以上の金額を入力してください。', thanks: 'ご支援をありがとうございます。大きな励みになります。',
         error: '寄付が完了しませんでした。請求は発生していません。もう一度お試しください。', back: '← 戻る',
         place: '宮崎', desc: '宮崎のアーティスト、Yoso の活動を支援する。',
-        labels: { yoso: '必要なところへ', dojo: '道場の創設', river: 'River 川・短い言葉', shinsei: 'Shinsei・絵画と掛軸', yosokuro: 'Yosokuro・日本の写真', on: 'On・雑誌', one: 'The Vault・ノートとエッセイ' } },
+        labels: { yoso: '必要なところへ', dojo: '道場の創設', river: 'River 川・Yoso の短い言葉', shinsei: 'Shinsei・絵画と掛軸', yosokuro: 'Yosokuro・日本の写真', on: 'On・雑誌', one: 'The Vault・ノートとエッセイ' } },
 };
 const LANG_ORDER = [['en', 'EN'], ['fr', 'FR'], ['ja', '日本語']];
 function pickLang(request, url) {
@@ -60,7 +60,7 @@ function pickLang(request, url) {
 const PROJECTS = {
   yoso:     { label: 'Wherever it’s needed', name: 'Donation to Yoso', back: `${HOME}/` },
   dojo:     { label: 'The creation of the dojo', name: 'Donation to the dojo', back: `${HOME}/` },
-  river:    { label: 'River 川 · short texts', name: 'Donation to River 川', back: 'https://river.yoso.one/#book' },
+  river:    { label: 'River 川 · short texts by Yoso', name: 'Donation to River 川', back: 'https://river.yoso.one/#book' },
   shinsei:  { label: 'Shinsei · paintings and scrolls', name: 'Donation to Shinsei', back: `${HOME}/` },
   yosokuro: { label: 'Yosokuro · photographs of Japan', name: 'Donation to Yosokuro', back: `${HOME}/` },
   on:       { label: 'On · the magazine', name: 'Donation to On', back: `${HOME}/` },
@@ -224,6 +224,7 @@ select,.amount input{min-height:44px;width:100%;min-width:0;font:inherit;font-si
 .amount input{flex:1 1 140px;width:auto}
 .amount button{min-height:44px;padding:0 24px;font:inherit;font-size:15px;letter-spacing:.06em;color:#F6F5F1;background:#4A4944;border:0;border-radius:8px;cursor:pointer;transition:background .35s ease,box-shadow .35s ease,color .35s ease}
 .amount button:hover{background:#E1BA4B;color:#1C1C1A;box-shadow:0 0 0 4px rgba(225,186,75,.28),0 6px 22px -6px rgba(225,186,75,.28)}
+@media (max-width:560px){.chip{flex:1 1 0;min-width:0}.amount input{flex-basis:calc(100% - 52px)}.amount button{flex:1 1 100%;margin-top:4px}}
 .note{margin:4px 0 0;font-size:13px;color:var(--muted)}
 .err{margin:0;font-size:14px;color:var(--bad)}
 .err:empty{display:none}

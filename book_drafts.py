@@ -368,6 +368,8 @@ a { color: inherit; text-decoration: none; }
 .letter .name { font-size: 0.85em; letter-spacing: 0.3em; }
 .letter .seal { margin: 0.4em 0 1.2em; line-height: 0; }
 .letter .stanza { margin: 0 0 1em; }
+.photo-page .pic { margin: 0; }
+.photo-page .portrait { width: 80%; max-width: 22em; height: auto; margin: 0 auto; }
 """
 
 
@@ -393,8 +395,18 @@ def build_epub(entries, texts, version, d, path):
         f = f"t{n}.xhtml"
         first = first or f
         pages.append((f, t, B.xhtml(t, f'<section class="piece" epub:type="chapter">{piece(n, t, v, img)}</section>'), True))
+    spread = {}
+    pic_rx = re.compile(r'<p class="pic"><img class="portrait"[^>]*/></p>')
     for i, (t, body, cls) in enumerate(matter(entries, "back matters", version, d, img)):
         f = f"back{i + 1:02d}.xhtml"
+        pic = pic_rx.search(body)
+        if pic and pages and pages[-1][1].lower() in ("insert", "blank"):
+            # EPUB only: the photograph goes on the blank page before, as the left
+            # page of the spread, and the text faces it on the right.
+            pf = pages[-1][0]
+            pages[-1] = (pf, "Photograph", B.xhtml("Photograph", f'<section class="page centre photo-page">{pic.group(0)}</section>'), False)
+            body = pic_rx.sub("", body, count=1)
+            spread[pf], spread[f] = "page-spread-left", "page-spread-right"
         pages.append((f, t, B.xhtml(t, f'<section class="page {cls}">{body}</section>'), t.lower() not in ("insert", "blank")))
     start = start or first
 
@@ -417,7 +429,7 @@ def build_epub(entries, texts, version, d, path):
     for f, _, _, _ in pages:
         pid = f.rsplit(".", 1)[0]
         manifest.append(f'<item id="{pid}" href="{f}" media-type="application/xhtml+xml"/>')
-        spine.append(f'<itemref idref="{pid}"/>')
+        spine.append(f'<itemref idref="{pid}"' + (f' properties="{spread[f]}"' if f in spread else "") + '/>')
     opf = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en-GB">\n'

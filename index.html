@@ -631,6 +631,7 @@ function bookPage(){
       subscribed = true;
     }
     done.textContent = u.done + (subscribed ? ' ' + u.doneList : '');
+    goat({ path: 'download/' + a.getAttribute('download'), title: 'Download ' + a.getAttribute('download'), event: true });
   }));
 }
 
@@ -853,6 +854,24 @@ route();
 </script>
 
 <script src="assets/list-choice.js" defer></script>
+<script>
+// GoatCounter (goatcounter.com): visits, texts read and book downloads, with no
+// cookies and no personal data. GOAT is the account's code (GOAT.goatcounter.com);
+// while it is empty nothing is loaded or counted.
+const GOAT = '';
+function goat(o){ try { if (GOAT && window.goatcounter && window.goatcounter.count) window.goatcounter.count(o); } catch(e) {} }
+if (GOAT) {
+  const s = document.createElement('script');
+  s.async = true; s.src = 'https://gc.zgo.at/count.js';
+  s.dataset.goatcounter = 'https://' + GOAT + '.goatcounter.com/count';
+  s.dataset.goatcounterSettings = '{"no_onload": true}';
+  // River is one page: each text or page (#t5, #about…) is counted as its own path.
+  const view = () => goat({ path: '/' + (location.hash || '#home'), title: document.title });
+  s.onload = view;
+  window.addEventListener('hashchange', view);
+  document.head.appendChild(s);
+}
+</script>
 <!-- Cloudflare Web Analytics: visit counts without cookies or personal data -->
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d8ad08c2a6944110a33bb653ed9d5e10"}'></script>
 </body>

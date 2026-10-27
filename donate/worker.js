@@ -9,7 +9,7 @@
 //   STRIPE_SECRET_KEY  a Stripe restricted key with 'Checkout Sessions: Write'
 // See donate/README.md for the setup.
 
-const VERSION = 'Beta 0.3';
+const VERSION = 'v0.4';
 const HOME = 'https://donate.yoso.one';
 const ALLOWED_ORIGINS = [
   HOME, 'https://river.yoso.one', 'https://hub.yoso.one', 'https://yosoone.github.io',
@@ -18,6 +18,42 @@ const MIN_YEN = 100;        // Stripe's floor for yen is ¥50; ¥100 keeps fees 
 const MAX_YEN = 1000000;
 const SUGGEST = [500, 1000, 3000];
 const LOCALES = ['en', 'ja', 'fr'];
+
+// Page wording in English, French and Japanese (French and Japanese are drafts
+// for Yoso to check). The language comes from ?lang=, then a remembered choice,
+// then the browser's own language.
+const T = {
+  en: { html: 'en-GB', title: 'Donate', what: 'What it’s for', amount: 'Amount in yen', other: 'or type any amount',
+        btn: 'Donate', btnAmt: 'Donate {a}', note: 'Paid through Stripe’s secure checkout. Minimum ¥{m}.',
+        min: 'Please enter an amount of ¥{m} or more.', thanks: 'Thank you for your support. It means a great deal.',
+        error: 'The donation didn’t go through and nothing was charged. Please try again.', back: '← Back',
+        place: 'Miyazaki, Japan', desc: 'Support the work of Yoso, an artist in Miyazaki, Japan.',
+        labels: { yoso: 'Wherever it’s needed', dojo: 'The creation of the dojo', river: 'River 川 · short texts', shinsei: 'Shinsei · paintings and scrolls', yosokuro: 'Yosokuro · photographs of Japan', on: 'On · the magazine', one: 'The Vault · notes and essays' } },
+  fr: { html: 'fr', title: 'Faire un don', what: 'À quoi il est destiné', amount: 'Montant en yens', other: 'ou saisissez un montant libre',
+        btn: 'Faire un don', btnAmt: 'Donner {a}', note: 'Paiement par le service sécurisé de Stripe. Minimum {m}\u00a0¥.',
+        min: 'Veuillez saisir un montant d’au moins {m}\u00a0¥.', thanks: 'Merci de votre soutien. Il compte beaucoup.',
+        error: 'Le don n’a pas abouti et rien n’a été prélevé. Veuillez réessayer.', back: '← Retour',
+        place: 'Miyazaki, Japon', desc: 'Soutenir le travail de Yoso, artiste à Miyazaki, au Japon.',
+        labels: { yoso: 'Là où c’est nécessaire', dojo: 'La création du dojo', river: 'River 川 · textes courts', shinsei: 'Shinsei · peintures et rouleaux', yosokuro: 'Yosokuro · photographies du Japon', on: 'On · le magazine', one: 'The Vault · notes et essais' } },
+  ja: { html: 'ja', title: '寄付', what: '寄付の用途', amount: '金額（円）', other: 'または金額を自由に入力',
+        btn: '寄付する', btnAmt: '{a} を寄付する', note: 'Stripe の安全な決済画面でお支払いいただけます。最低 ¥{m}。',
+        min: '¥{m} 以上の金額を入力してください。', thanks: 'ご支援をありがとうございます。大きな励みになります。',
+        error: '寄付が完了しませんでした。請求は発生していません。もう一度お試しください。', back: '← 戻る',
+        place: '宮崎', desc: '宮崎のアーティスト、Yoso の活動を支援する。',
+        labels: { yoso: '必要なところへ', dojo: '道場の創設', river: 'River 川・短い言葉', shinsei: 'Shinsei・絵画と掛軸', yosokuro: 'Yosokuro・日本の写真', on: 'On・雑誌', one: 'The Vault・ノートとエッセイ' } },
+};
+const LANG_ORDER = [['en', 'EN'], ['fr', 'FR'], ['ja', '日本語']];
+function pickLang(request, url) {
+  const q = url.searchParams.get('lang');
+  if (T[q]) return q;
+  const c = (request.headers.get('Cookie') || '').match(/(?:^|;\s*)lang=(en|fr|ja)\b/);
+  if (c) return c[1];
+  for (const part of (request.headers.get('Accept-Language') || '').toLowerCase().split(',')) {
+    const l = part.trim().slice(0, 2);
+    if (T[l]) return l;
+  }
+  return 'en';
+}
 
 // Projects a donation can be for. 'name' shows on Stripe's checkout; 'back' is
 // where readers land afterwards. A form that sends no 'for' is River's.
@@ -43,9 +79,10 @@ export default {
 
     if (url.pathname === '/robots.txt') return new Response(ROBOTS, { headers: { 'content-type': 'text/plain; charset=utf-8' } });
     if (url.pathname === '/' && request.method === 'GET') {
-      return new Response(page(url.searchParams.get('donation'), url.searchParams.get('for')), {
-        headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
-      });
+      const lang = pickLang(request, url);
+      const headers = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'content-language': lang };
+      if (url.searchParams.get('lang') === lang) headers['set-cookie'] = `lang=${lang}; Path=/; Max-Age=31536000; Secure; SameSite=Lax`;
+      return new Response(page(url.searchParams.get('donation'), url.searchParams.get('for'), lang), { headers });
     }
     if (url.pathname !== '/checkout') return Response.redirect(`${HOME}/`, 302);
     if (request.method !== 'POST') return Response.redirect(`${HOME}/`, 303);
@@ -127,25 +164,27 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const yen = (n) => '¥' + Number(n).toLocaleString('en');
 
 // The page. Wording is a draft for Yoso to rewrite.
-function page(status, forKey) {
+function page(status, forKey, lang = 'en') {
+  const t = T[lang] || T.en, fill = (s) => s.replace('{m}', MIN_YEN);
   const chosen = PROJECTS[forKey] ? forKey : 'yoso';
   const flash = status === 'thanks'
-    ? `<p class="flash" role="status">Thank you for your support. It means a great deal.</p>`
+    ? `<p class="flash" role="status">${esc(t.thanks)}</p>`
     : status === 'invalid'
-      ? `<p class="flash bad" role="alert">Please enter an amount of ¥${MIN_YEN} or more.</p>`
+      ? `<p class="flash bad" role="alert">${esc(fill(t.min))}</p>`
       : status === 'error'
-        ? `<p class="flash bad" role="alert">The donation didn’t go through and nothing was charged. Please try again.</p>`
+        ? `<p class="flash bad" role="alert">${esc(t.error)}</p>`
         : '';
   const options = Object.entries(PROJECTS).map(([k, p]) =>
-    `<option value="${k}"${k === chosen ? ' selected' : ''}>${esc(p.label)}</option>`).join('');
+    `<option value="${k}"${k === chosen ? ' selected' : ''}>${esc(t.labels[k] || p.label)}</option>`).join('');
+  const langs = LANG_ORDER.map(([k, n]) => k === lang ? `<span aria-current="true" lang="${k}">${n}</span>` : `<a href="${HOME}/?lang=${k}${PROJECTS[forKey] ? '&for=' + forKey : ''}" lang="${k}" hreflang="${k}">${n}</a>`).join('');
   const chips = SUGGEST.map((n) => `<button type="button" class="chip" data-yen="${n}">${yen(n)}</button>`).join('');
   return `<!doctype html>
-<html lang="en-GB">
+<html lang="${t.html}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Donate · Yoso</title>
-<meta name="description" content="Support the work of Yoso, an artist in Miyazaki, Japan.">
+<title>${esc(t.title)} · Yoso</title>
+<meta name="description" content="${esc(t.desc)}">
 <link rel="icon" href="https://river.yoso.one/images/yoso-mark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap">
@@ -162,7 +201,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .family-mark{display:block;width:48px;margin:24px auto 0;line-height:0}
 .family-mark img{display:block;width:48px;height:48px}
 header{padding:32px 0 8px;text-align:center}
-header a{font-family:var(--display);font-size:22px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
+header > a{font-family:var(--display);font-size:22px;letter-spacing:.08em;text-decoration:none;color:var(--ink)}
+.lang{display:flex;justify-content:center;gap:4px;margin-top:6px;font-size:14px;letter-spacing:.06em}
+.lang a,.lang span{display:inline-flex;align-items:center;min-height:44px;min-width:40px;padding:0 8px;justify-content:center;color:var(--muted);text-decoration:none}
+.lang a:hover{color:var(--ink)}
+.lang span{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px}
 main{padding:24px 0 48px}
 h1{margin:0 0 14px;font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,48px);line-height:1.15}
 .lead{margin:0 0 32px;color:var(--ink-2);font-size:17px}h1{margin-bottom:28px}
@@ -194,35 +237,36 @@ footer p{margin:0}
 <body>
 <div class="wrap">
 <span class="family-mark"><img src="https://river.yoso.one/images/yoso-mark.png" alt="Yoso" width="48" height="48"></span>
-<header><a href="${HOME}/">Yoso</a></header>
+<header><a href="${HOME}/">Yoso</a><nav class="lang" aria-label="Language">${langs}</nav></header>
 <main>
-<h1>Donate</h1>
+<h1>${esc(t.title)}</h1>
 ${flash}
 <form class="give" id="give" action="${HOME}/checkout" method="post" novalidate>
-<label for="for">What it’s for</label>
+<label for="for">${esc(t.what)}</label>
 <select id="for" name="for">${options}</select>
-<span class="lbl gap" id="amt-l">Amount in yen</span>
+<span class="lbl gap" id="amt-l">${esc(t.amount)}</span>
 <div class="chips" role="group" aria-labelledby="amt-l">${chips}</div>
-<label for="amount">or type any amount</label>
+<label for="amount">${esc(t.other)}</label>
 <div class="amount"><span class="yen" aria-hidden="true">¥</span>
-<input id="amount" name="amount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1,000" aria-label="Amount in yen">
-<button type="submit" id="go">Donate</button></div>
-<p class="note">Paid through Stripe’s secure checkout. Minimum ¥${MIN_YEN}.</p>
+<input id="amount" name="amount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="1,000" aria-label="${esc(t.amount)}">
+<input type="hidden" name="lang" value="${lang}">
+<button type="submit" id="go" data-btn="${esc(t.btn)}" data-amt="${esc(t.btnAmt)}" data-min="${esc(fill(t.min))}">${esc(t.btn)}</button></div>
+<p class="note">${esc(fill(t.note))}</p>
 <p class="err" id="err" role="alert"></p>
 </form>
 </main>
-<p class="back" id="back" hidden><a href="#">← Back</a></p>
-<footer><p>&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</p><p><span class="version" data-version>${VERSION}</span></p></footer>
+<p class="back" id="back" hidden><a href="#">${esc(t.back)}</a></p>
+<footer><p>&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · ${esc(t.place)}</p><p><span class="version" data-version>${VERSION}</span></p></footer>
 </div>
 <script>
 (function(){
 var f=document.getElementById('give'),a=document.getElementById('amount'),b=document.getElementById('go'),e=document.getElementById('err'),c=f.querySelectorAll('.chip');
 function n(){return parseInt(a.value.replace(/[^0-9]/g,''),10)}
 function y(v){return '¥'+Number(v).toLocaleString('en')}
-function sync(){var v=n();b.textContent=v?'Donate '+y(v):'Donate';c.forEach(function(x){x.setAttribute('aria-pressed',String(Number(x.dataset.yen)===v))});e.textContent=''}
+function sync(){var v=n();b.textContent=v?b.dataset.amt.replace('{a}',y(v)):b.dataset.btn;c.forEach(function(x){x.setAttribute('aria-pressed',String(Number(x.dataset.yen)===v))});e.textContent=''}
 c.forEach(function(x){x.addEventListener('click',function(){a.value=Number(x.dataset.yen).toLocaleString('en');sync()})});
 a.addEventListener('input',sync);sync();
-f.addEventListener('submit',function(ev){var v=n();if(!v||v<${MIN_YEN}){ev.preventDefault();e.textContent='Please enter an amount of ¥${MIN_YEN} or more.';a.focus();return}a.value=String(v)});
+f.addEventListener('submit',function(ev){var v=n();if(!v||v<${MIN_YEN}){ev.preventDefault();e.textContent=b.dataset.min;a.focus();return}a.value=String(v)});
 // Back link: only for readers who arrived from one of Yoso's sites. The
 // address is kept for the visit, so it survives the trip to Stripe and back.
 var bk=document.getElementById('back'),HOMES={river:'https://river.yoso.one/',shinsei:'https://shinsei.yoso.one/',yosokuro:'https://yosokuro.yoso.one/',on:'https://on.yoso.one/',one:'https://one.yoso.one/'};

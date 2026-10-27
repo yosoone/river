@@ -664,6 +664,7 @@ function chrome(){
   })();
   document.getElementById('foot-r').textContent = u.footR;
   document.getElementById('foot-donate').textContent = {en:'Donate', ja:'寄付', fr:'Faire un don'}[lang];
+  document.getElementById('foot-donate').href = 'https://donate.yoso.one/?for=river&lang=' + lang;
   document.getElementById('foot-contact').textContent = CONTACT_UI[lang].link;
   // The Japanese and French texts are machine translations of Yoso's English.
   { const mt = document.getElementById('mt-note'), t = {ja:'日本語の文章は機械翻訳です。', fr:'Les textes en français sont traduits automatiquement.'}[lang];
@@ -734,7 +735,7 @@ function piece(i){
     '<a class="next" href="#t' + next.n + '">' + esc(title(next)) + ' →</a>' +
     '</nav>' +
     '<p class="getbook">' + (window.RIVER_BOOK ? '<a href="#book">' + esc(BOOK_UI[lang].getSmall) + '<span>' + esc(BOOK_UI[lang].getFmt) + '</span></a>' : '') +
-    '<a class="give" href="https://donate.yoso.one/?for=river">' + esc({en:'Donate', ja:'寄付', fr:'Faire un don'}[lang]) + '</a></p>';
+    '<a class="give" href="https://donate.yoso.one/?for=river&lang=' + lang + '">' + esc({en:'Donate', ja:'寄付', fr:'Faire un don'}[lang]) + '</a></p>';
 }
 
 let nav = null; // hashes of the current text's neighbours, for swiping

@@ -858,15 +858,16 @@ route();
 // GoatCounter (goatcounter.com): visits, texts read and book downloads, with no
 // cookies and no personal data. GOAT is the account's code (GOAT.goatcounter.com);
 // while it is empty nothing is loaded or counted.
-const GOAT = '';
-function goat(o){ try { if (GOAT && window.goatcounter && window.goatcounter.count) window.goatcounter.count(o); } catch(e) {} }
+const GOAT = 'yoso';
+const GOAT_SITE = 'river'; // label in front of every path, as one dashboard serves all of Yoso's sites
+function goat(o){ try { if (o && o.path) o.path = GOAT_SITE + '/' + o.path.replace(/^\//, ''); if (GOAT && window.goatcounter && window.goatcounter.count) window.goatcounter.count(o); } catch(e) {} }
 if (GOAT) {
   const s = document.createElement('script');
   s.async = true; s.src = 'https://gc.zgo.at/count.js';
   s.dataset.goatcounter = 'https://' + GOAT + '.goatcounter.com/count';
   s.dataset.goatcounterSettings = '{"no_onload": true}';
   // River is one page: each text or page (#t5, #about…) is counted as its own path.
-  const view = () => goat({ path: '/' + (location.hash || '#home'), title: document.title });
+  const view = () => goat({ path: location.hash || '#home', title: document.title });
   s.onload = view;
   window.addEventListener('hashchange', view);
   document.head.appendChild(s);

@@ -9,3 +9,8 @@ workers_dev = false
 routes = [
   { pattern = "donate.yoso.one", custom_domain = true }
 ]
+
+# Contact messages from River (see donate/README.md, 'Contact form').
+# The address they go to is the secret CONTACT_TO, never written here.
+[[send_email]]
+name = "EMAIL"

@@ -202,6 +202,19 @@ nav.pager a:hover{color:var(--gold-ink)}
 .bp .back{margin:48px 0 0;font-size:14px}
 .bp .back a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 @media (prefers-reduced-motion:reduce){.book .cover{transition:none}.book .cover:hover{transform:none}}
+/* Contact */
+.contact{max-width:34em;margin:0 auto;padding-block:56px 72px;border-top:1px solid var(--rule)}
+.contact h1{margin:0 0 16px;font-family:var(--display);font-weight:400;font-size:clamp(32px,5vw,44px);line-height:1.2}
+.contact .lead{margin:0 0 28px;color:var(--ink-2);font-size:17px}
+.contact form{display:grid;gap:8px}
+.contact label{margin-top:10px;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.contact input,.contact textarea{width:100%;min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:10px 12px}
+.contact textarea{resize:vertical;line-height:1.6}
+.contact input:focus-visible,.contact textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.contact .c-row{margin-top:18px}
+.contact .note{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.contact .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.contact .btn[disabled]{opacity:.6;cursor:default}
 /* Mailing list */
 .list{display:flex;flex-wrap:wrap;gap:20px 56px;align-items:end;justify-content:space-between;padding-block:48px;border-top:1px solid var(--rule)}
 .list>div{flex:1 1 260px}
@@ -272,8 +285,8 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
-    <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.44</span></span>
+    <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.45</span></span>
   </footer>
 </div>
 
@@ -383,6 +396,58 @@ const browserLang = () => { const n = (navigator.language || '').toLowerCase(); 
 // Checkout page. Leave empty to show 'Donations will open here soon' instead.
 const DONATE_ENDPOINT = 'https://donate.yoso.one/checkout';
 const DONATE_MIN = 100, DONATE_SUGGEST = [500, 1000, 3000];
+
+// Contact page. Wording is a draft for Yoso; Japanese and French are drafts to check.
+// The form posts to the donate.yoso.one Worker, which emails Yoso; his address is never on the site.
+const CONTACT_ENDPOINT = 'https://donate.yoso.one/contact';
+const CONTACT_UI = {
+  en: { link:"Contact", h:"Contact", p:"A word, a question, a thought after reading. Messages come to me directly, and I read each one.",
+        name:"Name (optional)", email:"Your email", message:"Message", send:"Send",
+        note:"Your email is used only to reply. Nothing is stored on this site.", soon:"The contact form opens here soon.",
+        thanks:"Thank you. Your message is on its way.", error:"The message didn’t go through. Please try again a little later.",
+        invalid:"Please enter a valid email address and a message.", sending:"Sending…" },
+  ja: { link:"お問い合わせ", h:"お問い合わせ", p:"ひとこと、質問、読んで感じたこと。メッセージは私に直接届き、ひとつひとつ読んでいます。",
+        name:"お名前（任意）", email:"メールアドレス", message:"メッセージ", send:"送信",
+        note:"メールアドレスは返信のためだけに使います。このサイトには何も保存されません。", soon:"お問い合わせフォームはまもなく開きます。",
+        thanks:"ありがとうございます。メッセージを送信しました。", error:"送信できませんでした。少し時間をおいて、もう一度お試しください。",
+        invalid:"正しいメールアドレスとメッセージを入力してください。", sending:"送信中…" },
+  fr: { link:"Contact", h:"Contact", p:"Un mot, une question, une pensée après la lecture. Les messages me parviennent directement, et je les lis tous.",
+        name:"Nom (facultatif)", email:"Votre e-mail", message:"Message", send:"Envoyer",
+        note:"Votre e-mail sert uniquement à vous répondre. Rien n’est conservé sur ce site.", soon:"Le formulaire de contact ouvrira bientôt ici.",
+        thanks:"Merci. Votre message est en route.", error:"Le message n’a pas pu être envoyé. Veuillez réessayer un peu plus tard.",
+        invalid:"Veuillez saisir une adresse e-mail valide et un message.", sending:"Envoi…" }
+};
+let contactReady = null;   // null: not asked yet; true/false once the Worker has answered
+function checkContact(){
+  if (contactReady !== null) return Promise.resolve(contactReady);
+  return fetch(CONTACT_ENDPOINT + '/ready', {cache:'no-store'}).then(r => r.ok ? r.json() : {ready:false})
+    .then(j => (contactReady = !!j.ready)).catch(() => (contactReady = false));
+}
+function contactPage(){
+  const u = CONTACT_UI[lang];
+  document.title = u.h + ' · River 川';
+  const flash = contactMsg ? '<p class="flash' + (contactMsg === 'thanks' ? '' : ' bad') + '" role="status">' + esc(u[contactMsg] || u.error) + '</p>' : '';
+  view.innerHTML =
+    '<section class="contact" aria-labelledby="contact-h"><h1 id="contact-h">' + esc(u.h) + '</h1><p class="lead">' + esc(u.p) + '</p>' + flash +
+    '<p class="note" id="c-soon">' + esc(u.soon) + '</p>' +
+    '<form id="c-form" action="' + CONTACT_ENDPOINT + '" method="post" hidden>' +
+      '<label for="c-name">' + esc(u.name) + '</label><input id="c-name" name="name" autocomplete="name" maxlength="120">' +
+      '<label for="c-email">' + esc(u.email) + '</label><input id="c-email" name="email" type="email" autocomplete="email" required maxlength="200">' +
+      '<label for="c-msg">' + esc(u.message) + '</label><textarea id="c-msg" name="message" rows="7" required maxlength="5000"></textarea>' +
+      '<div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>' +
+      '<input type="hidden" name="lang" value="' + lang + '">' +
+      '<div class="c-row"><button type="submit" class="btn primary" id="c-send">' + esc(u.send) + '</button></div>' +
+      '<p class="note">' + esc(u.note) + '</p></form></section>';
+  contactMsg = '';
+  const f = document.getElementById('c-form'), soon = document.getElementById('c-soon');
+  checkContact().then(ok => { if (!document.body.contains(f)) return; f.hidden = !ok; soon.hidden = ok; });
+  f.addEventListener('submit', () => { const b = document.getElementById('c-send'); b.disabled = true; b.textContent = u.sending; });
+}
+let contactMsg = '';
+try {
+  const c = new URLSearchParams(location.search).get('contact');
+  if (c) { contactMsg = ['thanks','invalid','error'].includes(c) ? c : 'error'; history.replaceState(null, '', location.pathname + location.hash); }
+} catch(e) {}
 
 // Book wording. Japanese and French are drafts for Yoso to check.
 const BOOK_UI = {
@@ -570,6 +635,7 @@ function chrome(){
   })();
   document.getElementById('foot-r').textContent = u.footR;
   document.getElementById('foot-donate').textContent = {en:'Donate', ja:'寄付', fr:'Faire un don'}[lang];
+  document.getElementById('foot-contact').textContent = CONTACT_UI[lang].link;
   // The Japanese and French texts are machine translations of Yoso's English.
   { const mt = document.getElementById('mt-note'), t = {ja:'日本語の文章は機械翻訳です。', fr:'Les textes en français sont traduits automatiquement.'}[lang];
     mt.hidden = !t; mt.textContent = t || ''; }
@@ -615,6 +681,7 @@ function about(){
     '<p class="about-next">' +
       '<a class="btn primary" href="#home" data-to-list>' + esc({en:'Read the texts', ja:'言葉を読む', fr:'Lire les textes'}[lang]) + '</a>' +
       (window.RIVER_BOOK ? '<a class="btn" href="#book">' + esc(BOOK_UI[lang].get) + '</a>' : '') +
+      '<a class="btn" href="#contact">' + esc(CONTACT_UI[lang].link) + '</a>' +
     '</p></div></section>';
 }
 
@@ -672,6 +739,7 @@ function render(){
   if (h === 'about') document.getElementById('about-link').setAttribute('aria-current','page');
   { const ls = document.querySelector('section.list'); if (ls) ls.hidden = (h === 'book'); } // the download page offers the list in step 2
   if (h === 'about') { nav = null; about(); }
+  else if (h === 'contact') { nav = null; contactPage(); }
   else if (h === 'book') { nav = null; bookPage(); }
   else if (i >= 0) {
     const L = TEXTS.length;

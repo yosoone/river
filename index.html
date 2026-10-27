@@ -292,7 +292,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.47</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.48</span></span>
   </footer>
 </div>
 
@@ -629,6 +629,10 @@ function bookPage(){
 
 let lang = 'en';
 try { const s = localStorage.getItem('river-lang'); lang = (s === 'en' || s === 'ja' || s === 'fr') ? s : browserLang(); } catch(e) { lang = browserLang(); }
+// A link such as river.yoso.one/?lang=fr (used in the books) opens the site in that language and remembers it.
+{ const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'en' || q === 'ja' || q === 'fr') { lang = q; try { localStorage.setItem('river-lang', q); } catch(e) {}
+    const u = new URL(location.href); u.searchParams.delete('lang'); history.replaceState(null, '', u.pathname + u.search + u.hash); } }
 
 const view = document.getElementById('view');
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

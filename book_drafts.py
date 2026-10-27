@@ -150,7 +150,7 @@ def paras(text):
 
 MARKERS = [
     (re.compile(r"^[‘'\"]?\s*insert photograph\s*[’'\"]?$", re.I), "photo"),
-    (re.compile(r"^[‘'\"]?\s*Claude Insert Signature with Seal\s*[’'\"]?$", re.I), "seal"),
+    (re.compile(r"^[‘'\"]?\s*Claude Insert Signature with Seal[^’'\"]*[’'\"]?$", re.I), "seal"),
     (re.compile(r"^[‘'\"]?\s*Golden mark\s*[’'\"]?$", re.I), "gold"),
 ]
 SITE_RE = re.compile(r"^(https?://)?([a-z0-9-]+\.)+[a-z]{2,}(/\S*)?$", re.I)

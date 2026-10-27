@@ -156,6 +156,21 @@ MARKERS = [
 SITE_RE = re.compile(r"^(https?://)?([a-z0-9-]+\.)+[a-z]{2,}(/\S*)?$", re.I)
 
 
+INLINE_SITE = re.compile(r"(?<![\w@/.])((?:https?://)?(?:[a-z0-9-]+\.)+(?:one|com|org|net|jp|io)(?:/[^\s<]*)?)(?<![.,;:])", re.I)
+
+
+def linkify(line):
+    """Escape a line and turn any web address in it into a link."""
+    out, last = [], 0
+    for m in INLINE_SITE.finditer(line):
+        u = m.group(1)
+        out.append(escape(line[last:m.start(1)]))
+        out.append(f'<a href="{escape(u if u.startswith("http") else "https://" + u)}">{escape(u.split("//")[-1])}</a>')
+        last = m.end(1)
+    out.append(escape(line[last:]))
+    return "".join(out)
+
+
 def blank_page():
     # A non-breaking space keeps e-readers from skipping an empty page.
     return ("Blank", '<div class="blank">&#160;</div>', "blank")
@@ -187,7 +202,7 @@ def block_html(block, img):
             url = l if l.startswith("http") else "https://" + l
             run.append(f'<a href="{escape(url)}">{escape(l.split("//")[-1])}</a>')
         else:
-            run.append(escape(l))
+            run.append(linkify(l))
     flush()
     return "".join(out)
 
@@ -201,14 +216,14 @@ def matter_page(e, version, d, img):
         raw = re.sub(r"[‘']\s*(Beta version|Date|year)\s*[’']", lambda m: stamp[m.group(1)], raw)
         lines = [l.strip() for l in raw.split("\n") if l.strip()]
         body = f'<p class="name">{escape(lines[0])}</p>' + "".join(
-            (f'<p><a href="https://{escape(l)}">{escape(l)}</a></p>' if SITE_RE.match(l) else f'<p>{escape(l)}</p>') for l in lines[1:])
+            (f'<p><a href="https://{escape(l)}">{escape(l)}</a></p>' if SITE_RE.match(l) else f'<p>{linkify(l)}</p>') for l in lines[1:])
         return (title, f'<div class="colophon">{body}</div>', "colo")
     if title.lower().startswith("half title"):
         return (title, f'<p class="half">{escape(raw or B.KANJI)}</p>', "centre")
     signed = bool(re.search(r"^\s*[—―]\s*Yoso\s*$", raw, re.M))
     if signed:      # texts in the front matter: first version, signed in type
         v, _ = first_version(raw)
-        return (title, f'<div class="verse quiet">{paras(v)}</div><p class="byline">— Yoso</p>', "centre")
+        return (title, f'<div class="verse quiet">{paras(v)}</div><p class="byline">Yoso</p>', "centre")
     blocks = [b for b in re.split(r"\n\s*\n", raw) if b.strip()]
     if len(blocks) == 1 and "\n" not in blocks[0].strip() and len(blocks[0]) < 40 and not marker_html(blocks[0].strip(), img):
         return (title, f'<p class="lone">{escape(blocks[0].strip())}</p>', "centre")
@@ -240,8 +255,9 @@ TITLE_FIX = {}
 
 
 def piece(n, t, v, img):
-    # No signature on the texts (Book Design note).
-    return f'<h3>{escape(t)}</h3><div class="verse {B.size_class(v)}">{B.verse_html(v)}</div>'
+    # Title above, the signature in type below (no seal image).
+    return (f'<h3>{escape(t)}</h3><div class="verse {B.size_class(v)}">{B.verse_html(v)}</div>'
+            '<p class="byline">Yoso</p>')
 
 
 # ---------------------------------------------------------------- PDF
@@ -345,6 +361,7 @@ a { color: inherit; text-decoration: none; }
 .blank { min-height: 80vh; }
 .lone { font-size: 1.15em; letter-spacing: 0.04em; margin: 0; }
 .byline { margin: 2em 0 0; font-size: 0.8em; letter-spacing: 0.12em; opacity: 0.8; }
+.piece p.byline { text-align: center !important; text-indent: 0 !important; margin: 2.2em 0 0; }
 .letter .pic { margin: 0 0 1.4em; }
 .letter .portrait { width: 50%; max-width: 14em; height: auto; }
 .letter .gold { width: 3.5em; height: 3.5em; margin: 0 auto; }
@@ -440,11 +457,26 @@ def build_epub(entries, texts, version, d, path):
 
 # ---------------------------------------------------------------- designed cover
 
+def render_svg(svg, w, h):
+    """PNG of an SVG at w x h, drawn by Chromium through Playwright (Node)."""
+    import subprocess, tempfile
+    with tempfile.TemporaryDirectory() as t:
+        src, out = Path(t) / "cover.svg", Path(t) / "cover.png"
+        src.write_text(svg, encoding="utf-8")
+        js = ("const {chromium}=require('playwright');(async()=>{const b=await chromium.launch("
+              "{executablePath:process.env.CHROMIUM||undefined});const p=await b.newPage({viewport:{width:%d,height:%d}});"
+              "await p.goto('file://'+process.argv[1]);await p.waitForTimeout(800);"
+              "await p.screenshot({path:process.argv[2]});await b.close()})();" % (w, h))
+        subprocess.run(["node", "-e", js, str(src), str(out)], check=True,
+                       env={**__import__("os").environ, "CHROMIUM": "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+                            "NODE_PATH": "/home/claude/node_modules"})
+        return out.read_bytes()
+
+
 def cover_from_svg(svg_path, version, d):
     """Use Yoso's Illustrator cover (1600 x 2560 SVG). The Edition line is
     rewritten with this edition's beta number and date and kept centred on the
     same point. Returns (jpeg bytes 1600x2560, png bytes 2400x3840)."""
-    import cairosvg
     from io import BytesIO
     from PIL import Image
     from fontTools.ttLib import TTFont
@@ -464,7 +496,9 @@ def cover_from_svg(svg_path, version, d):
         old, new = m.group(5), f"Beta {version} · {B.long_date(d)}"
         centre = float(m.group(2)) + wid(old) / 2
         svg = svg.replace(m.group(0), f"{m.group(1)}{centre - wid(new) / 2:.4f}{m.group(3)}{escape(new)}{m.group(6)}")
-    big = cairosvg.svg2png(bytestring=svg.encode(), output_width=2400, output_height=3840)
+    # Illustrator writes letter-spacing without units, which browsers ignore.
+    svg = re.sub(r"letter-spacing:\s*([\d.]+)\s*;", r"letter-spacing:\1px;", svg)
+    big = render_svg(svg, 2400, 3840)
     im = Image.open(BytesIO(big)).convert("RGB")
     jpg = BytesIO()
     im.resize((1600, 2560), Image.LANCZOS).save(jpg, "JPEG", quality=92)

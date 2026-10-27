@@ -369,8 +369,12 @@ a { color: inherit; text-decoration: none; }
 .letter .seal { margin: 0.4em 0 1.2em; line-height: 0; }
 .letter .stanza { margin: 0 0 1em; }
 .photo-page .pic { margin: 0; }
+.photo-page .caption { margin: 1em 0 0; font-size: 0.75em; letter-spacing: 0.08em; opacity: 0.75; }
 .photo-page .portrait { width: 80%; max-width: 22em; height: auto; margin: 0 auto; }
 """
+
+
+PHOTO_CAPTION = "Kougenji Temple, Kumamoto"   # under the author photograph (EPUB)
 
 
 def build_epub(entries, texts, version, d, path):
@@ -404,7 +408,7 @@ def build_epub(entries, texts, version, d, path):
             # EPUB only: the photograph goes on the blank page before, as the left
             # page of the spread, and the text faces it on the right.
             pf = pages[-1][0]
-            pages[-1] = (pf, "Photograph", B.xhtml("Photograph", f'<section class="page centre photo-page">{pic.group(0)}</section>'), False)
+            pages[-1] = (pf, "Photograph", B.xhtml("Photograph", f'<section class="page centre photo-page">{pic.group(0)}<p class="caption">{escape(PHOTO_CAPTION)}</p></section>'), False)
             body = pic_rx.sub("", body, count=1)
             spread[pf], spread[f] = "page-spread-left", "page-spread-right"
         pages.append((f, t, B.xhtml(t, f'<section class="page {cls}">{body}</section>'), t.lower() not in ("insert", "blank")))

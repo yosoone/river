@@ -44,6 +44,10 @@ LANGS = {
            "desc": "{sub}, textes courts de {a}. Bêta {v}, {date}.", "rights": "Tous droits réservés.",
            "months": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
                       "septembre", "octobre", "novembre", "décembre"]},
+    "ja": {"tag": "ja", "subtitle": "目覚める心", "contents": "目次", "cover": "表紙", "start": "本文",
+           "blank": "白紙", "photo": "写真", "caption": "熊本・Kougenji",
+           "desc": "{sub}　{a}の短い言葉。Beta {v}、{date}。", "rights": "All rights reserved.",
+           "months": "ja"},
 }
 L = LANGS["en"]
 
@@ -52,7 +56,9 @@ def set_lang(code):
     """Switch the builder's wording (and dates) to another language."""
     global L, SUBTITLE
     L, SUBTITLE = LANGS[code], LANGS[code]["subtitle"]
-    if L["months"]:
+    if L["months"] == "ja":
+        B.long_date = lambda d: f"{d.year}年{d.month}月{d.day}日"
+    elif L["months"]:
         B.long_date = lambda d: f"{d.day}{'er' if d.day == 1 else ''} {L['months'][d.month - 1]} {d.year}"
     xh = B.xhtml
     B.xhtml = lambda *a, **k: xh(*a, **k).replace('lang="en-GB" xml:lang="en-GB"', f'lang="{L["tag"]}" xml:lang="{L["tag"]}"')
@@ -72,10 +78,31 @@ def translate(entries, path):
         i = str(scriv_id(e))
         if i in tr["texts"]:
             t, v = tr["texts"][i]
-            e["title"], e["raw"] = french_typography(t), french_typography(v) + "\n— Yoso\n"
+            fix = french_typography if L["tag"] == "fr" else (lambda x: x)
+            e["title"], e["raw"] = fix(t), fix(v) + "\n— Yoso\n"
         elif i in tr["matter"]:
-            e["raw"] = tr["matter"][i] if "‘" in tr["matter"][i] else french_typography(tr["matter"][i])
+            m = tr["matter"][i]
+            e["raw"] = m if "‘" in m or L["tag"] != "fr" else french_typography(m)
     return entries
+
+
+def cjk_fonts(entries, tmp):
+    """Japanese needs the full Shippori Mincho; the book carries only the
+    characters it uses. Writes subsets under the usual names into tmp and points
+    the builder at them."""
+    from fontTools import subset
+    full = {"Regular": Path.home() / ".fonts/ShipporiMincho-Regular.ttf",
+            "SemiBold": Path.home() / ".fonts/ShipporiMincho-SemiBold.ttf"}
+    chars = set("".join(e["raw"] + e["title"] for e in entries))
+    chars |= set("".join(str(v) for v in L.values()) + "0123456789年月日·・、。「」『』（）…—–-.,:;!?’‘ ©") | {chr(c) for c in range(32, 127)}
+    tmp = Path(tmp); tmp.mkdir(parents=True, exist_ok=True)
+    for w, src in full.items():
+        opts = subset.Options(); opts.layout_features = ["*"]; opts.name_IDs = ["*"]
+        f = subset.load_font(str(src), opts)
+        sub = subset.Subsetter(opts); sub.populate(text="".join(sorted(chars))); sub.subset(f)
+        f.save(str(tmp / f"ShipporiMincho-{w}-Latin.ttf"))
+    B.PDF_CSS = B.PDF_CSS.replace("book/fonts/", str(tmp) + "/")
+    B.FONTS = tmp
 PHOTO = HERE / "about.jpg"
 
 COLLECTION = {"collection", "best of", "refine"}
@@ -614,6 +641,9 @@ def main():
     entries = read_drafts(a.drafts)
     if a.lang != "en":
         entries = translate(entries, a.translations or HERE / f"book_{a.lang}.json")
+    if a.lang == "ja":
+        import tempfile
+        cjk_fonts(entries, tempfile.mkdtemp(prefix="river-ja-fonts-"))
     texts = collection(entries)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

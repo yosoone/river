@@ -257,7 +257,7 @@ ${flash}
 </form>
 </main>
 <p class="back" id="back" hidden><a href="#">${esc(t.back)}</a></p>
-<footer><p>&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · ${esc(t.place)}</p><p><span class="version" data-version>${VERSION}</span></p></footer>
+<footer><p>&copy; 2026 Yoso · ${esc(t.place)}</p><p><span class="version" data-version>${VERSION}</span></p></footer>
 </div>
 <script>
 (function(){

@@ -215,6 +215,12 @@ nav.pager a:hover{color:var(--gold-ink)}
 .contact .note{margin:10px 0 0;font-size:13px;color:var(--muted)}
 .contact .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .contact .btn[disabled]{opacity:.6;cursor:default}
+.contact .c-join{display:flex;gap:10px;align-items:center;margin-top:16px;font-size:15px;letter-spacing:0;color:var(--ink-2);cursor:pointer}
+.contact .c-join input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--ink)}
+.contact .c-ts{margin-top:12px}
+.contact .c-ts:empty{display:none}
+.contact .c-msg{margin:14px 0 0;min-height:1.4em;font-size:15px;color:var(--ink)}
+.contact .c-msg.bad{color:#A33A2A}
 /* Mailing list */
 .list{display:flex;flex-wrap:wrap;gap:20px 56px;align-items:end;justify-content:space-between;padding-block:48px;border-top:1px solid var(--rule)}
 .list>div{flex:1 1 260px}
@@ -286,7 +292,7 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.45</span></span>
+    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.46</span></span>
   </footer>
 </div>
 
@@ -398,56 +404,79 @@ const DONATE_ENDPOINT = 'https://donate.yoso.one/checkout';
 const DONATE_MIN = 100, DONATE_SUGGEST = [500, 1000, 3000];
 
 // Contact page. Wording is a draft for Yoso; Japanese and French are drafts to check.
-// The form posts to the donate.yoso.one Worker, which emails Yoso; his address is never on the site.
-const CONTACT_ENDPOINT = 'https://donate.yoso.one/contact';
+// The form posts to the Yoso forms Worker (forms.yoso.one/contact), the same service as the
+// mailing list, which emails Yoso; his address is never on the site. Cloudflare Turnstile
+// (widget 'Yoso forms', public key below) keeps bots out.
+const CONTACT_ENDPOINT = 'https://forms.yoso.one/contact';
+const TURNSTILE_KEY = '0x4AAAAAAFeWKK51BEJbKJSu';
 const CONTACT_UI = {
   en: { link:"Contact", h:"Contact", p:"A word, a question, a thought after reading. Messages come to me directly, and I read each one.",
-        name:"Name (optional)", email:"Your email", message:"Message", send:"Send",
-        note:"Your email is used only to reply. Nothing is stored on this site.", soon:"The contact form opens here soon.",
+        name:"Your name", email:"Your email", message:"Message", send:"Send", join:"Send me new River texts by email",
+        note:"Your email is used only to reply. Nothing is stored on this site.",
         thanks:"Thank you. Your message is on its way.", error:"The message didn’t go through. Please try again a little later.",
-        invalid:"Please enter a valid email address and a message.", sending:"Sending…" },
+        missing:"Please write your name and a message.", email_bad:"Please enter a valid email address.",
+        spam:"The page couldn’t confirm you’re not a robot. Please wait a moment and press Send again.", sending:"Sending…" },
   ja: { link:"お問い合わせ", h:"お問い合わせ", p:"ひとこと、質問、読んで感じたこと。メッセージは私に直接届き、ひとつひとつ読んでいます。",
-        name:"お名前（任意）", email:"メールアドレス", message:"メッセージ", send:"送信",
-        note:"メールアドレスは返信のためだけに使います。このサイトには何も保存されません。", soon:"お問い合わせフォームはまもなく開きます。",
+        name:"お名前", email:"メールアドレス", message:"メッセージ", send:"送信", join:"River の新しい言葉をメールで受け取る",
+        note:"メールアドレスは返信のためだけに使います。このサイトには何も保存されません。",
         thanks:"ありがとうございます。メッセージを送信しました。", error:"送信できませんでした。少し時間をおいて、もう一度お試しください。",
-        invalid:"正しいメールアドレスとメッセージを入力してください。", sending:"送信中…" },
+        missing:"お名前とメッセージを入力してください。", email_bad:"正しいメールアドレスを入力してください。",
+        spam:"確認が完了しませんでした。少し待ってから、もう一度「送信」を押してください。", sending:"送信中…" },
   fr: { link:"Contact", h:"Contact", p:"Un mot, une question, une pensée après la lecture. Les messages me parviennent directement, et je les lis tous.",
-        name:"Nom (facultatif)", email:"Votre e-mail", message:"Message", send:"Envoyer",
-        note:"Votre e-mail sert uniquement à vous répondre. Rien n’est conservé sur ce site.", soon:"Le formulaire de contact ouvrira bientôt ici.",
+        name:"Votre nom", email:"Votre e-mail", message:"Message", send:"Envoyer", join:"M’envoyer les nouveaux textes de River par e-mail",
+        note:"Votre e-mail sert uniquement à vous répondre. Rien n’est conservé sur ce site.",
         thanks:"Merci. Votre message est en route.", error:"Le message n’a pas pu être envoyé. Veuillez réessayer un peu plus tard.",
-        invalid:"Veuillez saisir une adresse e-mail valide et un message.", sending:"Envoi…" }
+        missing:"Veuillez écrire votre nom et un message.", email_bad:"Veuillez saisir une adresse e-mail valide.",
+        spam:"La page n’a pas pu confirmer que vous n’êtes pas un robot. Patientez un instant et appuyez de nouveau sur Envoyer.", sending:"Envoi…" }
 };
-let contactReady = null;   // null: not asked yet; true/false once the Worker has answered
-function checkContact(){
-  if (contactReady !== null) return Promise.resolve(contactReady);
-  return fetch(CONTACT_ENDPOINT + '/ready', {cache:'no-store'}).then(r => r.ok ? r.json() : {ready:false})
-    .then(j => (contactReady = !!j.ready)).catch(() => (contactReady = false));
+// Load Cloudflare's Turnstile once (list-choice.js may already have loaded it).
+function withTurnstile(cb){
+  if (window.turnstile) { cb(window.turnstile); return; }
+  const src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+  if (!document.querySelector('script[src^="' + src + '"]')) {
+    const s = document.createElement('script'); s.src = src + '?render=explicit'; s.async = true; document.head.appendChild(s);
+  }
+  let n = 0; const t = setInterval(() => { if (window.turnstile || ++n > 100) { clearInterval(t); if (window.turnstile) cb(window.turnstile); } }, 200);
 }
 function contactPage(){
   const u = CONTACT_UI[lang];
   document.title = u.h + ' · River 川';
-  const flash = contactMsg ? '<p class="flash' + (contactMsg === 'thanks' ? '' : ' bad') + '" role="status">' + esc(u[contactMsg] || u.error) + '</p>' : '';
   view.innerHTML =
-    '<section class="contact" aria-labelledby="contact-h"><h1 id="contact-h">' + esc(u.h) + '</h1><p class="lead">' + esc(u.p) + '</p>' + flash +
-    '<p class="note" id="c-soon">' + esc(u.soon) + '</p>' +
-    '<form id="c-form" action="' + CONTACT_ENDPOINT + '" method="post" hidden>' +
-      '<label for="c-name">' + esc(u.name) + '</label><input id="c-name" name="name" autocomplete="name" maxlength="120">' +
-      '<label for="c-email">' + esc(u.email) + '</label><input id="c-email" name="email" type="email" autocomplete="email" required maxlength="200">' +
+    '<section class="contact" aria-labelledby="contact-h"><h1 id="contact-h">' + esc(u.h) + '</h1><p class="lead">' + esc(u.p) + '</p>' +
+    '<form id="c-form" action="' + CONTACT_ENDPOINT + '" method="post" novalidate>' +
+      '<label for="c-name">' + esc(u.name) + '</label><input id="c-name" name="name" autocomplete="name" required maxlength="120">' +
+      '<label for="c-email">' + esc(u.email) + '</label><input id="c-email" name="email" type="email" autocomplete="email" required maxlength="254">' +
       '<label for="c-msg">' + esc(u.message) + '</label><textarea id="c-msg" name="message" rows="7" required maxlength="5000"></textarea>' +
+      '<label class="c-join"><input type="checkbox" name="subscribe" value="river"> ' + esc(u.join) + '</label>' +
       '<div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>' +
-      '<input type="hidden" name="lang" value="' + lang + '">' +
+      '<input type="hidden" name="topic" value="general">' +
+      '<div class="c-ts" id="c-ts"></div>' +
       '<div class="c-row"><button type="submit" class="btn primary" id="c-send">' + esc(u.send) + '</button></div>' +
+      '<p class="c-msg" id="c-msg-out" role="status" aria-live="polite"></p>' +
       '<p class="note">' + esc(u.note) + '</p></form></section>';
-  contactMsg = '';
-  const f = document.getElementById('c-form'), soon = document.getElementById('c-soon');
-  checkContact().then(ok => { if (!document.body.contains(f)) return; f.hidden = !ok; soon.hidden = ok; });
-  f.addEventListener('submit', () => { const b = document.getElementById('c-send'); b.disabled = true; b.textContent = u.sending; });
+  const f = document.getElementById('c-form'), out = document.getElementById('c-msg-out'), btn = document.getElementById('c-send'), ts = document.getElementById('c-ts');
+  let tsId = null;
+  withTurnstile(t => { if (!document.body.contains(ts)) return; try { tsId = t.render(ts, { sitekey: TURNSTILE_KEY, appearance: 'interaction-only', language: lang }); } catch (e) {} });
+  const say = (k, bad) => { out.textContent = u[k] || u.error; out.classList.toggle('bad', !!bad); };
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    const d = new FormData(f);
+    if (!String(d.get('name')).trim() || !String(d.get('message')).trim()) { say('missing', true); return; }
+    if (!f.querySelector('#c-email').checkValidity() || !String(d.get('email')).trim()) { say('email_bad', true); return; }
+    let token = '';
+    try { if (window.turnstile && tsId !== null) token = window.turnstile.getResponse(tsId) || ''; } catch (e2) {}
+    d.append('cf-turnstile-response', token);
+    btn.disabled = true; btn.textContent = u.sending; out.textContent = '';
+    fetch(CONTACT_ENDPOINT, { method: 'POST', body: d })
+      .then(r => r.json().catch(() => ({ ok: false })))
+      .then(j => {
+        if (j.ok) { f.reset(); say('thanks'); }
+        else say(j.error === 'missing' ? 'missing' : j.error === 'email' ? 'email_bad' : j.error === 'spam' ? 'spam' : 'error', true);
+      })
+      .catch(() => say('error', true))
+      .finally(() => { btn.disabled = false; btn.textContent = u.send; try { if (window.turnstile && tsId !== null) window.turnstile.reset(tsId); } catch (e3) {} });
+  });
 }
-let contactMsg = '';
-try {
-  const c = new URLSearchParams(location.search).get('contact');
-  if (c) { contactMsg = ['thanks','invalid','error'].includes(c) ? c : 'error'; history.replaceState(null, '', location.pathname + location.hash); }
-} catch(e) {}
 
 // Book wording. Japanese and French are drafts for Yoso to check.
 const BOOK_UI = {

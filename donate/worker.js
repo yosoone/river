@@ -1,19 +1,15 @@
 // Yoso donations: a Cloudflare Worker at donate.yoso.one.
 //
 // GET  /          the general donation page (amount, optional project)
-// GET  /contact/ready   tells River's contact page whether messages can be sent
-// POST /contact  sends a message from River's contact page to Yoso by email
 // POST /checkout  turns the amount into a Stripe Checkout page in yen and sends
 //                 the reader there; afterwards Stripe brings them back with a
 //                 thank-you. River's download page posts here too.
 //
-// Secrets and bindings, set in Cloudflare (never in this file or the repo):
+// It needs one secret, set in Cloudflare (never in this file or the repo):
 //   STRIPE_SECRET_KEY  a Stripe restricted key with 'Checkout Sessions: Write'
-//   CONTACT_TO         Yoso's address for contact messages (verified in Email Routing)
-//   EMAIL              the send_email binding (wrangler.toml)
 // See donate/README.md for the setup.
 
-const VERSION = 'Beta 0.4';
+const VERSION = 'Beta 0.3';
 const HOME = 'https://donate.yoso.one';
 const ALLOWED_ORIGINS = [
   HOME, 'https://river.yoso.one', 'https://hub.yoso.one', 'https://yosoone.github.io',
@@ -51,8 +47,6 @@ export default {
         headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
       });
     }
-    if (url.pathname === '/contact/ready') return contactReady(request, env);
-    if (url.pathname === '/contact') return contact(request, env);
     if (url.pathname !== '/checkout') return Response.redirect(`${HOME}/`, 302);
     if (request.method !== 'POST') return Response.redirect(`${HOME}/`, 303);
 
@@ -111,63 +105,6 @@ export default {
     return Response.redirect(session.url, 303);
   },
 };
-
-// ---------------------------------------------------------------- contact
-// River's contact page posts here. The message goes to Yoso by email; the
-// reader's address is set as Reply-To so Yoso can answer directly. Nothing is
-// stored. A hidden 'website' field catches simple spam bots.
-const CONTACT_BACK = 'https://river.yoso.one/#contact';
-const CONTACT_FROM = 'River 川 <river@yoso.one>';
-const MAX_MESSAGE = 5000;
-
-function cors(request) {
-  const o = request.headers.get('Origin');
-  return ALLOWED_ORIGINS.includes(o) ? { 'Access-Control-Allow-Origin': o, Vary: 'Origin' } : {};
-}
-
-function contactReady(request, env) {
-  const ready = Boolean(env.EMAIL && env.CONTACT_TO);
-  return new Response(JSON.stringify({ ready }), {
-    headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...cors(request) },
-  });
-}
-
-function backTo(status) {
-  const u = new URL(CONTACT_BACK);
-  u.searchParams.set('contact', status);
-  return u.toString();
-}
-
-async function contact(request, env) {
-  if (request.method !== 'POST') return Response.redirect(CONTACT_BACK, 303);
-  const origin = request.headers.get('Origin');
-  if (origin && !ALLOWED_ORIGINS.includes(origin)) return new Response('Forbidden', { status: 403 });
-  let form;
-  try { form = await request.formData(); } catch { return Response.redirect(backTo('invalid'), 303); }
-  if (String(form.get('website') || '').trim()) return Response.redirect(backTo('thanks'), 303); // bot
-  const name = String(form.get('name') || '').trim().slice(0, 120);
-  const email = String(form.get('email') || '').trim().slice(0, 200);
-  const message = String(form.get('message') || '').trim();
-  const lang = String(form.get('lang') || 'en').slice(0, 2);
-  if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email) || !message || message.length > MAX_MESSAGE) {
-    return Response.redirect(backTo('invalid'), 303);
-  }
-  if (!env.EMAIL || !env.CONTACT_TO) return Response.redirect(backTo('error'), 303);
-  const who = name ? `${name} <${email}>` : email;
-  try {
-    await env.EMAIL.send({
-      to: env.CONTACT_TO,
-      from: CONTACT_FROM,
-      replyTo: email,
-      subject: `River 川 · message from ${name || email}`,
-      text: `${message}\n\n—\nFrom: ${who}\nLanguage: ${lang}\nSent from river.yoso.one/#contact`,
-    });
-  } catch (e) {
-    console.log('Contact email failed', e && (e.code || e.message));
-    return Response.redirect(backTo('error'), 303);
-  }
-  return Response.redirect(backTo('thanks'), 303);
-}
 
 const ROBOTS = `# robots.txt for donate.yoso.one
 # Search engines may index this site. AI model-training crawlers may not.

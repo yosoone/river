@@ -55,19 +55,3 @@ The suggested amounts on the page are `DONATE_SUGGEST` in `index.html`.
 ## Testing
 
 To test without real money, use a test-mode restricted key (`rk_test_…`) in the Worker and pay with Stripe's test card `4242 4242 4242 4242`. Swap in the live key afterwards.
-
-## Contact form (River)
-
-River's contact page (`river.yoso.one/#contact`) posts to `/contact` on this Worker, which emails the message to Yoso, with the reader's address as Reply-To. Nothing is stored. Until the steps below are done, the page says 'The contact form opens here soon'; it switches itself on once `/contact/ready` answers `{"ready":true}`.
-
-Cloudflare's Email Service can send from a Worker to your own verified address on the free plan.[^cf]
-
-1. **Email Routing on yoso.one.** In the Cloudflare dashboard, open the `yoso.one` zone › **Email › Email Routing**, enable it, and add your own address under **Destination addresses**. Confirm it from the email Cloudflare sends you.
-2. **The sending binding.** Deploy this folder with `npx wrangler deploy`: `wrangler.toml` already declares a `send_email` binding named `EMAIL`. (In the dashboard instead: the Worker › **Settings › Bindings › Add › Send email**, name `EMAIL`.)
-3. **Your address, as a secret.** `npx wrangler secret put CONTACT_TO` and type your address (dashboard: **Settings › Variables and Secrets › Add › Secret**, name `CONTACT_TO`). It never appears in the repo or on the site.
-4. **Paste the new `worker.js`** if you deploy from the dashboard, then **Deploy**.
-5. **Test:** open `https://donate.yoso.one/contact/ready`. It should show `{"ready":true}`; then send yourself a message from River's contact page.
-
-Messages arrive from `river@yoso.one` with the subject 'River 川 · message from …'. A hidden field catches simple spam bots; if spam becomes a problem, Cloudflare Turnstile can be added to the form.
-
-[^cf]: Cloudflare, '[Email Service](https://developers.cloudflare.com/email-routing/email-workers/send-email-workers/)' and '[Workers API: send emails](https://developers.cloudflare.com/email-service/api/send-emails/workers-api/)', *Cloudflare Docs*, accessed 27 October 2026.

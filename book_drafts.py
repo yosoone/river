@@ -455,6 +455,10 @@ def build_epub(entries, texts, version, d, path):
             body = pic_rx.sub("", body, count=1)
             spread[pf], spread[f] = "page-spread-left", "page-spread-right"
         pages.append((f, t, B.xhtml(t, f'<section class="page {cls}">{body}</section>'), t.lower() not in ("insert", "blank")))
+    # No blank 'Insert' pages in the EPUB: e-readers lay out their own pages.
+    pages = [pg for pg in pages if pg[1] != "Blank"]
+    if start not in [pg[0] for pg in pages]:
+        start = None
     start = start or first
 
     toc = "".join(f'<li><a href="{f}">{escape(t)}</a></li>' for f, t, _, inc in pages if inc)

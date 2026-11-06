@@ -138,8 +138,25 @@ def undouble(raw):
     return raw if adjacent else re.sub(r"\n[ \t]*\n", "\n", raw)
 
 
+# Tags Yoso writes into a text in Scrivener for his own sorting, e.g.
+# '#seasonal' (On picks those texts up). They never appear on River.
+TAG = re.compile(r"[ \t]*#seasonal\b", re.I)
+
+
+def untag(raw):
+    """Remove the tags, and any line left empty by them."""
+    out = []
+    for l in raw.split("\n"):
+        if TAG.search(l):
+            l = TAG.sub("", l)
+            if not l.strip():
+                continue
+        out.append(l)
+    return "\n".join(out)
+
+
 def first_version(raw):
-    raw = undouble(raw.replace("\u2028", "\n").replace("\r\n", "\n"))
+    raw = untag(undouble(raw.replace("\u2028", "\n").replace("\r\n", "\n")))
     lines = []
     for l in raw.split("\n"):
         if l.strip().startswith("— Yoso") or l.strip().startswith("― Yoso"):

@@ -37,6 +37,10 @@ def texts():
     found = [(int(n), js_string(t), js_string(v)) for n, t, v in ITEM.findall(block)]
     if not found:
         raise SystemExit("No texts found in index.html")
+    tagged = [t for n, t, v in found if "#seasonal" in (t + v).lower()]
+    if tagged:
+        raise SystemExit("'#seasonal' is a Scrivener tag and must not appear on River: "
+                         + ", ".join(tagged))
     return found
 
 

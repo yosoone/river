@@ -16,6 +16,10 @@ Each text keeps the date it first appeared in the feed, so readers only see new 
 
 © Yoso
 
+## Seasonal texts
+
+Yoso marks a seasonal text by writing `#seasonal` in it in Scrivener. On uses the tag to bring the text back in later years. The tag never appears on River: `book_drafts.py` removes it from the drafts, and `build_feed.py` stops with an error if it is ever found in `TEXTS`. Leave it out when copying a text into `TEXTS`.
+
 ## Book editions (PDF and EPUB)
 
 When there has been enough change for a new edition, run this in the river folder:

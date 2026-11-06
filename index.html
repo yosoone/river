@@ -9,54 +9,6 @@
 body{margin:0}
 img{max-width:100%}
 [hidden]{display:none!important}
-/* == Yoso family type system (see yoso-microsites skill) == */
-.about h1,
-.book h2,
-.contact h1{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:500;font-style:normal;font-size:clamp(34px,5vw,48px);line-height:1.2;letter-spacing:normal;text-transform:none}
-.read-h,
-.list h2{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:500;font-style:normal;font-size:26px;line-height:1.25;letter-spacing:normal;text-transform:none}
-.mark,
-.index .t{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:500;font-style:normal;font-size:20px;line-height:1.3;letter-spacing:.02em;text-transform:none}
-.verse{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:400;font-style:normal;font-size:clamp(22px,5.5vw,28px);line-height:1.7;letter-spacing:normal}
-.intro p{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:400;font-style:normal;font-size:clamp(20px,4.5vw,24px);line-height:1.6;letter-spacing:normal}
-.about p,
-.book p,
-.contact .lead{font-family:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',system-ui,sans-serif;font-weight:400;font-style:normal;font-size:18px;line-height:1.85;letter-spacing:normal}
-nav.pager,
-.flash,
-.bp .err,
-.bp .done,
-.contact .c-join,
-.contact .c-msg,
-.list .list-note,
-.contact .note,
-.bp .note,
-.mt-note{font-family:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',system-ui,sans-serif;font-weight:400;font-style:normal;font-size:15px;line-height:1.6;letter-spacing:normal;text-transform:none}
-.byline,
-.lang button,
-.about-link,
-.about figcaption,
-.piece-title,
-.piece-sign,
-.hint,
-.book .kicker,
-.book .meta,
-.bp .meta,
-.bp .lbl,
-.contact label,
-.list label,
-footer.site,
-.getbook a span{font-family:'IBM Plex Mono','Zen Kaku Gothic New',ui-monospace,Menlo,monospace;font-weight:400;font-style:normal;font-size:12px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
-.btn,
-.book .get a,
-.bp .opt,
-.chip,
-.list-row button,
-.getbook a{font-family:'IBM Plex Mono','Zen Kaku Gothic New',ui-monospace,Menlo,monospace;font-weight:500;font-style:normal;font-size:12px;line-height:1;letter-spacing:.14em;text-transform:uppercase}
-a{color:var(--gold-ink);text-decoration-color:currentColor;text-underline-offset:3px}
-:root{--gold-ink:#86641A}
-.index a,nav.pager a,.btn,.book .get a,.getbook a,footer.site a,.lang button,.about-link,.mark{color:inherit}
-/* == end family type system == */
 </style>
 <link rel="alternate" type="application/rss+xml" title="River 川" href="https://river.yoso.one/feed.xml">
 <title>River 川</title>
@@ -294,6 +246,73 @@ nav.pager a:hover{color:var(--gold-ink)}
 footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-block:32px 48px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted)}
 @media (max-width:560px){nav.pager{grid-template-columns:1fr 1fr}nav.pager .mid{grid-column:1/-1;grid-row:3}}
 @media (prefers-reduced-motion:no-preference){.piece-inner{animation:rise .6s ease both}@keyframes rise{from{opacity:.0001;transform:translateY(8px)}to{opacity:1;transform:none}}}
+/* == Yoso family type system (see yoso-microsites skill) == */
+.about h1,
+.book h2,
+.contact h1{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:500;font-style:normal;font-size:clamp(34px,5vw,48px);line-height:1.2;letter-spacing:normal;text-transform:none}
+.read-h,
+.list h2{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:500;font-style:normal;font-size:26px;line-height:1.25;letter-spacing:normal;text-transform:none}
+.mark,
+.index .t{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:500;font-style:normal;font-size:20px;line-height:1.3;letter-spacing:.02em;text-transform:none}
+.verse{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:400;font-style:normal;font-size:clamp(22px,5.5vw,28px);line-height:1.7;letter-spacing:normal}
+.intro p{font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;font-weight:400;font-style:normal;font-size:clamp(20px,4.5vw,24px);line-height:1.6;letter-spacing:normal}
+.about p,
+.book p,
+.contact .lead{font-family:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',system-ui,sans-serif;font-weight:400;font-style:normal;font-size:18px;line-height:1.85;letter-spacing:normal}
+nav.pager,
+.flash,
+.bp .err,
+.bp .done,
+.contact .c-join,
+.contact .c-msg,
+.list .list-note,
+.contact .note,
+.bp .note,
+.mt-note{font-family:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',system-ui,sans-serif;font-weight:400;font-style:normal;font-size:15px;line-height:1.6;letter-spacing:normal;text-transform:none}
+.byline,
+.lang button,
+.about-link,
+.about figcaption,
+.piece-title,
+.piece-sign,
+.hint,
+.book .kicker,
+.book .meta,
+.bp .meta,
+.bp .lbl,
+.contact label,
+.list label,
+.getbook a span{font-family:'IBM Plex Mono','Zen Kaku Gothic New',ui-monospace,Menlo,monospace;font-weight:400;font-style:normal;font-size:12px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
+.btn,
+.book .get a,
+.bp .opt,
+.chip,
+.list-row button,
+.getbook a{font-family:'IBM Plex Mono','Zen Kaku Gothic New',ui-monospace,Menlo,monospace;font-weight:500;font-style:normal;font-size:12px;line-height:1;letter-spacing:.14em;text-transform:uppercase}
+a{color:var(--gold-ink);text-decoration-color:currentColor;text-underline-offset:3px}
+:root{--gold-ink:#86641A}
+.index a,nav.pager a,.btn,.book .get a,.getbook a,.lang button,.about-link,.mark{color:inherit}
+footer.site{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;margin-top:0;padding:20px 0 48px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono','Zen Kaku Gothic New',ui-monospace,Menlo,monospace;font-weight:400;font-size:12px;line-height:1.6;letter-spacing:.06em;text-transform:none;color:var(--muted)}
+footer.site p{margin:0}
+footer.site a{color:inherit;text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:3px;text-decoration-thickness:1px}
+footer.site a:hover,
+.lang button:hover,
+.about-link:hover,
+.mark:hover,
+nav.pager a:hover,
+.foot-donate:hover,
+.index a:hover .t{color:var(--gold-ink)}
+.about-link[aria-current="page"],
+.lang button[aria-pressed="true"]{text-decoration:underline;text-decoration-color:var(--gold-ink);text-decoration-thickness:1px;text-underline-offset:6px}
+.btn.primary:hover,
+.book .get a.primary:hover{background:var(--gold);border-color:var(--gold);color:#1C1C1A;opacity:1}
+.btn:hover,
+.book .get a:hover,
+.bp .opt:hover,
+.chip:hover,
+.list-row button:hover,
+.getbook a:hover{border-color:var(--gold-ink);color:inherit}
+/* == end family type system == */
 </style>
 </head>
 <body>
@@ -340,8 +359,8 @@ footer.site{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;p
   </section>
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
-    <span><span id="foot-l">© <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span> · <a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a></span>
-    <span><span id="foot-r">Mind is home</span> · <span class="version" data-version>Beta 0.56</span></span>
+    <span id="foot-l">&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
+    <span><a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a> · <span class="version" data-version>Beta 0.57</span></span>
   </footer>
 </div>
 
@@ -419,16 +438,16 @@ const UI = {
   en: { intro:"Short texts that move like a quiet river: fragments of a daily practice, read slowly, one after another.",
         all:"All texts", about:"About", aboutTitle:"About River", place:"Kougenji Temple, Kumamoto", credit:"Photograph by Qualishu", aboutAlt:"Yoso in profile, silhouetted against a bright window",
         aboutText:"River 川 is a collection of short texts written in Miyazaki, Japan. Fragments and reflections of my daily practice – the mind: reflecting on the morning, meditation, the breath, the warmth of light, and the seasons.\n\nA few lines each, inspirations kept close to the moment they were written. To be read slowly, the way a calm river reflects the light, revealing our emotions from the one to the next.\n\nWishing you happiness and prosperity.\n\nGassho",
-        byline:"Yoso · Miyazaki", footL:"© Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"Yoso", hint:"Swipe or tap to navigate" },
+        byline:"Yoso · Miyazaki", footL:"© 2026 Yoso · Miyazaki, Japan", footR:"Mind is home", sign:"Yoso", hint:"Swipe or tap to navigate" },
   ja: { intro:"静かな川のように流れる、短い言葉たち。息のこと、愛のこと、春のこと、そして流れに身をゆだねること。",
         all:"一覧へ", about:"このページについて", aboutTitle:"River 川について", place:"熊本・廣現寺", credit:"写真：Qualishu", aboutAlt:"明るい窓を背に、横顔のシルエットになったYoso",
         aboutText:"「River 川」は、宮崎で書かれた短い言葉を集めたものです。日々の修行の断片と思索――心について。朝のこと、瞑想、呼吸、光のぬくもり、そして季節。\n\n数行ずつの言葉は、書かれた瞬間に近いままのひらめきです。穏やかな川が光を映すように、ひとつの感情から次の感情へと移ろいを映しながら、ゆっくりとお読みください。\n\nみなさまの幸せと繁栄をお祈りします。\n\n合掌",
-        byline:"Yoso · 宮崎", footL:"© Yoso · 宮崎", footR:"心は家", sign:"Yoso", hint:"スワイプまたはタップで移動" }
+        byline:"Yoso · 宮崎", footL:"© 2026 Yoso · 宮崎", footR:"心は家", sign:"Yoso", hint:"スワイプまたはタップで移動" }
 };
 
 const FR = {"0": ["Une mer tranquille d’abstraction", "Avant d'atteindre le rivage,\ndans la mer tranquille de l'abstraction ;\nSaisis l'esprit."], "5": ["La soumission", "La soumission,\nétrangère à l'âme rayonnante,\nest l'union qui respire."], "18": ["Présent, attentif, maintenant", "Présent, attentif, maintenant.\nCœur paisible, esprit tranquille.\nL'étreinte de l'harmonie."], "20": ["Sans limites", "Mains jointes en prière,\nje m'incline avec respect devant chaque cellule de mon corps,\net devant la vie en toi."], "2": ["Âme naturelle du vent", "Âme naturelle du vent…\nMe menant vers l'inconnu…\nFlux transcendantal."], "22": ["D'abord l'Amour, puis la Forme", "D'abord l'Amour, puis la Forme."], "1": ["Ressentir les yeux ouverts", "Ressentir les yeux ouverts,\nécouter avec le cœur,\nparler avec vérité."], "7": ["Énergie du printemps", "Énergie du printemps,\nbénissant nos cœurs d’une lumière propice.\nChaque fleur, un vœu d’harmonie.\nAvec gratitude, ton éphémère me rend humble."], "3": ["Inspire", "Inspire…\nExpire…\nL'énergie qui relie toutes les formes…\nD'infinies chaînes de réactions chimiques…\nDes milliers de milliards de cellules vivant en moi…\nQue suis-je ?"], "4": ["Doux amour aimant", "Doux amour aimant,\nDoux amour aimant,\nDoux amour aimant."], "69": ["Le vœu", "À chaque fleur,\nje fais le vœu de me consacrer à la prospérité et à l’harmonie de tout être sensible."], "21": ["L’autre", "Guéris-toi pour guérir les autres,\nguéris les autres pour te guérir.\nIl n’y a pas d’autre."], "6": ["Je m'abandonne au courant", "Je m'abandonne au courant…\nAtteignant les profondeurs de mon cœur…\nL'étreinte de l'Union."], "64": ["Merci", "Merci d’être toujours à mes côtés.\nAvec toi, mon cœur coule comme une rivière paisible."], "23": ["La mort est clémence", "Il n’est pas de plus grand choc dans la vie que la naissance,\nincapables de survivre seuls,\nnous investissons dans l’indépendance.\nLa mort est clémence."], "50": ["Sagesse durable", "La vie elle-même est la connaissance !\nSagesse éternelle,\nsi seulement nous écoutions."], "24": ["Flirt", "L’existence elle-même…\nflirtant avec la mort…\nIl n’est pas de présence sans souffle."], "25": ["Les temps modernes", "À l’affût du savoir,\nen quête de distractions,\ncraignant l’impulsion."], "27": ["Un", "Devenir Un.\nÊtre Un.\nTout est Un."], "30": ["Ne pas", "N’aime pas l’Amour,\nsois amour,\naime, simplement."], "31": ["Le printemps s’éveille", "Le printemps s’éveille,\ncœur d’or,\npure Conscience."], "32": ["Ton esprit est ta demeure", "Ton esprit est ta demeure.\nApporte-lui la lumière,\napporte-lui l’air,\napporte-lui l’amour,\napporte-lui toi-même."], "54": ["Une voix", "Enfin, une voix.\nTout est lumière,\npour ceux qui s’éveillent."], "55": ["Ne juge pas", "Ne juge pas tes expériences,\nunion du présent, du passé et de l’avenir ;\nTout ce qui est, c’est maintenant."], "102": ["Quel est ce moment", "Il est un moment du jour,\noù le soleil regarde la lune ;\nQuel est ce moment ?"], "19": ["Au-dessus du savoir", "Au-dessus du savoir, l’intégrité,\nau-delà du jugement,\nl’éveil."], "33": ["Fragments", "Fragments de conscience ?\nRespirer l’harmonie."], "106": ["Ombres", "La lumière révèle les ombres de l’ego."], "111": ["L’intervalle", "L’espace entre les pensées,\nl’intervalle entre chaque souffle.\nPlus près de la mort."], "112": ["Le salut", "Le don de l’essence,\nqui honore ta présence."], "113": ["Lune des moissons", "Lune des moissons,\nbrillante à l’est,\navant l’aube, un vent froid."], "114": ["Intention", "Cultive l’intention,\ncomme des graines qui nourrissent ton imagination."]};
 
-UI.fr = {"intro": "Des textes courts qui coulent comme une rivière tranquille : sur le souffle, l'amour, le printemps et l'abandon au courant.", "all": "Tous les textes", "about": "À propos", "aboutTitle": "À propos de River", "place": "Temple Kougenji, Kumamoto", "credit": "Photographie de Qualishu", "aboutAlt": "Yoso de profil, en silhouette devant une fenêtre lumineuse", "aboutText": "River 川 est un recueil de textes courts écrits à Miyazaki, au Japon. Des fragments et des réflexions de ma pratique quotidienne – l’esprit : la réflexion sur le matin, la méditation, le souffle, la chaleur de la lumière et les saisons.\n\nQuelques lignes chacun, des inspirations gardées au plus près de l’instant où elles ont été écrites. À lire lentement, comme une rivière calme reflète la lumière, révélant nos émotions de l’une à l’autre.\n\nJe vous souhaite bonheur et prospérité.\n\nGassho", "byline": "Yoso · Miyazaki", "footL": "© Yoso · Miyazaki, Japon", "footR": "L'esprit est la demeure", "sign": "Yoso", "hint": "Balayez ou touchez pour naviguer"};
+UI.fr = {"intro": "Des textes courts qui coulent comme une rivière tranquille : sur le souffle, l'amour, le printemps et l'abandon au courant.", "all": "Tous les textes", "about": "À propos", "aboutTitle": "À propos de River", "place": "Temple Kougenji, Kumamoto", "credit": "Photographie de Qualishu", "aboutAlt": "Yoso de profil, en silhouette devant une fenêtre lumineuse", "aboutText": "River 川 est un recueil de textes courts écrits à Miyazaki, au Japon. Des fragments et des réflexions de ma pratique quotidienne – l’esprit : la réflexion sur le matin, la méditation, le souffle, la chaleur de la lumière et les saisons.\n\nQuelques lignes chacun, des inspirations gardées au plus près de l’instant où elles ont été écrites. À lire lentement, comme une rivière calme reflète la lumière, révélant nos émotions de l’une à l’autre.\n\nJe vous souhaite bonheur et prospérité.\n\nGassho", "byline": "Yoso · Miyazaki", "footL": "© 2026 Yoso · Miyazaki, Japon", "footR": "L'esprit est la demeure", "sign": "Yoso", "hint": "Balayez ou touchez pour naviguer"};
 
 // Newsletter-choice wording (assets/list-choice.js). Japanese and French are drafts for Yoso to check.
 const CHOICE = {
@@ -723,7 +742,7 @@ function chrome(){
     a.className = 'hub-link'; a.href = 'https://hub.yoso.one'; a.textContent = 'Yoso';
     el.append(u.footL.slice(0, i), a, u.footL.slice(i + 4));
   })();
-  document.getElementById('foot-r').textContent = u.footR;
+  var fr = document.getElementById('foot-r'); if (fr) fr.textContent = u.footR;
   document.getElementById('foot-donate').textContent = {en:'Donate', ja:'寄付', fr:'Faire un don'}[lang];
   document.getElementById('foot-donate').href = 'https://donate.yoso.one/?for=river&lang=' + lang;
   document.getElementById('foot-contact').textContent = CONTACT_UI[lang].link;

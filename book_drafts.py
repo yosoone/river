@@ -13,6 +13,8 @@ Rules (from the Draft instruction notes):
     is a folder, and every file after it belongs to it until the next '_'
   * each text is its first version, up to the first '— Yoso'
   * '_Seeds' and '_Rework' never go in the book
+  * '_Longer Form' and its subfolders (Seeds, refine, Best of) are On's
+    texts and never go in River's book or site
   * 'Thank you for always being by my side' is in the front matter only
   * case is left exactly as written
 
@@ -109,6 +111,7 @@ COLLECTION = {"collection", "best of", "refine"}
 FRONT = {"front matters"}
 BACK = {"back matters"}
 NEVER = {"seeds", "rework"}
+LONGER = {"longer form"}   # On's texts: never in River's book or site
 FRONT_ONLY = {"thank you for always being by my side"}
 FRONT_ONLY_IDS = {64}   # in the front matter of the book; on the site only
 
@@ -172,11 +175,19 @@ def read_drafts(folder):
         if m:
             files.append((int(m.group(1)), p))
     files.sort()
-    section, out = None, []
+    section, part, out = None, None, []
     for n, p in files:
         title = clean_title(p.stem)
         if title.startswith("_"):
-            section = title.lstrip("_ ").strip().lower()
+            name = title.lstrip("_ ").strip().lower()
+            # Scrivener's export is flat, so a folder's subfolders just follow it.
+            # Everything from '_Longer Form' to the back matter is On's (its own
+            # Seeds, refine and Best of), never River's.
+            if name in LONGER:
+                part = name
+            elif name in BACK or name in FRONT:
+                part = None
+            section = f"{part}/{name}" if part and name != part else name
             continue
         out.append({"n": n, "title": title, "section": section,
                     "path": p, "raw": p.read_text(encoding="utf-8")})

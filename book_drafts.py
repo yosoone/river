@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile River 川 from the Scrivener drafts (River 川/Desk/Draft) into an
+"""Compile River 川 from the Scrivener drafts (vault: Writings/River 川/Desk/Draft) into an
 A5 PDF and an EPUB, following the book structure kept in Scrivener:
 
     _ Front Matters   epigraph, copyright, Thank you Japan, half title,

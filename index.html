@@ -360,7 +360,7 @@ nav.pager a:hover,
   <p class="mt-note" id="mt-note" hidden></p>
   <footer class="site">
     <span id="foot-l">&copy; 2026 <a class="hub-link" href="https://hub.yoso.one">Yoso</a> · Miyazaki, Japan</span>
-    <span><a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a> · <span class="version" data-version>Beta 0.58</span></span>
+    <span><a class="foot-donate" id="foot-contact" href="#contact">Contact</a> · <a class="foot-donate" id="foot-donate" href="https://donate.yoso.one/?for=river">Donate</a> · <span class="version" data-version>Beta 0.59</span></span>
   </footer>
 </div>
 
@@ -396,42 +396,50 @@ const TEXTS = [
   tj:"流れに身をゆだねる", vj:"流れに身をゆだねる…\n心の奥深くに届き…\n合一の抱擁。"},
  {n:64, t:"Thank you", v:"Thank you for always being by my side.\nWith you, my heart flows like a tranquil river.",
   tj:"ありがとう", vj:"いつもそばにいてくれて、ありがとう。\nあなたといると、心は穏やかな川のように流れます。"},
- {n:23, t:"Death is clemency", v:"There is no greater shock in life than birth,\nunable to survive alone,\nwe invest in independence.\nDeath is clemency.",
-  tj:"死は慈悲", vj:"人生で、生まれること以上の衝撃はない。\nひとりでは生きられず、\n私たちは自立に身を投じる。\n死は慈悲。"},
- {n:50, t:"Enduring wisdom", v:"Life itself is the knowledge!\nEternal wisdom,\nif only we listened.",
-  tj:"変わらぬ叡智", vj:"生そのものが、知である！\n永遠の叡智、\n耳を傾けさえすれば。"},
- {n:24, t:"Flirt", v:"Existence itself…\nFlirting with death…\nThere is no presence without breath.",
+ {n:24, t:"Flirt", v:"Flirting with death…\nThere is no presence without breath.",
   tj:"戯れ", vj:"存在そのものは…\n死と戯れながら…\n息なくして、存在はない。"},
+ {n:50, t:"Intrinsic wisdom", v:"Intrinsic wisdom,\nif only we listened.",
+  tj:"変わらぬ叡智", vj:"生そのものが、知である！\n永遠の叡智、\n耳を傾けさえすれば。"},
  {n:25, t:"Modern times", v:"Scanning for knowledge,\nseeking distractions,\nfearing impulse.",
   tj:"現代", vj:"知識を探し回り、\n気晴らしを求め、\n衝動を恐れる。"},
+ {n:32, t:"Your mind is your home", v:"Your mind is your home.\nBring it light,\nbring it air,\nbring it love,\nbring it you.",
+  tj:"心は家", vj:"心は、あなたの家。\n光を、\n風を、\n愛を、\nそして、あなた自身を。"},
+ {n:54, t:"A voice", v:"Finally, a voice.\nAll is light,\nTo those who awake.",
+  tj:"声", vj:"ついに、ひとつの声。\nすべては光、\n目覚める者に。"},
+ {n:102, t:"What is the time", v:"There is a time in the day,\nwhen the sun watches the moon;\nWhat is the time?",
+  tj:"どんな時", vj:"一日のうちには、\n太陽が月を見つめる時がある。\nそれは、どんな時？"},
+ {n:33, t:"Fragments", v:"Fragments of consciousness?\nBreathing harmony.",
+  tj:"断片", vj:"意識の断片？\n調和を呼吸する。"},
+ {n:106, t:"Shadows", v:"The light reveals the shadows of the ego.",
+  tj:"影", vj:"光は、自我の影を照らし出す。"},
+ {n:111, t:"Mind the gap", v:"The space between thoughts,\nthe gap between each breath.\nEver closer to death.",
+  tj:"間", vj:"思いと思いのあいだの空間、\n息と息のあいだの隙間。\n死に、より近く。"},
+ {n:112, t:"The bow", v:"The gift of presence,\nthat honours your essence.",
+  tj:"礼", vj:"本質という贈り物、\nあなたの存在に敬意をこめて。"},
+ {n:19, t:"Above knowledge", v:"Above knowledge, integrity,\nbeyond judgement,\nawakening.",
+  tj:"知識の上に", vj:"知識の上に、誠実さ、\n判断を超えて、\n目覚め。"},
+ {n:114, t:"Intention", v:"Cultivate intention,\nas seeds that feed your imagination.",
+  tj:"志", vj:"志を育てよ、\n想像力を養う種のように。"},
+ {n:294, t:"Dragon Chest", v:"New moon rising —\nthe dragon they came to slay,\nasleep in his chest",
+  tj:"龍の胸", vj:"新月が昇る——\n彼らが討ちに来た龍は\n彼の胸に眠る"},
+ {n:318, t:"Listen", v:"At the gates of consciousness,\nlisten.",
+  tj:"聴く", vj:"意識の門で、\n耳を澄ませて。"},
+ {n:321, t:"Swallow the flesh", v:"To recognise the desires\nthat feed our needs.\nTo bite the apple,\nto swallow the flesh.",
+  tj:"果肉を呑む", vj:"私たちの必要を満たす\n欲望に気づくこと。\n林檎をかじり、\nその果肉を呑み込むこと。"},
  {n:27, t:"One", v:"Becoming One.\nBeing One.\nAll is One.",
   tj:"ひとつ", vj:"ひとつになる。\nひとつである。\nすべては、ひとつ。"},
  {n:30, t:"Do not", v:"Do not love Love,\nbe love,\nsimply love.",
   tj:"なかれ", vj:"愛を愛するなかれ、\n愛であれ、\nただ、愛せよ。"},
  {n:31, t:"The spring awakes", v:"The spring awakens,\ngolden heart,\npure Consciousness.",
   tj:"春が目覚める", vj:"春が目覚める、\n黄金の心、\n純粋な意識。"},
- {n:32, t:"Your mind is your home", v:"Your mind is your home.\nBring it light,\nbring it air,\nbring it love,\nbring it you.",
-  tj:"心は家", vj:"心は、あなたの家。\n光を、\n風を、\n愛を、\nそして、あなた自身を。"},
- {n:54, t:"A voice", v:"Finally, a voice.\nAll is light,\nTo those who awake.",
-  tj:"声", vj:"ついに、ひとつの声。\nすべては光、\n目覚める者に。"},
  {n:55, t:"Do not judge", v:"Do not judge your experiences,\nunion of presence, past and future;\nAll there is is now.",
   tj:"裁かずに", vj:"自らの経験を裁かずに、\n今と、過去と、未来がひとつに結ばれる。\nあるのは、ただ今だけ。"},
- {n:102, t:"What is the time", v:"There is a time in the day,\nwhen the sun watches the moon;\nWhat is the time?",
-  tj:"どんな時", vj:"一日のうちには、\n太陽が月を見つめる時がある。\nそれは、どんな時？"},
- {n:19, t:"Above knowledge", v:"Above knowledge, integrity,\nbeyond judgement,\nawakening.",
-  tj:"知識の上に", vj:"知識の上に、誠実さ、\n判断を超えて、\n目覚め。"},
- {n:33, t:"Fragments", v:"Fragments of consciousness?\nBreathing harmony.",
-  tj:"断片", vj:"意識の断片？\n調和を呼吸する。"},
- {n:106, t:"Shadows", v:"The light reveals the shadows of the ego.",
-  tj:"影", vj:"光は、自我の影を照らし出す。"},
- {n:111, t:"Mind the gap", v:"The space between thoughts,\nthe gap between each breath.\nCloser to death.",
-  tj:"間", vj:"思いと思いのあいだの空間、\n息と息のあいだの隙間。\n死に、より近く。"},
- {n:112, t:"The bow", v:"The gift of essence,\nthat honours your presence.",
-  tj:"礼", vj:"本質という贈り物、\nあなたの存在に敬意をこめて。"},
  {n:113, t:"Harvest moon", v:"Harvest moon,\nbright in the East,\nbefore dawn, a cold wind.",
   tj:"名月", vj:"名月や\n東の空に明るく\n夜明け前、冷たい風"},
- {n:114, t:"Intention", v:"Cultivate intention,\nas seeds that feed your imagination.",
-  tj:"志", vj:"志を育てよ、\n想像力を養う種のように。"}
+ {n:320, t:"Open my chest", v:"Open my chest,\nsutures of a past reality.\nReveal the mask\nand set me free.",
+  tj:"胸を開いて", vj:"胸を開いて、\n過ぎ去った現実の縫い目を。\n仮面をあらわにし、\n私を解き放って。"},
+ {n:23, t:"Death is clemency", v:"There is no greater shock in life than birth,\nunable to survive alone,\nwe invest in independence.\nDeath is clemency.",
+  tj:"死は慈悲", vj:"人生で、生まれること以上の衝撃はない。\nひとりでは生きられず、\n私たちは自立に身を投じる。\n死は慈悲。"}
 ];
 
 const UI = {
@@ -445,7 +453,7 @@ const UI = {
         byline:"Yoso · 宮崎", footL:"© 2026 Yoso · 宮崎", footR:"心は家", sign:"Yoso", hint:"スワイプまたはタップで移動" }
 };
 
-const FR = {"0": ["Une mer tranquille d’abstraction", "Avant d'atteindre le rivage,\ndans la mer tranquille de l'abstraction ;\nSaisis l'esprit."], "5": ["La soumission", "La soumission,\nétrangère à l'âme rayonnante,\nest l'union qui respire."], "18": ["Présent, attentif, maintenant", "Présent, attentif, maintenant.\nCœur paisible, esprit tranquille.\nL'étreinte de l'harmonie."], "20": ["Sans limites", "Mains jointes en prière,\nje m'incline avec respect devant chaque cellule de mon corps,\net devant la vie en toi."], "2": ["Âme naturelle du vent", "Âme naturelle du vent…\nMe menant vers l'inconnu…\nFlux transcendantal."], "22": ["D'abord l'Amour, puis la Forme", "D'abord l'Amour, puis la Forme."], "1": ["Ressentir les yeux ouverts", "Ressentir les yeux ouverts,\nécouter avec le cœur,\nparler avec vérité."], "7": ["Énergie du printemps", "Énergie du printemps,\nbénissant nos cœurs d’une lumière propice.\nChaque fleur, un vœu d’harmonie.\nAvec gratitude, ton éphémère me rend humble."], "3": ["Inspire", "Inspire…\nExpire…\nL'énergie qui relie toutes les formes…\nD'infinies chaînes de réactions chimiques…\nDes milliers de milliards de cellules vivant en moi…\nQue suis-je ?"], "4": ["Doux amour aimant", "Doux amour aimant,\nDoux amour aimant,\nDoux amour aimant."], "69": ["Le vœu", "À chaque fleur,\nje fais le vœu de me consacrer à la prospérité et à l’harmonie de tout être sensible."], "21": ["L’autre", "Guéris-toi pour guérir les autres,\nguéris les autres pour te guérir.\nIl n’y a pas d’autre."], "6": ["Je m'abandonne au courant", "Je m'abandonne au courant…\nAtteignant les profondeurs de mon cœur…\nL'étreinte de l'Union."], "64": ["Merci", "Merci d’être toujours à mes côtés.\nAvec toi, mon cœur coule comme une rivière paisible."], "23": ["La mort est clémence", "Il n’est pas de plus grand choc dans la vie que la naissance,\nincapables de survivre seuls,\nnous investissons dans l’indépendance.\nLa mort est clémence."], "50": ["Sagesse durable", "La vie elle-même est la connaissance !\nSagesse éternelle,\nsi seulement nous écoutions."], "24": ["Flirt", "L’existence elle-même…\nflirtant avec la mort…\nIl n’est pas de présence sans souffle."], "25": ["Les temps modernes", "À l’affût du savoir,\nen quête de distractions,\ncraignant l’impulsion."], "27": ["Un", "Devenir Un.\nÊtre Un.\nTout est Un."], "30": ["Ne pas", "N’aime pas l’Amour,\nsois amour,\naime, simplement."], "31": ["Le printemps s’éveille", "Le printemps s’éveille,\ncœur d’or,\npure Conscience."], "32": ["Ton esprit est ta demeure", "Ton esprit est ta demeure.\nApporte-lui la lumière,\napporte-lui l’air,\napporte-lui l’amour,\napporte-lui toi-même."], "54": ["Une voix", "Enfin, une voix.\nTout est lumière,\npour ceux qui s’éveillent."], "55": ["Ne juge pas", "Ne juge pas tes expériences,\nunion du présent, du passé et de l’avenir ;\nTout ce qui est, c’est maintenant."], "102": ["Quel est ce moment", "Il est un moment du jour,\noù le soleil regarde la lune ;\nQuel est ce moment ?"], "19": ["Au-dessus du savoir", "Au-dessus du savoir, l’intégrité,\nau-delà du jugement,\nl’éveil."], "33": ["Fragments", "Fragments de conscience ?\nRespirer l’harmonie."], "106": ["Ombres", "La lumière révèle les ombres de l’ego."], "111": ["L’intervalle", "L’espace entre les pensées,\nl’intervalle entre chaque souffle.\nPlus près de la mort."], "112": ["Le salut", "Le don de l’essence,\nqui honore ta présence."], "113": ["Lune des moissons", "Lune des moissons,\nbrillante à l’est,\navant l’aube, un vent froid."], "114": ["Intention", "Cultive l’intention,\ncomme des graines qui nourrissent ton imagination."]};
+const FR = {"0": ["Une mer tranquille d’abstraction", "Avant d'atteindre le rivage,\ndans la mer tranquille de l'abstraction ;\nSaisis l'esprit."], "5": ["La soumission", "La soumission,\nétrangère à l'âme rayonnante,\nest l'union qui respire."], "18": ["Présent, attentif, maintenant", "Présent, attentif, maintenant.\nCœur paisible, esprit tranquille.\nL'étreinte de l'harmonie."], "20": ["Sans limites", "Mains jointes en prière,\nje m'incline avec respect devant chaque cellule de mon corps,\net devant la vie en toi."], "2": ["Âme naturelle du vent", "Âme naturelle du vent…\nMe menant vers l'inconnu…\nFlux transcendantal."], "22": ["D'abord l'Amour, puis la Forme", "D'abord l'Amour, puis la Forme."], "1": ["Ressentir les yeux ouverts", "Ressentir les yeux ouverts,\nécouter avec le cœur,\nparler avec vérité."], "7": ["Énergie du printemps", "Énergie du printemps,\nbénissant nos cœurs d’une lumière propice.\nChaque fleur, un vœu d’harmonie.\nAvec gratitude, ton éphémère me rend humble."], "3": ["Inspire", "Inspire…\nExpire…\nL'énergie qui relie toutes les formes…\nD'infinies chaînes de réactions chimiques…\nDes milliers de milliards de cellules vivant en moi…\nQue suis-je ?"], "4": ["Doux amour aimant", "Doux amour aimant,\nDoux amour aimant,\nDoux amour aimant."], "69": ["Le vœu", "À chaque fleur,\nje fais le vœu de me consacrer à la prospérité et à l’harmonie de tout être sensible."], "21": ["L’autre", "Guéris-toi pour guérir les autres,\nguéris les autres pour te guérir.\nIl n’y a pas d’autre."], "6": ["Je m'abandonne au courant", "Je m'abandonne au courant…\nAtteignant les profondeurs de mon cœur…\nL'étreinte de l'Union."], "64": ["Merci", "Merci d’être toujours à mes côtés.\nAvec toi, mon cœur coule comme une rivière paisible."], "23": ["La mort est clémence", "Il n’est pas de plus grand choc dans la vie que la naissance,\nincapables de survivre seuls,\nnous investissons dans l’indépendance.\nLa mort est clémence."], "50": ["Sagesse durable", "La vie elle-même est la connaissance !\nSagesse éternelle,\nsi seulement nous écoutions."], "24": ["Flirt", "L’existence elle-même…\nflirtant avec la mort…\nIl n’est pas de présence sans souffle."], "25": ["Les temps modernes", "À l’affût du savoir,\nen quête de distractions,\ncraignant l’impulsion."], "27": ["Un", "Devenir Un.\nÊtre Un.\nTout est Un."], "30": ["Ne pas", "N’aime pas l’Amour,\nsois amour,\naime, simplement."], "31": ["Le printemps s’éveille", "Le printemps s’éveille,\ncœur d’or,\npure Conscience."], "32": ["Ton esprit est ta demeure", "Ton esprit est ta demeure.\nApporte-lui la lumière,\napporte-lui l’air,\napporte-lui l’amour,\napporte-lui toi-même."], "54": ["Une voix", "Enfin, une voix.\nTout est lumière,\npour ceux qui s’éveillent."], "55": ["Ne juge pas", "Ne juge pas tes expériences,\nunion du présent, du passé et de l’avenir ;\nTout ce qui est, c’est maintenant."], "102": ["Quel est ce moment", "Il est un moment du jour,\noù le soleil regarde la lune ;\nQuel est ce moment ?"], "19": ["Au-dessus du savoir", "Au-dessus du savoir, l’intégrité,\nau-delà du jugement,\nl’éveil."], "33": ["Fragments", "Fragments de conscience ?\nRespirer l’harmonie."], "106": ["Ombres", "La lumière révèle les ombres de l’ego."], "111": ["L’intervalle", "L’espace entre les pensées,\nl’intervalle entre chaque souffle.\nPlus près de la mort."], "112": ["Le salut", "Le don de l’essence,\nqui honore ta présence."], "113": ["Lune des moissons", "Lune des moissons,\nbrillante à l’est,\navant l’aube, un vent froid."], "114": ["Intention", "Cultive l’intention,\ncomme des graines qui nourrissent ton imagination."], "294": ["Le dragon endormi", "Nouvelle lune qui se lève —\nle dragon qu’ils venaient terrasser,\nendormi dans sa poitrine"], "318": ["Écoute", "Aux portes de la conscience,\nécoute."], "321": ["Avaler la chair", "Reconnaître les désirs\nqui nourrissent nos besoins.\nMordre la pomme,\navaler la chair."], "320": ["Ouvre ma poitrine", "Ouvre ma poitrine,\nsutures d’une réalité passée.\nRévèle le masque\net libère-moi."]};
 
 UI.fr = {"intro": "Des textes courts qui coulent comme une rivière tranquille : sur le souffle, l'amour, le printemps et l'abandon au courant.", "all": "Tous les textes", "about": "À propos", "aboutTitle": "À propos de River", "place": "Temple Kougenji, Kumamoto", "credit": "Photographie de Qualishu", "aboutAlt": "Yoso de profil, en silhouette devant une fenêtre lumineuse", "aboutText": "River 川 est un recueil de textes courts écrits à Miyazaki, au Japon. Des fragments et des réflexions de ma pratique quotidienne – l’esprit : la réflexion sur le matin, la méditation, le souffle, la chaleur de la lumière et les saisons.\n\nQuelques lignes chacun, des inspirations gardées au plus près de l’instant où elles ont été écrites. À lire lentement, comme une rivière calme reflète la lumière, révélant nos émotions de l’une à l’autre.\n\nJe vous souhaite bonheur et prospérité.\n\nGassho", "byline": "Yoso · Miyazaki", "footL": "© 2026 Yoso · Miyazaki, Japon", "footR": "L'esprit est la demeure", "sign": "Yoso", "hint": "Balayez ou touchez pour naviguer"};
 
